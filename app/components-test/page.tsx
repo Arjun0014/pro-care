@@ -11,6 +11,7 @@ import { MagneticButton } from '@/components/ui/magnetic-button';
 import { HoverPreview }   from '@/components/motion/hover-preview';
 import { Preloader }      from '@/components/preloader';
 import { RouteCurtain }   from '@/components/route-curtain';
+import { HorizontalScroll } from '@/components/motion/horizontal-scroll';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -115,6 +116,34 @@ export default function ComponentsTestPage() {
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* C.8 — <HorizontalScroll> */}
+        <section>
+          <div className="px-[5vw]">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              C.8 · HorizontalScroll
+            </span>
+            <p className="mt-4 font-sans text-sm text-[var(--color-ink)]/60 max-w-[60ch]">
+              Scroll while inside the section — the track moves horizontally.
+              On &lt;769px it stacks vertically (no pin).
+            </p>
+          </div>
+          <HorizontalScroll className="mt-8 px-[5vw]">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div
+                key={n}
+                className="shrink-0 w-[80vw] md:w-[40vw] aspect-[4/3] bg-[var(--color-ink)] text-[var(--color-bone)] grid place-items-center"
+              >
+                <div className="text-center">
+                  <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+                    Card {String(n).padStart(2, '0')}
+                  </span>
+                  <p className="mt-2 font-display text-3xl">Item {n}</p>
+                </div>
+              </div>
+            ))}
+          </HorizontalScroll>
         </section>
 
         {/* C.5 — <HoverPreview> */}
