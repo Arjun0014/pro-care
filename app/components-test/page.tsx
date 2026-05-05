@@ -15,6 +15,7 @@ import { HorizontalScroll } from '@/components/motion/horizontal-scroll';
 import { HeroVideo }        from '@/components/motion/hero-video';
 import { ImageCluster }     from '@/components/motion/image-cluster';
 import { LiveClock }        from '@/components/ui/live-clock';
+import { LocaleToggle }     from '@/components/ui/locale-toggle';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -118,6 +119,20 @@ export default function ComponentsTestPage() {
                 {href}
               </Link>
             ))}
+          </div>
+        </section>
+
+        {/* C.12 — <LocaleToggle> */}
+        <section className="px-[5vw]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+            C.12 · LocaleToggle
+          </span>
+          <p className="mt-4 font-sans text-sm text-[var(--color-ink)]/60 max-w-[60ch]">
+            EN/AR toggle. Clicking AR shows a &ldquo;coming soon&rdquo; toast
+            and reverts to EN (V1 scaffolding pending V2 Arabic content).
+          </p>
+          <div className="mt-6 inline-block bg-[var(--color-ink)] text-[var(--color-bone)] px-6 py-3">
+            <LocaleToggle />
           </div>
         </section>
 
