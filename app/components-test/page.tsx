@@ -8,6 +8,7 @@ import { SplitText }    from '@/components/motion/split-text';
 import { MaskedReveal } from '@/components/motion/masked-reveal';
 import { Marquee }        from '@/components/motion/marquee';
 import { MagneticButton } from '@/components/ui/magnetic-button';
+import { HoverPreview }   from '@/components/motion/hover-preview';
 
 export const metadata: Metadata = {
   title: 'Components Test (R1)',
@@ -84,6 +85,23 @@ export default function ComponentsTestPage() {
             <span className="px-12">Facility Services</span>
             <span className="px-12 text-[var(--color-gold)]">—</span>
           </Marquee>
+        </section>
+
+        {/* C.5 — <HoverPreview> */}
+        <section className="px-[5vw]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+            C.5 · HoverPreview
+          </span>
+          <HoverPreview
+            className="mt-4 border-y border-[var(--color-mist)]"
+            items={[
+              { id: 'p01', name: 'West Bay Office Tower Fit-out',     image: '/images/projects/p01.jpg', href: '/projects/p01' },
+              { id: 'p02', name: 'Lusail Marina Tower Maintenance',   image: '/images/projects/p02.jpg', href: '/projects/p02' },
+              { id: 'p03', name: 'Hamad Port Logistics Hub',          image: '/images/projects/p03.jpg', href: '/projects/p03' },
+              { id: 'p04', name: 'The Pearl Residential — Block C',   image: '/images/projects/p04.jpg', href: '/projects/p04' },
+              { id: 'p05', name: 'Doha Industrial District Phase II', image: '/images/projects/p05.jpg', href: '/projects/p05' },
+            ]}
+          />
         </section>
 
         {/* C.4 — useMagnetic + <MagneticButton> */}

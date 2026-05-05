@@ -1,0 +1,154 @@
+'use client';
+
+// Per 12-AWARD-TIER-COMPONENTS.md § 7.
+// A list of project rows; hovering a row makes a single thumbnail follow the
+// cursor (offset 24px right + 24px down) with a slight lerp. Mask-reveal entry,
+// mask-collapse exit. Mobile/reduced-motion fallback: thumbnails inline.
+
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import { useReducedMotion } from 'motion/react';
+
+export type HoverPreviewItem = {
+  id:    string;
+  name:  string;
+  image: string;
+  alt?:  string;
+  href:  string;
+};
+
+type Props = {
+  items: HoverPreviewItem[];
+  className?: string;
+};
+
+export function HoverPreview({ items, className }: Props) {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (reduceMotion) return;
+    if ('ontouchstart' in window) return;
+    const node = previewRef.current;
+    if (!node) return;
+
+    let raf = 0;
+    let mx = 0;
+    let my = 0;
+    let px = 0;
+    let py = 0;
+
+    const onMove = (e: MouseEvent) => {
+      mx = e.clientX + 24;
+      my = e.clientY + 24;
+    };
+
+    const tick = () => {
+      px += (mx - px) * 0.18;
+      py += (my - py) * 0.18;
+      node.style.transform = `translate3d(${px}px, ${py}px, 0)`;
+      raf = requestAnimationFrame(tick);
+    };
+
+    window.addEventListener('mousemove', onMove);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      window.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, [reduceMotion]);
+
+  const active = items.find((i) => i.id === activeId);
+
+  // Reduced motion / touch: inline thumbnails next to each row.
+  if (reduceMotion) {
+    return (
+      <ul className={cn('divide-y divide-[var(--color-mist)]', className)}>
+        {items.map((item, i) => (
+          <li key={item.id}>
+            <a
+              href={item.href}
+              className="flex items-center gap-6 py-6 px-4"
+            >
+              <span className="font-mono text-xs text-[var(--color-ink)]/50 w-8">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span className="font-display text-[clamp(1.5rem,3vw,2.5rem)] leading-none flex-1">
+                {item.name}
+              </span>
+              <span className="relative w-[120px] aspect-[4/3] overflow-hidden flex-none">
+                <Image
+                  src={item.image}
+                  alt={item.alt ?? item.name}
+                  fill
+                  sizes="120px"
+                  className="object-cover"
+                />
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  const previewStyle: CSSProperties = {
+    clipPath: active ? 'inset(0 0 0 0)' : 'inset(0 100% 0 0)',
+  };
+
+  return (
+    <>
+      <ul className={cn('divide-y divide-[var(--color-mist)]', className)}>
+        {items.map((item, i) => (
+          <li
+            key={item.id}
+            onMouseEnter={() => setActiveId(item.id)}
+            onMouseLeave={() => setActiveId((id) => (id === item.id ? null : id))}
+            className="group"
+          >
+            <a
+              href={item.href}
+              data-cursor
+              data-cursor-label="VIEW"
+              className="flex items-baseline justify-between py-8 px-4 transition-[padding] duration-300 hover:px-8"
+            >
+              <span className="font-mono text-xs text-[var(--color-ink)]/50">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span className="font-display text-[clamp(2rem,5vw,5rem)] leading-none flex-1 text-center">
+                {item.name}
+              </span>
+              <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-60 group-hover:opacity-100 transition-opacity">
+                View →
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div
+        ref={previewRef}
+        className={cn(
+          'fixed top-0 left-0 w-[280px] aspect-[4/3] pointer-events-none z-50',
+          'transition-[clip-path,opacity] duration-300 ease-[cubic-bezier(0.83,0,0.17,1)]',
+          active ? 'opacity-100' : 'opacity-0',
+        )}
+        style={previewStyle}
+        aria-hidden
+      >
+        {active && (
+          <Image
+            src={active.image}
+            alt={active.alt ?? active.name}
+            fill
+            sizes="280px"
+            className="object-cover"
+          />
+        )}
+      </div>
+    </>
+  );
+}
