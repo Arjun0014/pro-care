@@ -5,7 +5,14 @@
 // Word-grouping prevents words from breaking across lines mid-character.
 // Reduced motion: full headline appears immediately, no per-character animation.
 
-import { isValidElement, useRef, type ElementType, type ReactNode } from 'react';
+import {
+  Children,
+  isValidElement,
+  useRef,
+  type ElementType,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { motion, useInView, useReducedMotion } from 'motion/react';
 import { easings } from '@/lib/motion';
 
@@ -20,10 +27,14 @@ type Props = {
 
 type Token = { char: string; italic: boolean };
 
-/** Walk the React children tree, return [{char, italic}] tokens. */
+/** Walk the React children tree, return [{char, italic}] tokens.
+ *  Uses Children.toArray to flatten any RSC-serialized children shape into
+ *  an iterable that we can traverse uniformly across server/client boundaries. */
 function tokenize(children: ReactNode): Token[] {
   const result: Token[] = [];
+
   const walk = (node: ReactNode, italic = false): void => {
+    if (node === null || node === undefined || node === false || node === true) return;
     if (typeof node === 'string') {
       for (const ch of node) result.push({ char: ch, italic });
       return;
@@ -32,18 +43,20 @@ function tokenize(children: ReactNode): Token[] {
       for (const ch of String(node)) result.push({ char: ch, italic });
       return;
     }
-    if (Array.isArray(node)) {
-      for (const n of node) walk(n, italic);
+    if (isValidElement(node)) {
+      const elem = node as ReactElement<{ children?: ReactNode }>;
+      const isEm = elem.type === 'em' || elem.type === 'i';
+      const childProps = elem.props?.children;
+      // Recurse on the element's children with the italic flag carried down.
+      Children.toArray(childProps).forEach((child) =>
+        walk(child as ReactNode, italic || isEm),
+      );
       return;
     }
-    if (isValidElement(node)) {
-      const isEm = node.type === 'em' || node.type === 'i';
-      // node.props is unknown in React 19's stricter types — narrow it.
-      const props = node.props as { children?: ReactNode };
-      walk(props.children, italic || isEm);
-    }
   };
-  walk(children);
+
+  // Top-level: flatten children to an array first so we get a stable shape.
+  Children.toArray(children).forEach((child) => walk(child as ReactNode));
   return result;
 }
 

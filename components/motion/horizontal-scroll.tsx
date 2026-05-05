@@ -65,7 +65,7 @@ export function HorizontalScroll({ children, className }: Props) {
   return (
     <div
       ref={containerRef}
-      className={className}
+      className={`overflow-hidden ${className ?? ''}`}
       data-cursor-label="DRAG SCROLL"
     >
       <div
