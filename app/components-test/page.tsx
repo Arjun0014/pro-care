@@ -12,6 +12,7 @@ import { HoverPreview }   from '@/components/motion/hover-preview';
 import { Preloader }      from '@/components/preloader';
 import { RouteCurtain }   from '@/components/route-curtain';
 import { HorizontalScroll } from '@/components/motion/horizontal-scroll';
+import { HeroVideo }        from '@/components/motion/hero-video';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -116,6 +117,25 @@ export default function ComponentsTestPage() {
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* C.9 — <HeroVideo> */}
+        <section>
+          <div className="px-[5vw]">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              C.9 · HeroVideo
+            </span>
+            <p className="mt-4 font-sans text-sm text-[var(--color-ink)]/60 max-w-[60ch]">
+              Scroll out of the section — the video shrinks to 70% with rounded
+              corners on desktop. Mobile: no scale.
+            </p>
+          </div>
+          <HeroVideo
+            src="/videos/hero-loop.mp4"
+            srcH265="/videos/hero-loop.h265.mp4"
+            poster="/images/hero-poster.jpg"
+            className="mt-8"
+          />
         </section>
 
         {/* C.8 — <HorizontalScroll> */}
