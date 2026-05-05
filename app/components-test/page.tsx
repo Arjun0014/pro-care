@@ -9,6 +9,7 @@ import { MaskedReveal } from '@/components/motion/masked-reveal';
 import { Marquee }        from '@/components/motion/marquee';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { HoverPreview }   from '@/components/motion/hover-preview';
+import { Preloader }      from '@/components/preloader';
 
 export const metadata: Metadata = {
   title: 'Components Test (R1)',
@@ -19,6 +20,9 @@ export const metadata: Metadata = {
 export default function ComponentsTestPage() {
   return (
     <div className="min-h-screen bg-[var(--color-bone)] text-[var(--color-ink)]">
+      {/* C.6 — <Preloader> mounts on first visit; sessionStorage skips on revisit. */}
+      <Preloader />
+
       <header className="px-[5vw] pt-32 pb-16">
         <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
           R1 — Components test bed
