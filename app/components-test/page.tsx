@@ -13,6 +13,7 @@ import { Preloader }      from '@/components/preloader';
 import { RouteCurtain }   from '@/components/route-curtain';
 import { HorizontalScroll } from '@/components/motion/horizontal-scroll';
 import { HeroVideo }        from '@/components/motion/hero-video';
+import { ImageCluster }     from '@/components/motion/image-cluster';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -117,6 +118,29 @@ export default function ComponentsTestPage() {
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* C.10 — <ImageCluster> */}
+        <section>
+          <div className="px-[5vw]">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              C.10 · ImageCluster
+            </span>
+          </div>
+          <ImageCluster
+            className="mt-4"
+            heading={
+              <h2 className="font-display text-[clamp(2rem,5vw,5rem)] leading-[1.05] tracking-tight">
+                Built on relationships <em>that outlast</em> projects.
+              </h2>
+            }
+            images={[
+              { src: '/images/why/01.jpg', alt: 'Cluster image 01', x: 0.18, y: 0.25, width: 200, height: 260, rotate: -3, maskFrom: 'left' },
+              { src: '/images/why/02.jpg', alt: 'Cluster image 02', x: 0.20, y: 0.78, width: 280, height: 200, rotate:  2, maskFrom: 'bottom' },
+              { src: '/images/why/03.jpg', alt: 'Cluster image 03', x: 0.82, y: 0.30, width: 220, height: 180, rotate:  3, maskFrom: 'right' },
+              { src: '/images/why/04.jpg', alt: 'Cluster image 04', x: 0.80, y: 0.78, width: 180, height: 220, rotate: -2, maskFrom: 'top' },
+            ]}
+          />
         </section>
 
         {/* C.9 — <HeroVideo> */}
