@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button }       from '@/components/ui/button';
+import { LiveClock }    from '@/components/ui/live-clock';
+import { LocaleToggle } from '@/components/ui/locale-toggle';
 
 const NAV_ITEMS = [
   { label: 'About',      href: '/about' },
@@ -95,8 +97,18 @@ export function Nav() {
             ))}
           </nav>
 
-          {/* Desktop CTA */}
-          <div className="hidden md:block">
+          {/* Desktop chrome — LiveClock + LocaleToggle + CTA.
+              Per 16-EXTRA-PATTERNS.md § Updated nav layout. */}
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+            <div
+              className={cn(
+                'hidden lg:flex items-center gap-6 pe-6 border-r transition-colors duration-200',
+                isOnInk ? 'border-[var(--color-bone)]/20 text-[var(--color-bone)]' : 'border-[var(--color-ink)]/20 text-[var(--color-ink)]',
+              )}
+            >
+              <LiveClock />
+              <LocaleToggle />
+            </div>
             <Button
               href="/contact?intent=rfq"
               variant="primary"
@@ -180,7 +192,7 @@ export function Nav() {
         </nav>
 
         <div
-          className="mt-auto px-[clamp(1.5rem,4vw,2rem)] pb-12"
+          className="mt-auto px-[clamp(1.5rem,4vw,2rem)] pb-12 flex flex-col gap-8"
           style={{
             transitionDelay: mobileOpen ? `${NAV_ITEMS.length * 60}ms` : '0ms',
             opacity:   mobileOpen ? 1 : 0,
@@ -188,6 +200,12 @@ export function Nav() {
             transition: 'opacity 400ms ease, transform 400ms ease',
           }}
         >
+          {/* Mobile-only chrome row — LiveClock + LocaleToggle */}
+          <div className="flex items-center justify-between text-[var(--color-bone)]">
+            <LiveClock />
+            <LocaleToggle />
+          </div>
+
           <Button
             href="/contact?intent=rfq"
             variant="ghost"
