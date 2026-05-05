@@ -16,6 +16,7 @@ import { HeroVideo }        from '@/components/motion/hero-video';
 import { ImageCluster }     from '@/components/motion/image-cluster';
 import { LiveClock }        from '@/components/ui/live-clock';
 import { LocaleToggle }     from '@/components/ui/locale-toggle';
+import { ScrollSkew }       from '@/components/motion/scroll-skew';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -120,6 +121,22 @@ export default function ComponentsTestPage() {
               </Link>
             ))}
           </div>
+        </section>
+
+        {/* C.14 — useScrollVelocity + <ScrollSkew> */}
+        <section className="px-[5vw]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+            C.14 · ScrollSkew
+          </span>
+          <p className="mt-4 font-sans text-sm text-[var(--color-ink)]/60 max-w-[60ch]">
+            Scroll fast and the headline skews subtly (capped at 1.5°). When
+            scroll stops, target decays back to 0.
+          </p>
+          <ScrollSkew className="mt-8">
+            <h3 className="font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
+              Trading <em>—</em> Contracting <em>—</em> Facility
+            </h3>
+          </ScrollSkew>
         </section>
 
         {/* C.12 — <LocaleToggle> */}
