@@ -6,7 +6,8 @@
 import type { Metadata } from 'next';
 import { SplitText }    from '@/components/motion/split-text';
 import { MaskedReveal } from '@/components/motion/masked-reveal';
-import { Marquee }      from '@/components/motion/marquee';
+import { Marquee }        from '@/components/motion/marquee';
+import { MagneticButton } from '@/components/ui/magnetic-button';
 
 export const metadata: Metadata = {
   title: 'Components Test (R1)',
@@ -83,6 +84,20 @@ export default function ComponentsTestPage() {
             <span className="px-12">Facility Services</span>
             <span className="px-12 text-[var(--color-gold)]">—</span>
           </Marquee>
+        </section>
+
+        {/* C.4 — useMagnetic + <MagneticButton> */}
+        <section className="px-[5vw]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+            C.4 · MagneticButton
+          </span>
+          <p className="mt-4 font-sans text-sm text-[var(--color-ink)]/60 max-w-[60ch]">
+            Hover near the button — it should translate ~25% of the cursor offset.
+          </p>
+          <div className="mt-8 flex items-center gap-8 flex-wrap">
+            <MagneticButton>Get in touch</MagneticButton>
+            <MagneticButton strength={0.4}>Stronger pull</MagneticButton>
+          </div>
         </section>
 
         {/* C.2 — <MaskedReveal> */}
