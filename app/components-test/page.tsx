@@ -14,6 +14,7 @@ import { RouteCurtain }   from '@/components/route-curtain';
 import { HorizontalScroll } from '@/components/motion/horizontal-scroll';
 import { HeroVideo }        from '@/components/motion/hero-video';
 import { ImageCluster }     from '@/components/motion/image-cluster';
+import { LiveClock }        from '@/components/ui/live-clock';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -117,6 +118,16 @@ export default function ComponentsTestPage() {
                 {href}
               </Link>
             ))}
+          </div>
+        </section>
+
+        {/* C.11 — <LiveClock> */}
+        <section className="px-[5vw]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+            C.11 · LiveClock
+          </span>
+          <div className="mt-4 inline-block bg-[var(--color-ink)] text-[var(--color-bone)] px-6 py-3">
+            <LiveClock />
           </div>
         </section>
 
