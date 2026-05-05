@@ -9,8 +9,8 @@ import { MaskedReveal } from '@/components/motion/masked-reveal';
 import { Marquee }        from '@/components/motion/marquee';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { HoverPreview }   from '@/components/motion/hover-preview';
-import { Preloader }      from '@/components/preloader';
-import { RouteCurtain }   from '@/components/route-curtain';
+// Preloader and RouteCurtain are now globally mounted in app/layout.tsx
+// (R1.D step 1), so they're observable on this page without local mounts.
 import { HorizontalScroll } from '@/components/motion/horizontal-scroll';
 import { HeroVideo }        from '@/components/motion/hero-video';
 import { ImageCluster }     from '@/components/motion/image-cluster';
@@ -31,10 +31,7 @@ export const metadata: Metadata = {
 export default function ComponentsTestPage() {
   return (
     <div className="min-h-screen bg-[var(--color-bone)] text-[var(--color-ink)]">
-      {/* C.6 — <Preloader> mounts on first visit; sessionStorage skips on revisit. */}
-      <Preloader />
-      {/* C.7 — <RouteCurtain> plays on every route change. */}
-      <RouteCurtain />
+      {/* C.6 / C.7: Preloader + RouteCurtain are mounted globally in app/layout.tsx (R1.D). */}
 
       <header className="px-[5vw] pt-32 pb-16">
         <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]">

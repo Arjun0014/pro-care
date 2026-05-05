@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import { Fraunces, Geist, Geist_Mono, Reem_Kufi, Cairo } from 'next/font/google';
-import { Nav }           from '@/components/layout/nav';
-import { Footer }        from '@/components/layout/footer';
-import { Cursor }        from '@/components/layout/cursor';
-import { LenisProvider } from '@/components/layout/lenis-provider';
+import { Nav }              from '@/components/layout/nav';
+import { Footer }           from '@/components/layout/footer';
+import { Cursor }           from '@/components/layout/cursor';
+import { LenisProvider }    from '@/components/layout/lenis-provider';
+import { Preloader }        from '@/components/preloader';
+import { RouteCurtain }     from '@/components/route-curtain';
+import { DesignEasterEgg }  from '@/components/design-easter-egg';
 import './globals.css';
 
 // ── Latin typefaces ───────────────────────────────────────────
@@ -53,6 +56,16 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://procareqatar.com'),
 };
 
+// Mount order per R1.D step 1:
+//   <Preloader />      — first child of body
+//   <RouteCurtain />
+//   <Cursor />
+//   noise overlay div  — mounted in R1.B
+//   <LenisProvider />  — side-effect-only mount of Lenis on the document
+//   <Nav />
+//   <main>{children}</main>
+//   <Footer />
+//   <DesignEasterEgg /> — global, listens for Tab x5 anywhere
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -69,19 +82,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
 
+        <Preloader />
+        <RouteCurtain />
+        <Cursor />
+
         {/* Film-grain noise overlay — fixed, hidden from assistive tech.
             Per 15-ASSETS-AND-COPY.md "Texture / atmosphere". */}
         <div className="noise-overlay" aria-hidden="true" />
 
-        {/* Client-only providers — mount after hydration */}
         <LenisProvider />
-        <Cursor />
 
         <Nav />
-
         <main id="main">{children}</main>
-
         <Footer />
+
+        {/* Tab x5 design-system overlay — global keyboard listener. */}
+        <DesignEasterEgg />
       </body>
     </html>
   );
