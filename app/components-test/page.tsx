@@ -10,6 +10,8 @@ import { Marquee }        from '@/components/motion/marquee';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { HoverPreview }   from '@/components/motion/hover-preview';
 import { Preloader }      from '@/components/preloader';
+import { RouteCurtain }   from '@/components/route-curtain';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Components Test (R1)',
@@ -22,6 +24,8 @@ export default function ComponentsTestPage() {
     <div className="min-h-screen bg-[var(--color-bone)] text-[var(--color-ink)]">
       {/* C.6 — <Preloader> mounts on first visit; sessionStorage skips on revisit. */}
       <Preloader />
+      {/* C.7 — <RouteCurtain> plays on every route change. */}
+      <RouteCurtain />
 
       <header className="px-[5vw] pt-32 pb-16">
         <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
@@ -89,6 +93,28 @@ export default function ComponentsTestPage() {
             <span className="px-12">Facility Services</span>
             <span className="px-12 text-[var(--color-gold)]">—</span>
           </Marquee>
+        </section>
+
+        {/* C.7 — <RouteCurtain> demonstration links */}
+        <section className="px-[5vw]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+            C.7 · RouteCurtain
+          </span>
+          <p className="mt-4 font-sans text-sm text-[var(--color-ink)]/60 max-w-[60ch]">
+            Click a link — the ink panel slides up, displays the destination
+            page name, then slides off the top. ~1.2s total.
+          </p>
+          <div className="mt-6 flex gap-4 flex-wrap">
+            {(['/about', '/services', '/projects', '/contact'] as const).map((href) => (
+              <Link
+                key={href}
+                href={href}
+                className="font-mono text-xs uppercase tracking-[0.2em] border border-[var(--color-ink)] px-4 py-2 hover:bg-[var(--color-ink)] hover:text-[var(--color-bone)] transition-colors duration-200"
+              >
+                {href}
+              </Link>
+            ))}
+          </div>
         </section>
 
         {/* C.5 — <HoverPreview> */}
