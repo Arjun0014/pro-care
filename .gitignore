@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Raw source video — replaced by compressed /public/videos/* in R1.A
+/public/video/

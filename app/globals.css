@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* ── Grounds ─────────────────────────────────────────────── */
+  --color-ink:     #0B1220;
+  --color-ink-2:   #131C2E;
+  --color-bone:    #F4EFE6;
+  --color-bone-2:  #EBE3D5;
+  --color-paper:   #FFFFFF;
+
+  /* ── Accent ──────────────────────────────────────────────── */
+  --color-gold:      #C9A36A;
+  --color-gold-deep: #8E6E3D;
+  --color-gold-glow: #E5C896;
+
+  /* ── Neutrals ────────────────────────────────────────────── */
+  --color-smoke: #6B7280;
+  --color-mist:  #B7BCC4;
+  --color-haze:  #2A3245;
+
+  /* ── Semantic ────────────────────────────────────────────── */
+  --color-positive: #4A7A4F;
+  --color-warning:  #B8732B;
+  --color-error:    #A8361B;
+
+  /* ── Typography (overridden at runtime by next/font vars) ── */
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-sans:    "Geist", "Helvetica Neue", system-ui, sans-serif;
+  --font-mono:    "Geist Mono", "JetBrains Mono", monospace;
+
+  /* ── Type scale ──────────────────────────────────────────── */
+  --text-display-xl: clamp(4.5rem, 12vw, 12rem);
+  --text-display-l:  clamp(3.5rem, 8vw, 8rem);
+  --text-h1:         clamp(2.5rem, 4.5vw, 4.5rem);
+  --text-h2:         clamp(1.75rem, 2.8vw, 2.75rem);
+  --text-h3:         1.5rem;
+  --text-h4:         1.25rem;
+  --text-body-l:     1.125rem;
+  --text-body:       1rem;
+  --text-small:      0.875rem;
+  --text-micro:      0.75rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  /* Enforce italic in Fraunces (Tailwind preflight can strip it) */
+  em,
+  i {
+    font-style: italic;
+  }
+
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  /* Focus rings — 2px gold, always visible */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Custom cursor ────────────────────────────────────────────
+   Only active on pointer: fine + no reduced-motion.
+   The cursor component checks the same media query before mounting.
+───────────────────────────────────────────────────────────── */
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html {
+    cursor: none;
+  }
+  a,
+  button,
+  [data-cursor="hover"] {
+    cursor: none;
+  }
+}
+
+.cursor-ring--hover {
+  width: 60px !important;
+  height: 60px !important;
+  opacity: 0.6 !important;
+}
+
+/* ── Reduced motion safety net ───────────────────────────────
+   Per 03-MOTION-LANGUAGE.md — all motion components also check
+   useReducedMotion(), this is the CSS safety net on top.
+───────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
