@@ -4,7 +4,8 @@
 // these via app/page.tsx (R2 work).
 
 import type { Metadata } from 'next';
-import { SplitText } from '@/components/motion/split-text';
+import { SplitText }    from '@/components/motion/split-text';
+import { MaskedReveal } from '@/components/motion/masked-reveal';
 
 export const metadata: Metadata = {
   title: 'Components Test (R1)',
@@ -42,6 +43,26 @@ export default function ComponentsTestPage() {
           >
             We build for <em>Qatar</em>.
           </SplitText>
+        </section>
+
+        {/* C.2 — <MaskedReveal> */}
+        <section className="px-[5vw]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+            C.2 · MaskedReveal
+          </span>
+          <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {(['bottom', 'top', 'left', 'right'] as const).map((dir) => (
+              <MaskedReveal
+                key={dir}
+                direction={dir}
+                className="aspect-[4/5] bg-[var(--color-ink)] text-[var(--color-bone)] grid place-items-center"
+              >
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em]">
+                  from {dir}
+                </span>
+              </MaskedReveal>
+            ))}
+          </div>
         </section>
       </main>
     </div>
