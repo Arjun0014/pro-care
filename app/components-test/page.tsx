@@ -17,6 +17,8 @@ import { ImageCluster }     from '@/components/motion/image-cluster';
 import { LiveClock }        from '@/components/ui/live-clock';
 import { LocaleToggle }     from '@/components/ui/locale-toggle';
 import { ScrollSkew }       from '@/components/motion/scroll-skew';
+import { TiltImage }        from '@/components/motion/tilt-image';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -119,6 +121,30 @@ export default function ComponentsTestPage() {
               >
                 {href}
               </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* C.15 — <TiltImage> */}
+        <section className="px-[5vw]">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+            C.15 · TiltImage
+          </span>
+          <p className="mt-4 font-sans text-sm text-[var(--color-ink)]/60 max-w-[60ch]">
+            Hover any of the three project cards — they tilt up to 6° based on
+            cursor position. Touch / reduced-motion: handlers no-op.
+          </p>
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {(['p01', 'p02', 'p03'] as const).map((id) => (
+              <TiltImage key={id} className="aspect-[4/5] relative overflow-hidden">
+                <Image
+                  src={`/images/projects/${id}.jpg`}
+                  alt={`Tilt sample ${id}`}
+                  fill
+                  sizes="(min-width: 640px) 30vw, 90vw"
+                  className="object-cover"
+                />
+              </TiltImage>
             ))}
           </div>
         </section>
