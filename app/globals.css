@@ -27,6 +27,9 @@
   --font-display: "Fraunces", "Times New Roman", serif;
   --font-sans:    "Geist", "Helvetica Neue", system-ui, sans-serif;
   --font-mono:    "Geist Mono", "JetBrains Mono", monospace;
+  /* Arabic typefaces (V2 content; vars defined now so [lang='ar'] works) */
+  --font-display-ar: "Reem Kufi", "Cairo", system-ui, sans-serif;
+  --font-sans-ar:    "Cairo", system-ui, sans-serif;
 
   /* ── Type scale ──────────────────────────────────────────── */
   --text-display-xl: clamp(4.5rem, 12vw, 12rem);
@@ -105,4 +108,65 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ╔════════════════════════════════════════════════════════════╗
+   ║  R1.B — Award-tier foundation                             ║
+   ║  (per 11/12/15/16 design docs)                            ║
+   ╚════════════════════════════════════════════════════════════╝ */
+
+/* ── Marquee keyframes (12 § 4) ─────────────────────────────── */
+@keyframes marquee-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes marquee-right {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+.animate-marquee-left  { animation: marquee-left  linear infinite; }
+.animate-marquee-right { animation: marquee-right linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none !important;
+  }
+}
+
+/* ── Ken Burns keyframes (12 § 10) ──────────────────────────── */
+@keyframes ken-burns {
+  0%   { transform: scale(1.0); }
+  100% { transform: scale(1.04); }
+}
+.animate-ken-burns {
+  animation: ken-burns 12s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-ken-burns { animation: none !important; }
+}
+
+/* ── Film-grain noise overlay (15 § Texture / atmosphere) ─── */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Arabic locale typography (16 § Pairing the Arabic typeface) ── */
+[lang='ar'] {
+  font-family: var(--font-sans-ar);
+}
+[lang='ar'] h1,
+[lang='ar'] h2,
+[lang='ar'] h3,
+[lang='ar'] .font-display {
+  font-family: var(--font-display-ar);
+}
+[lang='ar'] .font-mono {
+  /* No Arabic monospace; fall back to sans which renders cleanly. */
+  font-family: var(--font-sans-ar);
 }

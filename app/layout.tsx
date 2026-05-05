@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { Fraunces, Geist, Geist_Mono } from 'next/font/google';
+import { Fraunces, Geist, Geist_Mono, Reem_Kufi, Cairo } from 'next/font/google';
 import { Nav }           from '@/components/layout/nav';
 import { Footer }        from '@/components/layout/footer';
 import { Cursor }        from '@/components/layout/cursor';
 import { LenisProvider } from '@/components/layout/lenis-provider';
 import './globals.css';
 
+// ── Latin typefaces ───────────────────────────────────────────
 // Variable font — load SOFT and opsz axes so we can tune them in CSS.
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -26,6 +27,22 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
+// ── Arabic typefaces (V2 content; UI scaffolding only in V1) ──
+// Pair Reem Kufi (display) + Cairo (body) per 16-EXTRA-PATTERNS.md.
+const reemKufi = Reem_Kufi({
+  subsets: ['arabic'],
+  variable: '--font-display-ar',
+  weight: ['400', '600'],
+  display: 'swap',
+});
+
+const cairo = Cairo({
+  subsets: ['arabic'],
+  variable: '--font-sans-ar',
+  weight: ['400', '500'],
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: {
     default:  'Pro Care Qatar — Trading, Contracting, Facility Services',
@@ -40,7 +57,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${geist.variable} ${geistMono.variable}`}
+      dir="ltr"
+      className={`${fraunces.variable} ${geist.variable} ${geistMono.variable} ${reemKufi.variable} ${cairo.variable}`}
     >
       <body className="bg-[var(--color-bone)] text-[var(--color-ink)] font-sans antialiased">
         {/* Skip-to-content link — always the first focusable element */}
@@ -50,6 +68,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
+
+        {/* Film-grain noise overlay — fixed, hidden from assistive tech.
+            Per 15-ASSETS-AND-COPY.md "Texture / atmosphere". */}
+        <div className="noise-overlay" aria-hidden="true" />
 
         {/* Client-only providers — mount after hydration */}
         <LenisProvider />
