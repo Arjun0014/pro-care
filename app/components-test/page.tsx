@@ -6,6 +6,7 @@
 import type { Metadata } from 'next';
 import { SplitText }    from '@/components/motion/split-text';
 import { MaskedReveal } from '@/components/motion/masked-reveal';
+import { Marquee }      from '@/components/motion/marquee';
 
 export const metadata: Metadata = {
   title: 'Components Test (R1)',
@@ -43,6 +44,45 @@ export default function ComponentsTestPage() {
           >
             We build for <em>Qatar</em>.
           </SplitText>
+        </section>
+
+        {/* C.3 — <Marquee> (ticker + headline variants) */}
+        <section>
+          <div className="px-[5vw]">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              C.3 · Marquee — ticker
+            </span>
+          </div>
+          <Marquee variant="ticker" className="mt-4 py-4 border-y border-[var(--color-mist)]">
+            <span className="px-6">PRO CARE QATAR</span>
+            <span className="px-6">·</span>
+            <span className="px-6">TRADING</span>
+            <span className="px-6">·</span>
+            <span className="px-6">CONTRACTING</span>
+            <span className="px-6">·</span>
+            <span className="px-6">FACILITY SERVICES</span>
+            <span className="px-6">·</span>
+            <span className="px-6">CR# 217949</span>
+            <span className="px-6">·</span>
+            <span className="px-6">ESTABLISHED IN DOHA</span>
+            <span className="px-6">·</span>
+            <span className="px-6">BUILT TO LAST</span>
+            <span className="px-6">·</span>
+          </Marquee>
+
+          <div className="px-[5vw] mt-12">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              C.3 · Marquee — headline
+            </span>
+          </div>
+          <Marquee variant="headline" speed={20} className="mt-4">
+            <span className="px-12">Trading</span>
+            <span className="px-12 text-[var(--color-gold)]">—</span>
+            <span className="px-12 italic">Contracting</span>
+            <span className="px-12 text-[var(--color-gold)]">—</span>
+            <span className="px-12">Facility Services</span>
+            <span className="px-12 text-[var(--color-gold)]">—</span>
+          </Marquee>
         </section>
 
         {/* C.2 — <MaskedReveal> */}
