@@ -18,6 +18,7 @@ import { LiveClock }        from '@/components/ui/live-clock';
 import { LocaleToggle }     from '@/components/ui/locale-toggle';
 import { ScrollSkew }       from '@/components/motion/scroll-skew';
 import { TiltImage }        from '@/components/motion/tilt-image';
+import { ScrollWords }      from '@/components/motion/scroll-words';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -122,6 +123,20 @@ export default function ComponentsTestPage() {
                 {href}
               </Link>
             ))}
+          </div>
+        </section>
+
+        {/* C.16 — <ScrollWords> (Manifesto signature) */}
+        <section className="min-h-[100vh] flex items-center justify-center px-[10vw]">
+          <div>
+            <span className="block mb-12 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              C.16 · ScrollWords
+            </span>
+            <ScrollWords className="font-display text-[clamp(2rem,4vw,4rem)] leading-[1.15] max-w-[52ch] text-center">
+              We are <em>three companies in one</em>. Traders, contractors, operators.
+              We bring materials to Qatar, we build with them, and we keep what we
+              build running. One standard across all three. <em>Things that last.</em>
+            </ScrollWords>
           </div>
         </section>
 
