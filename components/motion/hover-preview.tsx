@@ -53,10 +53,16 @@ export function HoverPreview({ items, className }: Props) {
       raf = requestAnimationFrame(tick);
     };
 
+    // Reset hover state on scroll so the preview thumbnail doesn't get
+    // stuck if the user scrolls away from a row mid-hover.
+    const onScroll = () => setActiveId(null);
+
     window.addEventListener('mousemove', onMove);
+    window.addEventListener('scroll', onScroll, { passive: true });
     raf = requestAnimationFrame(tick);
     return () => {
       window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('scroll', onScroll);
       cancelAnimationFrame(raf);
     };
   }, [reduceMotion]);
@@ -113,15 +119,15 @@ export function HoverPreview({ items, className }: Props) {
               href={item.href}
               data-cursor
               data-cursor-label="VIEW"
-              className="flex items-baseline justify-between py-8 px-4 transition-[padding] duration-300 hover:px-8"
+              className="flex items-baseline justify-between gap-6 py-6 sm:py-8 px-4 transition-[padding] duration-300 hover:px-8 min-w-0"
             >
-              <span className="font-mono text-xs text-[var(--color-ink)]/50">
+              <span className="shrink-0 font-mono text-[10px] sm:text-xs text-current opacity-50 tabular-nums">
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <span className="font-display text-[clamp(2rem,5vw,5rem)] leading-none flex-1 text-center">
+              <span className="font-display text-[clamp(1.5rem,3vw,3rem)] leading-[1.05] flex-1 text-center min-w-0 truncate">
                 {item.name}
               </span>
-              <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-60 group-hover:opacity-100 transition-opacity">
+              <span className="shrink-0 font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] opacity-60 group-hover:opacity-100 transition-opacity">
                 View →
               </span>
             </a>

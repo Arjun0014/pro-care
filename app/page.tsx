@@ -197,6 +197,7 @@ export default function HomePage() {
             value="100,000"
             unit="QAR"
             label="Registered capital · CR# 217949"
+            scale="md"
           />
         </div>
       </section>
@@ -219,7 +220,7 @@ export default function HomePage() {
           </span>
           <SplitText
             as="h2"
-            className="block font-display text-[clamp(2.5rem,6vw,6rem)] leading-[1] tracking-[-0.02em] text-[var(--color-bone)] [text-shadow:0_2px_24px_rgba(11,18,32,0.7),0_1px_3px_rgba(11,18,32,0.5)]"
+            className="block font-display text-[clamp(2rem,4.5vw,4.5rem)] leading-[1.05] tracking-[-0.02em] text-[var(--color-bone)] max-w-[16ch] [text-shadow:0_2px_24px_rgba(11,18,32,0.7),0_1px_3px_rgba(11,18,32,0.5)]"
           >
             Eight projects. <em>Three disciplines.</em>
           </SplitText>
@@ -279,31 +280,36 @@ function Stat({
   unit,
   label,
   isWord = false,
+  scale = 'lg',
 }: {
   value:  React.ReactNode;
   unit?:  string;
   label:  string;
   isWord?: boolean;
+  /** 'lg' for short values (Three, 20+); 'md' for long values (100,000). */
+  scale?: 'lg' | 'md';
 }) {
+  const sizeClass =
+    scale === 'lg'
+      ? 'text-[clamp(3rem,8vw,7rem)]'
+      : 'text-[clamp(2.25rem,5.5vw,5rem)]';
   return (
-    <div className="flex flex-col gap-3 text-[var(--color-bone)]">
+    <div className="flex flex-col gap-3 text-[var(--color-bone)] min-w-0">
       <div
-        className={`leading-[0.95] tracking-[-0.02em] ${
-          isWord
-            ? 'font-display text-[clamp(3.5rem,9vw,9rem)]'
-            : 'font-mono tabular-nums text-[clamp(3.5rem,9vw,9rem)]'
+        className={`leading-[0.95] tracking-[-0.02em] ${sizeClass} ${
+          isWord ? 'font-display' : 'font-mono tabular-nums'
         }`}
         style={{ textShadow: SHADOW_HEAVY }}
       >
         {value}
         {unit && (
-          <span className="ml-3 font-mono text-[clamp(1rem,1.6vw,1.5rem)] uppercase tracking-[0.16em] text-[var(--color-gold)]">
+          <span className="ml-3 font-mono text-[clamp(0.875rem,1.4vw,1.25rem)] uppercase tracking-[0.16em] text-[var(--color-gold)]">
             {unit}
           </span>
         )}
       </div>
       <span
-        className="font-sans text-[15px] leading-[1.4] max-w-[24ch] text-[var(--color-bone)]/80"
+        className="font-sans text-[15px] leading-[1.4] max-w-[28ch] text-[var(--color-bone)]/80"
         style={{ textShadow: SHADOW_MEDIUM }}
       >
         {label}

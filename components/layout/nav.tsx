@@ -52,14 +52,10 @@ export function Nav() {
 
   return (
     <>
-      <header
-        className={cn(
-          'fixed inset-x-0 top-0 z-50',
-          'transition-[background,backdrop-filter,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]',
-          scrolled && !isOnInk && 'bg-[var(--color-bone)]/80 backdrop-blur-md border-b border-[var(--color-mist)]',
-          scrolled && isOnInk  && 'bg-[var(--color-ink)]/80  backdrop-blur-md border-b border-[var(--color-haze)]',
-        )}
-      >
+      {/* Nav stays fully transparent on scroll — overlays the canvas
+          (R1.7+ direction, user feedback). The text colors still invert
+          based on the section's data-ground via isOnInk. */}
+      <header className="fixed inset-x-0 top-0 z-50">
         <div className="mx-auto flex h-20 max-w-[1440px] items-center justify-between px-[clamp(1.5rem,4vw,4rem)]">
 
           {/* Logo */}
