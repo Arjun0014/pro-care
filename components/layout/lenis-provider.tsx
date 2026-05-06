@@ -17,12 +17,18 @@ export function LenisProvider() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
+    // Expose for ScrollBackdrop (and any other consumer) to subscribe to
+    // Lenis scroll events directly. See 19-SCROLL-SEQUENCE.md § Modifications
+    // to LenisProvider.
+    (window as Window & { __lenis?: Lenis }).__lenis = lenis;
+
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add((time) => lenis.raf(time * 1000));
     gsap.ticker.lagSmoothing(0);
 
     return () => {
       lenis.destroy();
+      delete (window as Window & { __lenis?: Lenis }).__lenis;
     };
   }, []);
 
