@@ -10,19 +10,26 @@
 // through to read.
 
 import {
+  Children,
   isValidElement,
   useEffect,
   useRef,
   useState,
+  type ReactElement,
   type ReactNode,
 } from 'react';
 import { useReducedMotion } from 'motion/react';
 
 type Token = { text: string; italic: boolean };
 
+/** Walk the React children tree, return [{text, italic}] tokens.
+ *  Uses Children.toArray to flatten any RSC-serialized children shape so
+ *  <em> emphasis from a server component is captured correctly. */
 function tokenize(node: ReactNode): Token[] {
   const tokens: Token[] = [];
+
   const walk = (n: ReactNode, italic = false): void => {
+    if (n === null || n === undefined || n === false || n === true) return;
     if (typeof n === 'string') {
       const parts = n.split(/(\s+)/);
       for (const p of parts) {
@@ -35,17 +42,17 @@ function tokenize(node: ReactNode): Token[] {
       tokens.push({ text: String(n), italic });
       return;
     }
-    if (Array.isArray(n)) {
-      for (const c of n) walk(c, italic);
+    if (isValidElement(n)) {
+      const elem = n as ReactElement<{ children?: ReactNode }>;
+      const isEm = elem.type === 'em' || elem.type === 'i';
+      Children.toArray(elem.props?.children).forEach((child) =>
+        walk(child as ReactNode, italic || isEm),
+      );
       return;
     }
-    if (isValidElement(n)) {
-      const isEm = n.type === 'em' || n.type === 'i';
-      const props = n.props as { children?: ReactNode };
-      walk(props.children, italic || isEm);
-    }
   };
-  walk(node);
+
+  Children.toArray(node).forEach((child) => walk(child as ReactNode));
   return tokens;
 }
 

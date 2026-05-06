@@ -72,7 +72,7 @@ export function HoverPreview({ items, className }: Props) {
   // Reduced motion / touch: inline thumbnails next to each row.
   if (reduceMotion) {
     return (
-      <ul className={cn('divide-y divide-[var(--color-mist)]', className)}>
+      <ul className={cn('divide-y divide-current/15', className)}>
         {items.map((item, i) => (
           <li key={item.id}>
             <a
@@ -107,7 +107,7 @@ export function HoverPreview({ items, className }: Props) {
 
   return (
     <>
-      <ul className={cn('divide-y divide-[var(--color-mist)]', className)}>
+      <ul className={cn('divide-y divide-current/15', className)}>
         {items.map((item, i) => (
           <li
             key={item.id}
@@ -138,11 +138,13 @@ export function HoverPreview({ items, className }: Props) {
       <div
         ref={previewRef}
         className={cn(
-          'fixed top-0 left-0 w-[280px] aspect-[4/3] pointer-events-none z-50',
+          'fixed top-0 left-0 pointer-events-none z-50',
           'transition-[clip-path,opacity] duration-300 ease-[cubic-bezier(0.83,0,0.17,1)]',
           active ? 'opacity-100' : 'opacity-0',
         )}
-        style={previewStyle}
+        // Hard-coded size — 280×350 (4:5 portrait per HoverPreview spec).
+        // Inline style wins over any utility override.
+        style={{ ...previewStyle, width: 280, height: 350 }}
         aria-hidden
       >
         {active && (

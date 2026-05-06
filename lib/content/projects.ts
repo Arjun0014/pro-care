@@ -1,5 +1,7 @@
-// TODO(arjun): replace with real project list from client.
-// Each entry maps to a ProjectCard. V2 will add a [slug]/page.tsx detail view.
+// PLACEHOLDER: replace with real project list when supplied.
+// Project names locked from procare-design-package/docs/15-ASSETS-AND-COPY.md.
+// They are plausible Qatar projects for first-pass UI; treat as final until
+// the client supplies the real portfolio.
 
 export type Project = {
   slug:     string;
@@ -15,80 +17,118 @@ export type Project = {
   featured: boolean; // appears on home page selected-projects section
 };
 
+// PLACEHOLDER: replace with real project list when supplied.
 export const projects: Project[] = [
   {
-    slug:     'placeholder-project-01',
-    title:    // TODO: client project name
-      'Commercial Tower MEP Works',
+    slug:     'p01',
+    title:    'West Bay Office Tower Fit-out',
     endUser:  '// TODO: end user',
     client:   '// TODO: client',
-    year:     '// TODO: year',
-    sector:   'Construction',
+    year:     '2024',
+    sector:   'Commercial',
     pillar:   'contracting',
     brief:    // TODO: client copy
-      'Full MEP package for a 24-storey commercial tower in Lusail City, including HVAC, electrical, and plumbing systems.',
-    image:    'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80', // TODO: shoot
-    imageAlt: 'Commercial tower under construction', // TODO: shoot
+      'Full interior fit-out for a West Bay commercial tower — finishes, joinery, and MEP integration.',
+    image:    '/images/projects/p01.jpg',
+    imageAlt: 'Doha skyline at golden hour', // PLACEHOLDER imagery
     featured: true,
   },
   {
-    slug:     'placeholder-project-02',
-    title:    // TODO: client project name
-      'Industrial Facility FM Contract',
+    slug:     'p02',
+    title:    'Lusail Marina Tower Maintenance',
     endUser:  '// TODO: end user',
     client:   '// TODO: client',
-    year:     '// TODO: year',
-    sector:   'Manufacturing',
+    year:     '2024',
+    sector:   'Facility Services',
     pillar:   'facility-services',
     brief:    // TODO: client copy
-      'Three-year hard and soft FM contract for a 42,000 sqm industrial facility in the Industrial Area, Doha.',
-    image:    'https://images.unsplash.com/photo-1565043589221-1a6fd9ae45c7?w=1200&q=80', // TODO: shoot
-    imageAlt: 'Industrial facility exterior', // TODO: shoot
+      'Long-term hard and soft FM contract for a Lusail Marina residential tower.',
+    image:    '/images/projects/p02.jpg',
+    imageAlt: 'Modern glass facade architecture', // PLACEHOLDER imagery
     featured: true,
   },
   {
-    slug:     'placeholder-project-03',
-    title:    // TODO: client project name
-      'Oil & Gas Equipment Supply',
+    slug:     'p03',
+    title:    'Hamad Port Logistics Hub',
     endUser:  '// TODO: end user',
     client:   '// TODO: client',
-    year:     '// TODO: year',
-    sector:   'Oil & Gas',
+    year:     '2025',
+    sector:   'Industrial',
+    pillar:   'contracting',
+    brief:    // TODO: client copy
+      'Civil and MEP works supporting the Hamad Port logistics expansion.',
+    image:    '/images/projects/p03.jpg',
+    imageAlt: 'Construction crane silhouette at blue hour', // PLACEHOLDER imagery
+    featured: true,
+  },
+  {
+    slug:     'p04',
+    title:    'The Pearl Residential — Block C',
+    endUser:  '// TODO: end user',
+    client:   '// TODO: client',
+    year:     '2024',
+    sector:   'Residential',
+    pillar:   'contracting',
+    brief:    // TODO: client copy
+      'Residential fit-out for a Pearl-Qatar block — joinery, surfaces, MEP commissioning.',
+    image:    '/images/projects/p04.jpg',
+    imageAlt: 'Modern interior office space', // PLACEHOLDER imagery
+    featured: true,
+  },
+  {
+    slug:     'p05',
+    title:    'Doha Industrial District Phase II',
+    endUser:  '// TODO: end user',
+    client:   '// TODO: client',
+    year:     '2025',
+    sector:   'Industrial',
     pillar:   'trading',
     brief:    // TODO: client copy
-      'Sourcing and supply of specialist equipment and consumables for a downstream processing facility.',
-    image:    'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=1200&q=80', // TODO: shoot
-    imageAlt: 'Oil refinery equipment', // TODO: shoot
+      'Materials and equipment supply for the Phase II expansion of the Industrial District.',
+    image:    '/images/projects/p05.jpg',
+    imageAlt: 'Clean industrial warehouse, golden lighting', // PLACEHOLDER imagery
     featured: true,
   },
   {
-    slug:     'placeholder-project-04',
-    title:    // TODO: client project name
-      'Roads & Drainage Package',
+    slug:     'p06',
+    title:    'Education City Auxiliary Services',
     endUser:  '// TODO: end user',
     client:   '// TODO: client',
-    year:     '// TODO: year',
-    sector:   'Infrastructure',
-    pillar:   'contracting',
+    year:     '2023',
+    sector:   'Institutional',
+    pillar:   'facility-services',
     brief:    // TODO: client copy
-      'Civil works for a multi-kilometre road and drainage scheme in Doha.',
-    image:    'https://images.unsplash.com/photo-1545459720-aac8509eb02c?w=1200&q=80', // TODO: shoot
-    imageAlt: 'Highway construction with drainage works', // TODO: shoot
-    featured: true,
+      'Auxiliary services contract supporting the Education City campuses.',
+    image:    '/images/projects/p06.jpg',
+    imageAlt: 'University campus building', // PLACEHOLDER imagery
+    featured: false,
   },
   {
-    slug:     'placeholder-project-05',
-    title:    // TODO: client project name
-      'Hospitality Fit-Out',
+    slug:     'p07',
+    title:    'Aspire Zone Sports Complex Renovation',
     endUser:  '// TODO: end user',
     client:   '// TODO: client',
-    year:     '// TODO: year',
-    sector:   'Hospitality',
+    year:     '2024',
+    sector:   'Public',
     pillar:   'contracting',
     brief:    // TODO: client copy
-      'Interior fit-out and finishing for a hospitality refurbishment in central Doha.',
-    image:    'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=1200&q=80', // TODO: shoot
-    imageAlt: 'Luxury hotel interior with refined finishes', // TODO: shoot
-    featured: true,
+      'Renovation of an Aspire Zone sports complex — finishes, MEP, accessibility.',
+    image:    '/images/projects/p07.jpg',
+    imageAlt: 'Modern sports stadium', // PLACEHOLDER imagery
+    featured: false,
+  },
+  {
+    slug:     'p08',
+    title:    'Al Wakra Industrial Workshop',
+    endUser:  '// TODO: end user',
+    client:   '// TODO: client',
+    year:     '2025',
+    sector:   'Industrial',
+    pillar:   'trading',
+    brief:    // TODO: client copy
+      'Workshop tooling and equipment supply for an Al Wakra industrial unit.',
+    image:    '/images/projects/p08.jpg',
+    imageAlt: 'Industrial workshop interior', // PLACEHOLDER imagery
+    featured: false,
   },
 ] as const;
