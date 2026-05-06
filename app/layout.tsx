@@ -7,6 +7,7 @@ import { LenisProvider }    from '@/components/layout/lenis-provider';
 import { Preloader }        from '@/components/preloader';
 import { RouteCurtain }     from '@/components/route-curtain';
 import { DesignEasterEgg }  from '@/components/design-easter-egg';
+import { ScrollBackdrop }   from '@/components/scroll-backdrop';
 import './globals.css';
 
 // ── Latin typefaces ───────────────────────────────────────────
@@ -56,16 +57,18 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://procareqatar.com'),
 };
 
-// Mount order per R1.D step 1:
-//   <Preloader />      — first child of body
+// Mount order per R1.7.C (extends R1.D, supersedes the earlier flat layout):
+//   <Preloader />                         — first child of body
 //   <RouteCurtain />
 //   <Cursor />
-//   noise overlay div  — mounted in R1.B
-//   <LenisProvider />  — side-effect-only mount of Lenis on the document
-//   <Nav />
-//   <main>{children}</main>
-//   <Footer />
-//   <DesignEasterEgg /> — global, listens for Tab x5 anywhere
+//   noise-overlay div                     — z-1, above canvas, below content
+//   <LenisProvider>                       — wraps the page so Lenis runs alongside
+//     <ScrollBackdrop />                  — fixed inset-0, z-0  (the canvas)
+//     <Nav />                             — z-50
+//     <main className="relative z-10">    — home sections render above canvas
+//     <Footer />
+//   </LenisProvider>
+//   <DesignEasterEgg />                   — global Tab×5 listener
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -87,14 +90,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Cursor />
 
         {/* Film-grain noise overlay — fixed, hidden from assistive tech.
+            z-index from .noise-overlay class is 1 (above canvas, below content).
             Per 15-ASSETS-AND-COPY.md "Texture / atmosphere". */}
         <div className="noise-overlay" aria-hidden="true" />
 
-        <LenisProvider />
-
-        <Nav />
-        <main id="main">{children}</main>
-        <Footer />
+        <LenisProvider>
+          <ScrollBackdrop />
+          <Nav />
+          <main id="main" className="relative z-10">
+            {children}
+          </main>
+          <Footer />
+        </LenisProvider>
 
         {/* Tab x5 design-system overlay — global keyboard listener. */}
         <DesignEasterEgg />

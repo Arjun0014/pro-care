@@ -1,12 +1,15 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import Lenis from 'lenis';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import gsap from 'gsap';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function LenisProvider() {
+// Now wraps children so the layout can colocate ScrollBackdrop / Nav / main /
+// Footer within it. The Lenis useEffect logic and window.__lenis exposure are
+// unchanged from R1.7.B.
+export function LenisProvider({ children }: { children?: ReactNode } = {}) {
   useEffect(() => {
     // Never smooth-scroll on touch or reduced-motion — per 04-TECH-STACK.md.
     if (window.matchMedia('(pointer: coarse)').matches) return;
@@ -32,5 +35,5 @@ export function LenisProvider() {
     };
   }, []);
 
-  return null;
+  return <>{children}</>;
 }
