@@ -50,90 +50,86 @@ export default function ComponentsTestPage() {
         </p>
       </header>
 
-      <main className="bg-[var(--color-bone)] space-y-32 pb-32">
-        {/* C.18 — ScrollBackdrop demo (5 viewport-heights of placeholder content,
-            alternating transparent (canvas shows through) vs semi-opaque grounds.
-            On a short test page like this, the canvas scrubs through all 600
-            frames in one scroll — full pacing comes from the real home page in R2. */}
-        <section className="-mt-32 -mx-[clamp(0px,0px,0px)]">
-          {/* Section break-out: removes the parent main's bone bg by setting
-              this region to transparent. The canvas (z-0) shows through. */}
-          <div className="relative -mb-32" style={{ background: 'transparent' }}>
-            {/* Block 1 — transparent: canvas only with floating headline */}
-            <div className="relative flex h-screen items-center justify-center px-[5vw] bg-transparent">
-              <div className="text-center max-w-3xl">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
-                  C.18 · ScrollBackdrop demo · block 1
-                </span>
-                <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight text-[var(--color-bone)]" style={{ textShadow: '0 2px 24px rgba(11,18,32,0.5)' }}>
-                  Stage <em>1</em> — dawn
-                </h2>
-                <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80" style={{ textShadow: '0 1px 8px rgba(11,18,32,0.6)' }}>
-                  Scroll. The construction rises behind every word.
-                </p>
-              </div>
-            </div>
-
-            {/* Block 2 — semi-ink overlay with backdrop blur */}
-            <div className="relative flex h-screen items-center justify-center px-[5vw] bg-[var(--color-ink)]/75 backdrop-blur-sm">
-              <div className="text-center max-w-3xl text-[var(--color-bone)]">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
-                  block 2 · semi-ink overlay
-                </span>
-                <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
-                  Stage <em>2</em> — foundation
-                </h2>
-                <p className="mt-6 font-sans text-[16px] leading-[1.6] max-w-[60ch] mx-auto text-[var(--color-bone)]/80">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pretium aenean pharetra magna ac placerat vestibulum lectus mauris.
-                </p>
-              </div>
-            </div>
-
-            {/* Block 3 — transparent again, gradient for legibility */}
-            <div className="relative flex h-screen items-center justify-center px-[5vw] bg-transparent">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--color-ink)]/30 to-transparent pointer-events-none" />
-              <div className="relative text-center max-w-3xl text-[var(--color-bone)]" style={{ textShadow: '0 2px 16px rgba(11,18,32,0.6)' }}>
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
-                  block 3 · transparent + gradient
-                </span>
-                <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
-                  Stage <em>3</em> — frame
-                </h2>
-              </div>
-            </div>
-
-            {/* Block 4 — semi-bone overlay */}
-            <div className="relative flex h-screen items-center justify-center px-[5vw] bg-[var(--color-bone)]/85 backdrop-blur-sm text-[var(--color-ink)]">
-              <div className="text-center max-w-3xl">
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
-                  block 4 · semi-bone overlay
-                </span>
-                <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
-                  Stage <em>4</em> — cladding
-                </h2>
-                <p className="mt-6 font-sans text-[16px] leading-[1.6] max-w-[60ch] mx-auto text-[var(--color-ink)]/75">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque at egestas leo, ut sodales magna.
-                </p>
-              </div>
-            </div>
-
-            {/* Block 5 — transparent close, "stage 5/6" */}
-            <div className="relative flex h-screen items-center justify-center px-[5vw] bg-transparent">
-              <div className="text-center max-w-3xl text-[var(--color-bone)]" style={{ textShadow: '0 2px 24px rgba(11,18,32,0.5)' }}>
-                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
-                  block 5 · transparent close
-                </span>
-                <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
-                  Stage <em>6</em> — night
-                </h2>
-                <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80">
-                  Existing component-test sections continue below ↓
-                </p>
-              </div>
-            </div>
+      {/* C.18 — ScrollBackdrop demo, OUTSIDE main so no parent bg-bone covers
+          the canvas. 5 viewport-heights, alternating transparent vs semi-opaque
+          overlays. The canvas (z-0, in app/layout.tsx) shows through directly
+          here because this section has no bg of its own. */}
+      <section aria-label="ScrollBackdrop demo">
+        {/* Block 1 — transparent: canvas only with floating headline */}
+        <div className="relative flex h-screen items-center justify-center px-[5vw]">
+          <div className="text-center max-w-3xl">
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]" style={{ textShadow: '0 1px 6px rgba(11,18,32,0.7)' }}>
+              C.18 · ScrollBackdrop demo · block 1 (transparent)
+            </span>
+            <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight text-[var(--color-bone)]" style={{ textShadow: '0 2px 24px rgba(11,18,32,0.6)' }}>
+              Stage <em>1</em> — dawn
+            </h2>
+            <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/90" style={{ textShadow: '0 1px 8px rgba(11,18,32,0.7)' }}>
+              Scroll. The construction rises behind every word.
+            </p>
           </div>
-        </section>
+        </div>
 
+        {/* Block 2 — semi-ink overlay with backdrop blur */}
+        <div className="relative flex h-screen items-center justify-center px-[5vw] bg-[var(--color-ink)]/75 backdrop-blur-sm">
+          <div className="text-center max-w-3xl text-[var(--color-bone)]">
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              block 2 · semi-ink overlay
+            </span>
+            <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
+              Stage <em>2</em> — foundation
+            </h2>
+            <p className="mt-6 font-sans text-[16px] leading-[1.6] max-w-[60ch] mx-auto text-[var(--color-bone)]/80">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pretium aenean pharetra magna ac placerat vestibulum lectus mauris.
+            </p>
+          </div>
+        </div>
+
+        {/* Block 3 — transparent again, gradient for legibility */}
+        <div className="relative flex h-screen items-center justify-center px-[5vw]">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[var(--color-ink)]/30 to-transparent pointer-events-none" />
+          <div className="relative text-center max-w-3xl text-[var(--color-bone)]" style={{ textShadow: '0 2px 16px rgba(11,18,32,0.7)' }}>
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              block 3 · transparent + gradient
+            </span>
+            <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
+              Stage <em>3</em> — frame
+            </h2>
+          </div>
+        </div>
+
+        {/* Block 4 — semi-bone overlay */}
+        <div className="relative flex h-screen items-center justify-center px-[5vw] bg-[var(--color-bone)]/85 backdrop-blur-sm text-[var(--color-ink)]">
+          <div className="text-center max-w-3xl">
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              block 4 · semi-bone overlay
+            </span>
+            <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
+              Stage <em>4</em> — cladding
+            </h2>
+            <p className="mt-6 font-sans text-[16px] leading-[1.6] max-w-[60ch] mx-auto text-[var(--color-ink)]/75">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque at egestas leo, ut sodales magna.
+            </p>
+          </div>
+        </div>
+
+        {/* Block 5 — transparent close */}
+        <div className="relative flex h-screen items-center justify-center px-[5vw]">
+          <div className="text-center max-w-3xl text-[var(--color-bone)]" style={{ textShadow: '0 2px 24px rgba(11,18,32,0.7)' }}>
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
+              block 5 · transparent close
+            </span>
+            <h2 className="mt-4 font-display text-[clamp(2.5rem,7vw,7rem)] leading-[0.95] tracking-tight">
+              Stage <em>6</em> — night
+            </h2>
+            <p className="mt-6 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/90" style={{ textShadow: '0 1px 8px rgba(11,18,32,0.7)' }}>
+              Existing component-test sections continue below ↓
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <main className="bg-[var(--color-bone)] space-y-32 pb-32">
         {/* C.1 — <SplitText> */}
         <section className="px-[5vw]">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-gold)]">
