@@ -67,7 +67,7 @@ export default function HomePage() {
         </span>
         <SplitText
           as="h1"
-          className="mt-6 font-display font-medium text-[clamp(4rem,11vw,11rem)] leading-[0.92] tracking-[-0.02em] text-[var(--color-bone)] [text-shadow:0_2px_24px_rgba(11,18,32,0.65),0_1px_2px_rgba(11,18,32,0.5)]"
+          className="mt-6 font-display text-[clamp(4rem,11vw,11rem)] leading-[0.92] tracking-[-0.02em] text-[var(--color-bone)] [text-shadow:0_2px_24px_rgba(11,18,32,0.65),0_1px_2px_rgba(11,18,32,0.5)]"
         >
           We build for <em>Qatar</em>.
         </SplitText>

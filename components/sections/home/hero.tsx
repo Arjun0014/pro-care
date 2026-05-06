@@ -126,7 +126,7 @@ export function Hero() {
             within the wide container at 1920px without horizontal overflow.
             Mobile clamp tops out at 5rem; desktop clamp tops out at 8rem. */}
         <h1
-          className="mt-6 sm:mt-8 font-display font-medium text-[clamp(2.25rem,8vw,4.5rem)] md:text-[clamp(3.5rem,8vw,8rem)] leading-[0.95] tracking-[-0.025em] max-w-[22ch]"
+          className="mt-6 sm:mt-8 font-display text-[clamp(2.25rem,8vw,4.5rem)] md:text-[clamp(3.5rem,8vw,8rem)] leading-[0.95] tracking-[-0.025em] max-w-[22ch]"
           style={{ fontOpticalSizing: 'auto' } as React.CSSProperties}
         >
           {HEADLINE_LINES.map((line, i) => (

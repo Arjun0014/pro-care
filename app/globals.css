@@ -24,7 +24,7 @@
   --color-error:    #A8361B;
 
   /* ── Typography (overridden at runtime by next/font vars) ── */
-  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-display: "Instrument Serif", "Times New Roman", serif;
   --font-sans:    "Geist", "Helvetica Neue", system-ui, sans-serif;
   --font-mono:    "Geist Mono", "JetBrains Mono", monospace;
   /* Arabic typefaces (V2 content; vars defined now so [lang='ar'] works) */

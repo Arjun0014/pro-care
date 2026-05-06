@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fraunces, Geist, Geist_Mono, Reem_Kufi, Cairo } from 'next/font/google';
+import { Instrument_Serif, Geist, Geist_Mono, Reem_Kufi, Cairo } from 'next/font/google';
 import { Nav }              from '@/components/layout/nav';
 import { Footer }           from '@/components/layout/footer';
 import { Cursor }           from '@/components/layout/cursor';
@@ -11,12 +11,15 @@ import { ScrollBackdrop }   from '@/components/scroll-backdrop';
 import './globals.css';
 
 // ── Latin typefaces ───────────────────────────────────────────
-// Variable font — load SOFT and opsz axes so we can tune them in CSS.
-const fraunces = Fraunces({
+// Display: Instrument Serif (R2.A — replaces Fraunces). Ships only at
+// weight 400; anywhere the project previously used 600/700, tighten
+// letter-spacing to -0.01em instead of switching weight.
+const display = Instrument_Serif({
   subsets: ['latin'],
   variable: '--font-display',
-  display: 'swap',
-  axes: ['SOFT', 'opsz'],
+  weight:   ['400'],
+  style:    ['normal', 'italic'],
+  display:  'swap',
 });
 
 const geist = Geist({
@@ -74,7 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       dir="ltr"
-      className={`${fraunces.variable} ${geist.variable} ${geistMono.variable} ${reemKufi.variable} ${cairo.variable}`}
+      className={`${display.variable} ${geist.variable} ${geistMono.variable} ${reemKufi.variable} ${cairo.variable}`}
     >
       <body className="bg-[var(--color-bone)] text-[var(--color-ink)] font-sans antialiased">
         {/* Skip-to-content link — always the first focusable element */}
