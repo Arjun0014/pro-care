@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "totalFrames": 600,
+  "fps": 15,
+  "resolution": {
+    "width": 1920,
+    "height": 1080
+  },
+  "framePathTemplate": "/frames/clip{clip}_{frame}.{ext}",
+  "posterPathTemplate": "/frames/clip{clip}_poster.jpg",
+  "formats": [
+    "avif",
+    "webp"
+  ],
+  "clips": [
+    {
+      "id": 1,
+      "name": "plot-to-foundation",
+      "frames": 120,
+      "sectionLabel": "Stage 1 to 2",
+      "firstFrame": 1,
+      "lastFrame": 120
+    },
+    {
+      "id": 2,
+      "name": "foundation-to-frame",
+      "frames": 120,
+      "sectionLabel": "Stage 2 to 3",
+      "firstFrame": 1,
+      "lastFrame": 120
+    },
+    {
+      "id": 3,
+      "name": "frame-to-cladding",
+      "frames": 120,
+      "sectionLabel": "Stage 3 to 4",
+      "firstFrame": 1,
+      "lastFrame": 120
+    },
+    {
+      "id": 4,
+      "name": "cladding-to-glass",
+      "frames": 120,
+      "sectionLabel": "Stage 4 to 5",
+      "firstFrame": 1,
+      "lastFrame": 120
+    },
+    {
+      "id": 5,
+      "name": "glass-to-night",
+      "frames": 120,
+      "sectionLabel": "Stage 5 to 6",
+      "firstFrame": 1,
+      "lastFrame": 120
+    }
+  ]
+}

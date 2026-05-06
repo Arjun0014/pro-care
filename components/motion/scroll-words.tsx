@@ -52,9 +52,21 @@ function tokenize(node: ReactNode): Token[] {
 type Props = {
   children: ReactNode;
   className?: string;
+  /** Color of words once "lit" by scroll. Default: ink. */
+  litColor?: string;
+  /** Color of words still "dim" before scroll reaches them. Default: ink @ 18%. */
+  dimColor?: string;
+  /** Optional CSS text-shadow applied to lit words for canvas-overlay legibility. */
+  textShadow?: string;
 };
 
-export function ScrollWords({ children, className }: Props) {
+export function ScrollWords({
+  children,
+  className,
+  litColor   = 'var(--color-ink)',
+  dimColor   = 'rgba(11, 18, 32, 0.18)',
+  textShadow,
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const reduceMotion = useReducedMotion();
@@ -100,10 +112,9 @@ export function ScrollWords({ children, className }: Props) {
             key={i}
             style={{
               fontStyle: t.italic ? 'italic' : 'normal',
-              color: isLit
-                ? 'var(--color-ink)'
-                : 'rgba(11, 18, 32, 0.18)',
-              transition: 'color 0.3s ease',
+              color:     isLit ? litColor : dimColor,
+              textShadow: isLit ? textShadow : undefined,
+              transition: 'color 0.3s ease, text-shadow 0.3s ease',
             }}
           >
             {t.text}
