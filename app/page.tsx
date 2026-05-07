@@ -185,54 +185,32 @@ export default function HomePage() {
         </ScrollWords>
       </section>
 
-      {/* ───── Section 4 · Pillars marquee ──────────────────────────
-          Per doc 21 § Section 4 — TRANSPARENT, viewport-centered, full
-          width. Massive headline marquee using Tool 4 (mix-blend-mode:
-          difference) so the text inverts against any canvas brightness
-          and is always legible. Em-dashes stay gold (no blend) so they
-          read as gold regardless. */}
-      <section
-        className="relative w-full h-[60vh] flex items-center overflow-hidden"
-        aria-label="Three pillars marquee"
-      >
-        {/* ScrollSkew kept but max reduced 1.5° → 0.4° so the marquee
-            doesn't appear to "race" when the user scrolls quickly past.
-            Marquee speed lowered 25 → 12 for the same reason. */}
-        <ScrollSkew max={0.4}>
-          <Marquee
-            variant="headline"
-            speed={12}
-            direction="right"
-            className="font-display text-[clamp(5rem,18vw,18rem)] leading-[1.15] py-[0.1em]"
-          >
-            <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Trading</span>
-            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
-            <span className="px-12 italic" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Contracting</span>
-            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
-            <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Facility Services</span>
-            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
-          </Marquee>
-        </ScrollSkew>
-      </section>
+      {/* Section 4 (mid-page Pillars marquee) was REMOVED in R2.6 per
+          user feedback — the giant "Trading — Contracting — Facility
+          Services" mix-blend-mode banner was redundant with the Pillars
+          deep-dive's own typography below it. The Identity ticker
+          (Section 2) still carries the trading/contracting/facility
+          chrome. ScrollBackdrop frame mapping is scrollY-based so it
+          adjusts automatically to the shorter document height. */}
 
-      {/* ───── Section 5 · Pillars (pin-and-scrub) ──────────────────
-          Own ink ground; canvas hidden. */}
+      {/* ───── Section 4 · Pillars (pin-and-scrub) ──────────────────
+          Per doc 21 § Section 5 — pure typography over canvas, pin and
+          scrub three pillar panels. */}
       <Pillars />
 
-      {/* ───── Section 6 · Projects horizontal scroll ───────────────
-          Own bone ground. */}
+      {/* ───── Section 5 · Projects horizontal scroll ───────────────
+          Typographic cards, pin-and-scrub. */}
       <ProjectsHorizontal />
 
-      {/* ───── Section 7 · Stats (count-up) ─────────────────────────
-          Bone ground per doc 13. Three numbers, animated counters
-          on scroll-into-view. */}
+      {/* ───── Section 6 · Stats (count-up) ─────────────────────────
+          Three numbers anchored to viewport bottom. */}
       <StatsCountUp />
 
-      {/* ───── Section 8 · Why Pro Care (image cluster) ─────────────
-          Own ink ground; canvas hidden. */}
+      {/* ───── Section 7 · Why Pro Care ─────────────────────────────
+          Single typographic headline over canvas. */}
       <WhyCluster />
 
-      {/* ───── Section 9 · Selected projects (hover list) ───────────
+      {/* ───── Section 8 · Selected projects (hover list) ───────────
           Per doc 21 § Section 9 — TRANSPARENT. Light text + Tool 2 halo.
           Hairline rules between rows via `divide-current/20` (HoverPreview
           uses `divide-current/15` already; the parent's text-bone makes
@@ -257,7 +235,7 @@ export default function HomePage() {
         <HoverPreview items={projectItems} />
       </section>
 
-      {/* ───── Section 10 · Closing CTA + integrated footer ─────────
+      {/* ───── Section 9 · Closing CTA + integrated footer ──────────
           Per R2.5 user feedback — combine the closing CTA with the
           contact/legal chrome so the last frame reads as one coherent
           composition over the night canvas. The standalone Footer

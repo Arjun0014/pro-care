@@ -21,7 +21,10 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const URL_BASE = process.env.PROCARE_URL ?? 'http://localhost:3000/';
-const OUT_DIR  = join(process.cwd(), 'docs', 'qa', 'screenshots', 'r25');
+// Default to r26 for the current phase; pass PROCARE_OUT to override.
+const OUT_DIR  = process.env.PROCARE_OUT
+  ? join(process.cwd(), process.env.PROCARE_OUT)
+  : join(process.cwd(), 'docs', 'qa', 'screenshots', 'r26');
 
 type Viewport = { width: number; height: number; deviceScaleFactor?: number };
 
