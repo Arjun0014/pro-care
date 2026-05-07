@@ -137,17 +137,31 @@ export function HoverPreview({ items, className }: Props) {
               data-cursor
               data-cursor-label="VIEW"
               className={cn(
-                'flex items-baseline justify-between gap-6 py-6 sm:py-8 px-6 sm:px-8',
+                // R2.6 Task 2b — gap-6 → gap-4 so the long names ("Doha
+                // Industrial District Phase II") have more room before
+                // truncating; px-8 → px-6 for the same reason. Hover
+                // expands by 4 px instead of 12 so the row doesn't shove
+                // its content sideways out of viewport on tighter widths.
+                'flex items-baseline justify-between gap-4 sm:gap-6 py-6 sm:py-8 px-5 sm:px-7',
                 'border border-[var(--color-bone)]/15 bg-[var(--color-bone)]/[0.04]',
                 'transition-[padding,background-color,border-color] duration-300',
-                'group-hover:px-10 group-hover:bg-[var(--color-bone)]/[0.08] group-hover:border-[var(--color-bone)]/30',
+                'group-hover:px-7 sm:group-hover:px-9 group-hover:bg-[var(--color-bone)]/[0.08] group-hover:border-[var(--color-bone)]/30',
                 'min-w-0',
               )}
             >
               <span className="shrink-0 font-mono text-[10px] sm:text-xs text-current opacity-60 tabular-nums">
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <span className="font-display text-[clamp(1.5rem,3vw,3rem)] leading-[1.15] flex-1 text-center min-w-0 truncate pb-[0.05em]">
+              <span
+                className={cn(
+                  // R2.6 Task 2b — drop max font-size from 3rem → 2.5rem
+                  // so the longest names fit on one line at 1280px without
+                  // needing truncate; keep the truncate as a safety net at
+                  // narrower viewports.
+                  'font-display text-[clamp(1.25rem,2.4vw,2.5rem)] leading-[1.15]',
+                  'flex-1 text-center min-w-0 truncate pb-[0.05em]',
+                )}
+              >
                 {item.name}
               </span>
               <span className="shrink-0 font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-opacity">
@@ -168,18 +182,31 @@ export function HoverPreview({ items, className }: Props) {
           'transition-[clip-path,opacity] duration-300 ease-[cubic-bezier(0.83,0,0.17,1)]',
           active ? 'opacity-100' : 'opacity-0',
         )}
-        // Hard-coded size — 280×350 (4:5 portrait per HoverPreview spec).
-        // Inline style wins over any utility override.
-        style={{ ...previewStyle, width: 280, height: 350 }}
+        // Hard-coded size — 280×350 (4:5 portrait per doc 16 § HoverPreview
+        // spec). Inline `width`/`height` plus explicit min/max box-size
+        // ensure no parent or utility class can override the dimensions.
+        style={{
+          ...previewStyle,
+          width:    280,
+          height:   350,
+          minWidth: 280,
+          maxWidth: 280,
+          minHeight: 350,
+          maxHeight: 350,
+        }}
         aria-hidden
       >
         {active && (
           <Image
             src={active.image}
             alt={active.alt ?? active.name}
-            fill
+            // Explicit width/height instead of fill so Next.js Image
+            // can't introduce intrinsic-aspect quirks. Wrapper has
+            // overflow:hidden so any minor slice is hidden cleanly.
+            width={280}
+            height={350}
             sizes="280px"
-            className="object-cover"
+            className="block w-full h-full object-cover"
           />
         )}
       </div>
