@@ -1,20 +1,21 @@
 'use client';
 
-// Per 13-HOME-AWARD-TIER.md § Section 5 — Pillars (pin-and-scrub).
-// Three pillars, each pinned for ~120vh of scroll. Inside each pinned stage,
-// a multi-element timeline plays: number Lift → image mask-reveal + scale
-// parallax → headline split-text → body Lift → deliverables stagger →
-// CTA fade. Inter-stage: previous image exits left, next enters right.
+// Per 21-CANVAS-FIRST-REDESIGN.md § Section 5 — pure-typography rebuild.
+// The pin-and-scrub mechanic is PRESERVED (each stage pins for ~120vh).
+// The animations are PRESERVED (number Lift → headline split-text → tagline
+// → body Lift → deliverables stagger → CTA fade). What changes vs R2:
+//   - The image-left / content-right grid is gone.
+//   - Each stage is a centered single-column composition (max-w 700px).
+//   - Section background is transparent — canvas reads through.
+//   - Tool 2 halo on all light text.
+//   - Tool 3 radial pool ONLY on the Trading panel (Stage 2-3 cladding has
+//     a bright sky — the pool is needed). Contracting + Facility panels
+//     don't need it.
 //
-// Mobile (<769px): no pin. Each pillar becomes a vertical section ~100vh
-// with mask-reveal entry only. matchMedia gates this.
-//
-// Lenis integration: ScrollTrigger.refresh wired to BOTH window resize and
-// Lenis 'scroll' event (so opening DevTools or Lenis virtualization changes
-// don't desync the pin).
+// Mobile (<769px): no pin (matchMedia gates desktop pin only); each pillar
+// stacks as a normal vertical section.
 
 import { useEffect, useRef } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -32,15 +33,15 @@ type Pillar = {
   body:         string;
   deliverables: readonly string[];
   href:         string;
-  image:        string;
-  imageAlt:     string;
+  /** Whether this stage needs Tool 3 radial pool (canvas brightest here). */
+  needsPool:    boolean;
 };
 
 // Locked content from 15-ASSETS-AND-COPY.md § Pillars.
 const PILLARS: readonly Pillar[] = [
   {
-    number: '01',
-    name:   'Trading',
+    number:  '01',
+    name:    'Trading',
     tagline: 'Importing the systems that build Qatar.',
     body:
       "We supply the materials, equipment, and tools that Qatar's largest projects rely on. From civil construction inputs to specialized MEP equipment, we move what's needed, when it's needed, with the documentation and trust the region demands.",
@@ -50,13 +51,12 @@ const PILLARS: readonly Pillar[] = [
       'Specialist tooling',
       'Logistics & customs',
     ],
-    href:     '/services/trading',
-    image:    '/images/pillars/trading.jpg',
-    imageAlt: 'Stacked construction materials at a Pro Care supply yard',
+    href:      '/services/trading',
+    needsPool: true,  // Stage 2-3 frames are bright (cladding/sky)
   },
   {
-    number: '02',
-    name:   'Contracting',
+    number:  '02',
+    name:    'Contracting',
     tagline: 'Executing what the drawings promise.',
     body:
       'We are the team between the drawings and the finished building. Civil, MEP, fit-out — delivered against fixed timelines, with site safety treated as the first metric, not the last.',
@@ -66,13 +66,12 @@ const PILLARS: readonly Pillar[] = [
       'Fit-out & renovation',
       'Project management',
     ],
-    href:     '/services/contracting',
-    image:    '/images/pillars/contracting.jpg',
-    imageAlt: 'Pro Care contracting crew on site at golden hour',
+    href:      '/services/contracting',
+    needsPool: false,
   },
   {
-    number: '03',
-    name:   'Facility Services',
+    number:  '03',
+    name:    'Facility Services',
     tagline: 'Keeping operations running, every day.',
     body:
       'Buildings exist long after handover. We maintain them — the mechanical systems that keep them habitable, the surfaces that keep them presentable, and the response times that keep clients calm.',
@@ -82,11 +81,13 @@ const PILLARS: readonly Pillar[] = [
       'Pest control',
       'Operations support',
     ],
-    href:     '/services/facility-services',
-    image:    '/images/pillars/facility.jpg',
-    imageAlt: 'MEP technician maintaining building systems',
+    href:      '/services/facility-services',
+    needsPool: false,
   },
 ];
+
+// Tool 2 halo for light text over canvas.
+const HALO = '[text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]';
 
 export function Pillars() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -105,13 +106,10 @@ export function Pillars() {
         const stages = gsap.utils.toArray<HTMLElement>('[data-pillar-stage]', section);
         if (stages.length === 0) return;
 
-        // Each stage is positioned absolutely; we initially hide stages 2 & 3.
+        // Each stage absolutely stacked. Hide stages 2 & 3 initially.
         stages.forEach((stage, i) => {
           if (i === 0) {
             gsap.set(stage, { autoAlpha: 1, xPercent: 0 });
-            // Initial: image starts mask-clipped from left, scaled 1.05.
-            const img = stage.querySelector<HTMLElement>('[data-pillar-image]');
-            if (img) gsap.set(img, { clipPath: 'inset(0 100% 0 0)', scale: 1.05 });
           } else {
             gsap.set(stage, { autoAlpha: 0, xPercent: 100 });
           }
@@ -121,7 +119,11 @@ export function Pillars() {
           scrollTrigger: {
             trigger:    section,
             start:      'top top',
-            end:        () => `+=${stages.length * 120}vh`,
+            // ScrollTrigger end strings don't parse "vh" — convert to px so
+            // the pin extends 120vh per stage as intended (R2 had the same
+            // bug; pin worked but the timeline scrubbed across only 360px
+            // instead of 360vh, so each stage played in ~120px of scroll).
+            end:        () => `+=${stages.length * 1.2 * window.innerHeight}`,
             pin:        true,
             scrub:      1,
             anticipatePin: 1,
@@ -131,19 +133,19 @@ export function Pillars() {
 
         stages.forEach((stage, i) => {
           const num    = stage.querySelector<HTMLElement>('[data-pillar-number]');
-          const img    = stage.querySelector<HTMLElement>('[data-pillar-image]');
           const head   = stage.querySelector<HTMLElement>('[data-pillar-head]');
           const body   = stage.querySelector<HTMLElement>('[data-pillar-body]');
           const items  = gsap.utils.toArray<HTMLElement>('[data-pillar-item]', stage);
           const cta    = stage.querySelector<HTMLElement>('[data-pillar-cta]');
 
-          // Stage entry — image mask-reveal + scale 1.05 → 1.
-          tl.to(img,    { clipPath: 'inset(0 0 0 0)', scale: 1, duration: 0.8, ease: gsapEasings.cinema }, '+=0');
-          tl.from(num,  { y: 24, autoAlpha: 0, duration: 0.4, ease: gsapEasings.out },                    '<+0.1');
-          tl.from(head, { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                    '<+0.1');
-          tl.from(body, { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                    '<+0.1');
+          // Stage entry animations — number Lift → head → body → items → cta.
+          // (Image mask-reveal is gone in the canvas-first rebuild — there's
+          //  no image. The "image" is the canvas, which is already there.)
+          tl.from(num,  { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '+=0');
+          tl.from(head, { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '<+0.1');
+          tl.from(body, { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '<+0.1');
           tl.from(items,{ y: 16, autoAlpha: 0, duration: 0.4, stagger: 0.1, ease: gsapEasings.out },     '<+0.1');
-          tl.from(cta,  { y: 16, autoAlpha: 0, duration: 0.4, ease: gsapEasings.out },                    '<+0.2');
+          tl.from(cta,  { y: 16, autoAlpha: 0, duration: 0.4, ease: gsapEasings.out },                   '<+0.2');
           // Hold this stage visible for a bit before transition.
           tl.to({}, { duration: 0.8 });
 
@@ -153,16 +155,10 @@ export function Pillars() {
             tl.to(stage,  { autoAlpha: 0, xPercent: -100, duration: 0.6, ease: gsapEasings.cinema });
             tl.set(next,  { autoAlpha: 1, xPercent: 100 });
             tl.to(next,   { xPercent: 0, duration: 0.6, ease: gsapEasings.cinema }, '<');
-            // Reset the next stage's mask + scale so its entry timeline can play.
-            const nextImg = next.querySelector<HTMLElement>('[data-pillar-image]');
-            if (nextImg) tl.set(nextImg, { clipPath: 'inset(0 100% 0 0)', scale: 1.05 });
           }
         });
 
-        // ── Refresh wiring ──────────────────────────────────────
-        // ScrollTrigger.refresh on resize (built into ScrollTrigger by default
-        // via window.resize listener), AND on Lenis scroll updates so the pin
-        // doesn't desync if Lenis changes the virtualized scroll height.
+        // Refresh wiring — both window resize and Lenis scroll.
         const lenis = (window as Window & { __lenis?: Lenis }).__lenis;
         const onLenisRefresh = () => ScrollTrigger.update();
         if (lenis) lenis.on('scroll', onLenisRefresh);
@@ -181,16 +177,6 @@ export function Pillars() {
         const stages = gsap.utils.toArray<HTMLElement>('[data-pillar-stage]', section);
         stages.forEach((stage) => {
           gsap.set(stage, { autoAlpha: 1, xPercent: 0, position: 'relative' });
-          const img = stage.querySelector<HTMLElement>('[data-pillar-image]');
-          if (img) {
-            gsap.set(img, { clipPath: 'inset(0 100% 0 0)' });
-            gsap.to(img, {
-              clipPath: 'inset(0 0 0 0)',
-              duration: 0.8,
-              ease: gsapEasings.cinema,
-              scrollTrigger: { trigger: stage, start: 'top 80%' },
-            });
-          }
         });
       });
     }, section);
@@ -201,82 +187,77 @@ export function Pillars() {
   return (
     <section
       ref={sectionRef}
-      data-ground="ink"
       data-cursor-label="EXPLORE"
-      className="relative w-full bg-[var(--color-ink)] text-[var(--color-bone)] overflow-hidden md:h-screen"
+      className={`relative w-full text-[var(--color-bone)] ${HALO} overflow-hidden md:h-screen`}
       aria-label="Three pillars in detail"
     >
-      {PILLARS.map((p, i) => (
+      {PILLARS.map((p) => (
         <div
           key={p.number}
           data-pillar-stage
           // Desktop: stages absolutely stacked over each other inside the
           // pinned container. Mobile: position is overridden to relative
           // by matchMedia.
-          className="md:absolute md:inset-0 md:flex md:items-center"
+          className="md:absolute md:inset-0 md:flex md:items-center md:justify-center"
         >
-          <div className="mx-auto max-w-[1440px] w-full px-[5vw] py-[8vh] md:py-0">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
-              {/* Image — left ~55% */}
-              <div className="md:col-span-7">
-                <div className="relative aspect-[5/6] overflow-hidden">
-                  <div data-pillar-image className="absolute inset-0">
-                    <Image
-                      src={p.image}
-                      alt={p.imageAlt}
-                      fill
-                      sizes="(min-width: 768px) 55vw, 100vw"
-                      className="object-cover"
-                      priority={i === 0}
-                    />
-                  </div>
-                </div>
-              </div>
+          {/* Tool 3 — radial pool, only on the Trading panel (canvas brightest here) */}
+          {p.needsPool && (
+            <div
+              className="absolute inset-0 pointer-events-none"
+              aria-hidden="true"
+              style={{
+                background:
+                  'radial-gradient(ellipse 80vw 60vh at center, rgba(11,18,32,0.45) 0%, rgba(11,18,32,0.2) 40%, rgba(11,18,32,0) 80%)',
+              }}
+            />
+          )}
 
-              {/* Text — right ~45% */}
-              <div className="md:col-span-5 flex flex-col gap-6">
-                <div className="flex items-baseline justify-between font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/60">
-                  <span data-pillar-number>{p.number}</span>
-                  <span>{i + 1} / {PILLARS.length}</span>
-                </div>
+          {/* Centered single-column composition, max-w 700px per doc 21 */}
+          <div className="relative mx-auto w-full max-w-[700px] px-[5vw] py-[10vh] md:py-0 flex flex-col gap-8 text-center">
+            {/* Number — small mono index */}
+            <div data-pillar-number className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80">
+              {p.number} / {String(PILLARS.length).padStart(2, '0')}
+            </div>
 
-                <div data-pillar-head className="flex flex-col gap-3">
-                  <h3 className="font-display text-[clamp(2rem,5vw,4.5rem)] leading-[1.05] tracking-[-0.02em]">
-                    {p.name}
-                  </h3>
-                  <p className="font-display italic text-[clamp(1.125rem,1.6vw,1.5rem)] leading-[1.3] text-[var(--color-bone)]/85">
-                    {p.tagline}
-                  </p>
-                </div>
+            {/* Headline + tagline */}
+            <div data-pillar-head className="flex flex-col gap-3">
+              <h3 className="font-display text-[clamp(3rem,7vw,6rem)] leading-[1.0] tracking-[-0.02em]">
+                {p.name}
+              </h3>
+              <p className="font-display italic text-[clamp(1.25rem,2vw,1.875rem)] leading-[1.3] text-[var(--color-bone)]/85">
+                {p.tagline}
+              </p>
+            </div>
 
-                <p data-pillar-body className="font-sans text-[15px] sm:text-[16px] leading-[1.6] text-[var(--color-bone)]/80 max-w-[52ch]">
-                  {p.body}
-                </p>
+            {/* Body */}
+            <p data-pillar-body className="font-sans text-[15px] sm:text-[16px] leading-[1.6] text-[var(--color-bone)]/85 max-w-[58ch] mx-auto">
+              {p.body}
+            </p>
 
-                <ul className="flex flex-col gap-2">
-                  {p.deliverables.map((d) => (
-                    <li
-                      key={d}
-                      data-pillar-item
-                      className="flex items-baseline gap-3 font-sans text-[14px] text-[var(--color-bone)]/85"
-                    >
-                      <span className="text-[var(--color-gold)]" aria-hidden>·</span>
-                      <span>{d}</span>
-                    </li>
-                  ))}
-                </ul>
+            {/* Deliverables — center-aligned list */}
+            <ul className="flex flex-col gap-2 items-center">
+              {p.deliverables.map((d) => (
+                <li
+                  key={d}
+                  data-pillar-item
+                  className="flex items-baseline gap-3 font-sans text-[14px] text-[var(--color-bone)]/85"
+                >
+                  <span className="text-[var(--color-gold)]" aria-hidden>·</span>
+                  <span>{d}</span>
+                </li>
+              ))}
+            </ul>
 
-                <div data-pillar-cta className="mt-2">
-                  <Link
-                    href={p.href}
-                    data-cursor
-                    className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)] border-b border-[var(--color-bone)]/40 pb-1 hover:border-[var(--color-bone)] transition-colors"
-                  >
-                    View details
-                    <span aria-hidden>→</span>
-                  </Link>
-                </div>
-              </div>
+            {/* CTA */}
+            <div data-pillar-cta>
+              <Link
+                href={p.href}
+                data-cursor
+                className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)] border-b border-[var(--color-bone)]/40 pb-1 hover:border-[var(--color-bone)] transition-colors"
+              >
+                View details
+                <span aria-hidden>→</span>
+              </Link>
             </div>
           </div>
         </div>

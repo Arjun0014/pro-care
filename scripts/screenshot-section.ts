@@ -28,7 +28,12 @@ type Viewport = { width: number; height: number; deviceScaleFactor?: number };
 const DESKTOP: Viewport = { width: 1920, height: 1080, deviceScaleFactor: 1 };
 const MOBILE:  Viewport = { width: 375,  height: 812,  deviceScaleFactor: 2 };
 
-type ScrollTarget = { kind: 'y'; value: number } | { kind: 'center'; label: string } | { kind: 'top'; label: string };
+type ScrollTarget =
+  | { kind: 'y';      value: number }
+  | { kind: 'center'; label: string }
+  | { kind: 'top';    label: string }
+  /** Scroll into a pinned section's timeline at stageIndex × 120vh + 0.5vh. */
+  | { kind: 'pin';    label: string; stage: number };
 
 async function snap(page: Page, viewport: Viewport, target: ScrollTarget, outFile: string) {
   await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -43,25 +48,48 @@ async function snap(page: Page, viewport: Viewport, target: ScrollTarget, outFil
     if (!match) return 0;
     const rect = match.getBoundingClientRect();
     const docTop = rect.top + window.scrollY;
-    if (t.kind === 'top') return docTop;
-    return docTop + rect.height / 2 - window.innerHeight / 2;
+    if (t.kind === 'top')    return docTop;
+    if (t.kind === 'center') return docTop + rect.height / 2 - window.innerHeight / 2;
+    // 'pin' — scroll past sectionTop by stageIndex × 120vh + ~70vh so the
+    // entry animations have completed (settles in the "hold" portion).
+    const vh = window.innerHeight;
+    return docTop + t.stage * 1.2 * vh + 0.7 * vh;
   }, target);
 
-  // Disable Lenis raf so we can snap to exact scrollY
+  // Walk to the target in small steps so Lenis + ScrollTrigger see normal
+  // scroll events. Faster than waiting on Lenis's natural easing.
   await page.evaluate((y: number) => {
-    type WithLenis = Window & { __lenis?: { scrollTo: (n: number, opts?: { immediate?: boolean }) => void } };
+    type WithLenis = Window & { __lenis?: { scrollTo: (n: number, opts?: { immediate?: boolean; duration?: number }) => void } };
     const w = window as WithLenis;
-    if (w.__lenis) w.__lenis.scrollTo(Math.max(0, y), { immediate: true });
-    else window.scrollTo(0, Math.max(0, y));
+    if (w.__lenis) {
+      // Use Lenis's own animated scroll so its scroll events fire and
+      // ScrollTrigger's listeners pick up real updates.
+      w.__lenis.scrollTo(Math.max(0, y), { duration: 0.1 });
+    } else {
+      window.scrollTo(0, Math.max(0, y));
+    }
   }, scrollY);
-  // Give canvas paint + IO observers a beat (rAF settle + 1 frame request)
-  await page.waitForTimeout(2000);
+  // Give Lenis time to complete the scrollTo + canvas paint + IO observers.
+  await page.waitForTimeout(2500);
+  // Debug: print actual landing position vs requested
+  const actual = await page.evaluate(() => Math.round(window.scrollY));
+  console.log(`  requested scrollY ${Math.round(scrollY)}, actual ${actual}`);
   await page.screenshot({ path: outFile, fullPage: false });
 }
 
 function parseTarget(arg: string): ScrollTarget {
   if (arg.startsWith('center:')) return { kind: 'center', label: arg.slice('center:'.length) };
   if (arg.startsWith('top:'))    return { kind: 'top',    label: arg.slice('top:'.length) };
+  if (arg.startsWith('pin:')) {
+    // Format: pin:<aria-label>:<stageIndex>
+    const rest = arg.slice('pin:'.length);
+    const lastColon = rest.lastIndexOf(':');
+    if (lastColon < 0) throw new Error(`pin: target must be pin:<label>:<stage>`);
+    const label = rest.slice(0, lastColon);
+    const stage = Number(rest.slice(lastColon + 1));
+    if (!Number.isFinite(stage)) throw new Error(`pin: stage must be a number`);
+    return { kind: 'pin', label, stage };
+  }
   const n = Number(arg);
   if (!Number.isFinite(n)) throw new Error(`invalid scroll target: ${arg}`);
   return { kind: 'y', value: n };

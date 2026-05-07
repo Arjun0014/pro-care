@@ -221,3 +221,35 @@ If any item fails the section is fixed and re-screenshot before moving on.
 | Hover state | ✓ `hover:border-[var(--color-bone)]/30` brightens the hairline; "View details →" opacity ramps from /80 to /100 |
 
 **What changed:** rewrote `components/sections/home/projects-horizontal.tsx`. Removed: `Image`, `TiltImage` imports; `imageAlt`/`image` usage. Cards became `flex flex-col h-[60vh] border border-bone/15 p-8 sm:p-10` typography blocks: `01 → year` top row, large display project title in mid (`mt-auto`), sector + view-details bottom row. Section transparent + bone text + Tool 2 halo. Counter logic and HorizontalScroll wrapping untouched so pin-and-scrub still works on desktop and mobile gets the stack fallback.
+
+---
+
+### S2.9 — Section 5 Pillars deep-dive (HARDEST)
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Stage 1 desktop screenshot | ✓ `screenshots/r25/s2-9-pillars-deepdive-stage1-desktop.png` |
+| Stage 2 desktop screenshot | ✓ `screenshots/r25/s2-9-pillars-deepdive-stage2-desktop.png` |
+| Stage 3 desktop screenshot | ✓ `screenshots/r25/s2-9-pillars-deepdive-stage3-desktop.png` |
+| Stage 1/2/3 mobile screenshots | ✓ all three captured (mobile stacks all stages — same scrollY shows whichever stage is in viewport) |
+| No solid background block | ✓ removed `bg-[var(--color-ink)]`, `data-ground="ink"`; section `text-[--color-bone]` + Tool 2 halo |
+| Canvas visible | ✓ Stage 2-4 cladding/build frames read through behind the typography on each stage |
+| Content anchored per spec | ✓ centered single column, `max-w-[700px]` per doc 21 |
+| Tool 2 halo on all light text | ✓ on section root |
+| Tool 3 radial pool ONLY on Trading | ✓ `needsPool: true` on Trading panel; Contracting + Facility have no pool (verified visually — only Stage 1 has the slight radial darkening behind text) |
+| Pillar imagery removed | ✓ all `<Image>` imports + the image-left grid layout gone; no JPGs loaded |
+| Locked copy verbatim | ✓ Trading / Contracting / Facility Services with full taglines, bodies, deliverables, hrefs (doc 15 § Pillars) |
+| Pin-and-scrub mechanic preserved | ✓ matchMedia desktop block creates ScrollTrigger pin with scrub:1; pin-spacer has parentHeight 4968 (= 1080 section + 3888 pin extension = 360vh) |
+| Animations preserved | ✓ number Lift → headline → tagline → body → deliverables stagger → CTA fade — all `tl.from()` calls retained per doc 21 ("animations MUST be preserved") |
+| Mobile fallback (no pin) | ✓ `(max-width: 768px)` matchMedia block sets all stages `position: relative` + `autoAlpha: 1` — mobile stacks vertically |
+
+**Critical bug fix discovered during S2.9:** the R2 ScrollTrigger pin used `end: () => '+=' + stages.length * 120 + 'vh'` — but ScrollTrigger's end string parser doesn't interpret `vh` units, so the pin was actually only extending by **360 PIXELS** (not 360vh = 3888px). The full per-stage timeline was being scrubbed across ~120px of scroll instead of 120vh, making each stage flash by in milliseconds. Fixed by computing pixel value: `'+=' + (stages.length * 1.2 * window.innerHeight)`. Now pin-spacer correctly sits at 1080 + 3888 = 4968px, and each stage gets its full 120vh of scroll real estate. This was a latent bug present in R2 that wasn't caught because the visual still "kind of worked" — the stages just transitioned almost instantly.
+
+**What changed:**
+- `components/sections/home/pillars.tsx`: complete rewrite. Removed `<Image>` and the image-left/content-right grid. Each pillar is now a centered single-column composition (max-w 700px) with: index `01 / 03` mono → `Trading` display headline → italic tagline → body → centered deliverables list with gold dots → "View details →" CTA. Section transparent + bone text + Tool 2 halo.
+- Added `needsPool: boolean` field to the `Pillar` type. Only `Trading` has `needsPool: true` — renders a Tool 3 radial-pool overlay div behind its content (Stage 2-3 cladding has bright sky → pool needed). Contracting + Facility don't need it.
+- Pin formula bug fix (see above).
+- Animation timeline kept intact: number Lift → head → body → items stagger → CTA fade → hold → inter-stage exit-left/enter-right transition.
+- Lenis 'scroll' + window 'resize' refresh wiring kept intact.
