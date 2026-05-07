@@ -91,12 +91,20 @@ export function ScrollWords({
     const handleScroll = () => {
       const el = ref.current;
       if (!el) return;
-      const rect = el.getBoundingClientRect();
+      // Per R2.6 Manifesto feedback — drive progress from the closest
+      // <section> ancestor instead of the inner ScrollWords div. The
+      // div is flex-centred inside Manifesto's 150 vh container, so its
+      // rect.top is offset from the section's rect.top by ~half the
+      // remaining viewport space; using the section keeps the snap-to-
+      // section-top experience aligned with progress = 1 (all lit).
+      const section = el.closest('section') ?? el;
+      const rect = section.getBoundingClientRect();
       const vh = window.innerHeight;
-      const elementCenter = rect.top + rect.height / 2;
-      const distanceFromCenter = elementCenter - vh / 2;
-      const total = rect.height;
-      const p = Math.max(0, Math.min(1, 1 - distanceFromCenter / total));
+      //   section.top = vh    → just entering bottom edge → p = 0
+      //   section.top = 0     → top flush with viewport   → p = 1
+      //   section.top < 0     → already past viewport top → p = 1 (clamped)
+      const relativeTop = rect.top;
+      const p = 1 - Math.max(0, Math.min(1, relativeTop / vh));
       setProgress(p);
     };
 

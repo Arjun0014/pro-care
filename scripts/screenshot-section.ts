@@ -60,14 +60,14 @@ async function snap(page: Page, viewport: Viewport, target: ScrollTarget, outFil
   }, target);
 
   // Walk to the target in small steps so Lenis + ScrollTrigger see normal
-  // scroll events. Faster than waiting on Lenis's natural easing.
+  // scroll events. Bumped to 0.4 s (was 0.1 s) so Lenis actually fires
+  // multiple scroll events during the animation — ScrollWords's progress
+  // listener needs a real scroll-then-settle to update React state.
   await page.evaluate((y: number) => {
     type WithLenis = Window & { __lenis?: { scrollTo: (n: number, opts?: { immediate?: boolean; duration?: number }) => void } };
     const w = window as WithLenis;
     if (w.__lenis) {
-      // Use Lenis's own animated scroll so its scroll events fire and
-      // ScrollTrigger's listeners pick up real updates.
-      w.__lenis.scrollTo(Math.max(0, y), { duration: 0.1 });
+      w.__lenis.scrollTo(Math.max(0, y), { duration: 0.4 });
     } else {
       window.scrollTo(0, Math.max(0, y));
     }
