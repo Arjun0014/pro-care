@@ -253,3 +253,42 @@ If any item fails the section is fixed and re-screenshot before moving on.
 - Pin formula bug fix (see above).
 - Animation timeline kept intact: number Lift → head → body → items stagger → CTA fade → hold → inter-stage exit-left/enter-right transition.
 - Lenis 'scroll' + window 'resize' refresh wiring kept intact.
+
+---
+
+### S2.10 — Section 1 Hero (verify only)
+
+**Result:** ✅ PASS — no regression
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-10-hero-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-10-hero-mobile.png` |
+| No solid background block | ✓ already transparent in R2 |
+| Canvas visible | ✓ Stage 1 dawn frame: Doha skyline + empty plot reads cleanly behind hero copy |
+| Content anchored per spec | ✓ bottom-left anchor: eyebrow `TRADING — CONTRACTING — FACILITY`, big SplitText "We build for *Qatar*.", Get-in-touch MagneticButton, scroll affordance bottom-right |
+| Text readable | ✓ bone color + InkVeil + heavy text-shadow on the headline |
+| Locked copy verbatim | ✓ "We build for *Qatar*." + eyebrow + scroll tag (doc 15 § Hero) |
+| Animations work | ✓ SplitText reveals, italic on "Qatar" preserved |
+
+No code changes. Verified Hero still works after global changes (scrollbar-hide CSS, ScrollWords prop wiring, footer / pillars layout reshuffles).
+
+---
+
+### S2.11 — Section 10 Closing CTA (verify only)
+
+**Result:** ✅ PASS — no regression
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-11-closing-cta-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-11-closing-cta-mobile.png` |
+| No solid background block | ✓ already transparent in R2 (with InkVeil radial overlay only) |
+| Canvas visible | ✓ Stage 6 night frame: completed building lit at night reads through |
+| Content anchored per spec | ✓ centered, "Let's build *something durable*." headline, Start CTA, "Doha · Qatar · CR# 217949" stamp |
+| Text readable | ✓ bone + heavy text-shadow + InkVeil radial pool |
+| No separate cluster images | ✓ none — just typography over canvas |
+| Locked copy verbatim | ✓ "Let's build *something durable*." + "Doha · Qatar · CR# 217949" (doc 15 § Closing CTA) |
+| Animations work | ✓ ScrollSkew + SplitText preserved; italic on "something durable" preserved |
+
+No code changes. Verified Closing CTA still works after global changes.
