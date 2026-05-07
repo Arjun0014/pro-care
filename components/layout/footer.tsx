@@ -1,6 +1,10 @@
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Marquee } from '@/components/motion/marquee';
+
+// Tool 2 halo — light text over the canvas (footer is transparent per doc 21).
+const HALO = '[text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]';
 
 // TODO: replace address/phone/email with real contact details from client.
 const CONTACT = {
@@ -22,8 +26,11 @@ const NAV_LINKS = [
 export function Footer() {
   return (
     <footer
-      data-ground="ink"
-      className="bg-[var(--color-ink)] text-[var(--color-bone)]"
+      // Per 21-CANVAS-FIRST-REDESIGN.md § Footer — TRANSPARENT, light text +
+      // Tool 2 halo, hairline rules in `border-[--color-bone]/20`. Marquee
+      // strip just above the bottom legal row uses Tool 4 (mix-blend-mode:
+      // difference) for guaranteed legibility against the canvas.
+      className={cn('relative text-[var(--color-bone)]', HALO)}
     >
       {/* Main grid */}
       <div className="mx-auto max-w-[1440px] px-[clamp(1.5rem,4vw,4rem)] pt-20 pb-12">
@@ -109,23 +116,44 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom strip */}
-      <div className="border-t border-[var(--color-haze)]">
+      {/* Footer marquee strip — Tool 4 (mix-blend-mode: difference) so the
+          full-width text is always legible against any canvas brightness.
+          Locked content from doc 15 § Footer marquee strip. */}
+      <div className="border-t border-[var(--color-bone)]/20">
+        <Marquee
+          variant="headline"
+          speed={30}
+          direction="left"
+          className="py-6 font-display text-[clamp(2rem,4vw,4rem)] leading-none"
+        >
+          <span className="px-8" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>
+            LET&apos;S BUILD SOMETHING DURABLE
+          </span>
+          <span className="px-8" style={{ color: 'var(--color-gold)' }}>—</span>
+          <span className="px-8" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>
+            LET&apos;S BUILD SOMETHING DURABLE
+          </span>
+          <span className="px-8" style={{ color: 'var(--color-gold)' }}>—</span>
+        </Marquee>
+      </div>
+
+      {/* Bottom legal strip */}
+      <div className="border-t border-[var(--color-bone)]/20">
         <div className="mx-auto max-w-[1440px] px-[clamp(1.5rem,4vw,4rem)] py-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <span className="font-mono text-[11px] tracking-[0.08em] text-[var(--color-bone)]/40">
+          <span className="font-mono text-[11px] tracking-[0.08em] text-[var(--color-bone)]/70">
             CR# 217949 · © Pro Care Trading, Contracting and Facility Services W.L.L.
           </span>
           <nav className="flex items-center gap-6" aria-label="Legal">
             {/* TODO: add real Privacy and Terms pages */}
             <Link
               href="/privacy"
-              className="font-sans text-[12px] text-[var(--color-bone)]/40 hover:text-[var(--color-bone)]/70 transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+              className="font-sans text-[12px] text-[var(--color-bone)]/70 hover:text-[var(--color-bone)] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
             >
               Privacy
             </Link>
             <Link
               href="/terms"
-              className="font-sans text-[12px] text-[var(--color-bone)]/40 hover:text-[var(--color-bone)]/70 transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+              className="font-sans text-[12px] text-[var(--color-bone)]/70 hover:text-[var(--color-bone)] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
             >
               Terms
             </Link>

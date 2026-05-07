@@ -138,3 +138,24 @@ If any item fails the section is fixed and re-screenshot before moving on.
 **What changed:**
 - `app/page.tsx`: Selected projects section lost `data-ground="bone"`, `bg-[var(--color-bone)]`, `text-[var(--color-ink)]`. Now transparent with bone text + Tool 2 halo.
 - `components/motion/hover-preview.tsx`: added clamp() in onMove → `mx = clamp(e.clientX + 24, 24, innerWidth - 280 - 24)`, same for y. Thumbnail wrapper got `border border-[var(--color-bone)]/25 overflow-hidden` so it's distinguishable from canvas.
+
+---
+
+### S2.5 — Footer
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-5-footer-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-5-footer-mobile.png` |
+| No solid background block | ✓ removed `bg-[var(--color-ink)]` and `data-ground="ink"` |
+| Canvas visible | ✓ Stage 6 night frame: lit building reads through behind the columns + legal strip |
+| Content anchored per spec | ✓ columns top, marquee strip middle, legal bottom; full-width footer chrome unchanged |
+| Text readable | ✓ bone text + Tool 2 halo on the footer root; column text uses /70 opacity but the halo gives letter-edge definition |
+| Mix-blend-mode marquee | ✓ "LET'S BUILD SOMETHING DURABLE" renders white-on-difference, so it inverts to dark on the bright crane top and reads as bone on the dark night sky — guaranteed legibility regardless of canvas brightness |
+| Hairline rules at bone/20 | ✓ `border-t border-[var(--color-bone)]/20` separates marquee + legal strips |
+| Locked copy verbatim | ✓ "LET'S BUILD SOMETHING DURABLE" matches doc 15 § Footer marquee strip; all 6 nav links match doc 15 § Footer Column 2 |
+| Animations work | ✓ Marquee slide-left + pause-on-hover preserved |
+
+**What changed:** removed `bg-[var(--color-ink)]` from `<footer>`, added Tool 2 halo class. Replaced `border-[var(--color-haze)]` → `border-[var(--color-bone)]/20`. Added marquee strip above the bottom legal row with mix-blend-mode: difference (locked content from doc 15). Bumped legal text from /40 to /70 so it reads against varied canvas. Internals (nav links, contact column structure, // TODO strings) untouched per scope.
