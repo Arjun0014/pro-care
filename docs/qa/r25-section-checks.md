@@ -159,3 +159,23 @@ If any item fails the section is fixed and re-screenshot before moving on.
 | Animations work | ✓ Marquee slide-left + pause-on-hover preserved |
 
 **What changed:** removed `bg-[var(--color-ink)]` from `<footer>`, added Tool 2 halo class. Replaced `border-[var(--color-haze)]` → `border-[var(--color-bone)]/20`. Added marquee strip above the bottom legal row with mix-blend-mode: difference (locked content from doc 15). Bumped legal text from /40 to /70 so it reads against varied canvas. Internals (nav links, contact column structure, // TODO strings) untouched per scope.
+
+---
+
+### S2.6 — Section 3 Manifesto
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-6-manifesto-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-6-manifesto-mobile.png` |
+| No solid background block | ✓ removed `bg-[var(--color-bone)]` and `data-ground="bone"` |
+| Canvas visible | ✓ Stage 2 frame: construction site with cranes + concrete pour reads through |
+| Content anchored per spec | ✓ `min-h-[150vh] flex items-center justify-center` — vertically centered, max-w-[52ch] |
+| Text readable | ✓ bone @ 100% lit + Tool 2 halo + Tool 3 radial pool (rgba(11,18,32,0.45→0.2→0)) |
+| No competing imagery | ✓ no images |
+| Locked copy verbatim | ✓ "We are *three companies in one*. Traders, contractors, operators. We bring materials to Qatar, we build with them, and we keep what we build running. One standard across all three. *Things that last.*" (doc 15 § Manifesto) |
+| Animations work | ✓ ScrollWords still drives word-by-word reveal; italic preserved on both `<em>` phrases; dim/lit colors via prop-driven inline style |
+
+**What changed:** Manifesto section converted from `bg-[var(--color-bone)] text-[var(--color-ink)] min-h-[120vh]` to `min-h-[150vh]` transparent + Tool 3 radial-pool overlay div. ScrollWords now receives explicit `dimColor="rgba(244,239,230,0.25)"`, `litColor="rgb(244,239,230)"`, `textShadow="0 1px 2px rgba(11,18,32,0.5),0 0 24px rgba(11,18,32,0.35)"` so words start ghostly bone, light up to full bone with halo as the user scrolls through.

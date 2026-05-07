@@ -132,15 +132,29 @@ export default function HomePage() {
       </section>
 
       {/* ───── Section 3 · Manifesto ────────────────────────────────
-          Per doc 13, Manifesto is bone ground. Words light up via ScrollWords.
-          Canvas hidden behind own bone bg. */}
+          Per doc 21 § Section 3 — TRANSPARENT. Centered ScrollWords with
+          adapted colors: dim = bone @ 25% (ghostly), lit = bone @ 100%
+          + Tool 2 halo. Tool 3 radial pool centered behind text since
+          Stage 2-3 frames are predominantly mid-bright outdoor scenes. */}
       <section
-        data-ground="bone"
-        className="relative w-full min-h-[120vh] bg-[var(--color-bone)] text-[var(--color-ink)] flex items-center justify-center px-[8vw] py-[10vh]"
+        className="relative w-full min-h-[150vh] flex items-center justify-center px-[8vw] py-[10vh]"
         aria-label="Manifesto"
       >
+        {/* Tool 3 — radial pool. Fully transparent at 80% so canvas reads
+            continuous, not interrupted. */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            background:
+              'radial-gradient(ellipse 80vw 60vh at center, rgba(11,18,32,0.45) 0%, rgba(11,18,32,0.2) 40%, rgba(11,18,32,0) 80%)',
+          }}
+        />
         <ScrollWords
-          className="font-display text-[clamp(2rem,4.5vw,4.5rem)] leading-[1.2] max-w-[52ch] text-center"
+          className="relative font-display text-[clamp(2rem,4.5vw,4.5rem)] leading-[1.2] max-w-[52ch] text-center"
+          dimColor="rgba(244, 239, 230, 0.25)"
+          litColor="rgb(244, 239, 230)"
+          textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
         >
           We are <em>three companies in one</em>. Traders, contractors,
           operators. We bring materials to Qatar, we build with them, and
