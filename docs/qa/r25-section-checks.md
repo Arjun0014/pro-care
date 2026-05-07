@@ -179,3 +179,24 @@ If any item fails the section is fixed and re-screenshot before moving on.
 | Animations work | ✓ ScrollWords still drives word-by-word reveal; italic preserved on both `<em>` phrases; dim/lit colors via prop-driven inline style |
 
 **What changed:** Manifesto section converted from `bg-[var(--color-bone)] text-[var(--color-ink)] min-h-[120vh]` to `min-h-[150vh]` transparent + Tool 3 radial-pool overlay div. ScrollWords now receives explicit `dimColor="rgba(244,239,230,0.25)"`, `litColor="rgb(244,239,230)"`, `textShadow="0 1px 2px rgba(11,18,32,0.5),0 0 24px rgba(11,18,32,0.35)"` so words start ghostly bone, light up to full bone with halo as the user scrolls through.
+
+---
+
+### S2.7 — Section 4 Pillars marquee
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-7-pillars-marquee-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-7-pillars-marquee-mobile.png` |
+| No solid background block | ✓ removed `bg-[var(--color-ink)]`, `data-ground="ink"`, `text-[var(--color-bone)]`, `py-[6vh]` and the gold hairline rule |
+| Canvas visible | ✓ Stage 2 frame (cranes + foundation pour) reads through clearly |
+| Content anchored per spec | ✓ `h-[60vh] flex items-center overflow-hidden` — viewport-centered, full width |
+| Text legibility (mix-blend-mode) | ✓ "Trading" / italic "Contracting" / "Facility Services" each render `color: #FFFFFF; mixBlendMode: 'difference'`. Where the text overlaps the bright sky, glyphs read dark; where it overlaps the dark crane silhouettes, glyphs read light. Always perfect contrast. |
+| Em-dashes stay gold | ✓ `style={{ color: 'var(--color-gold)' }}` with no blend mode — read as gold against everything |
+| No competing imagery | ✓ |
+| Locked copy verbatim | ✓ Trading / Contracting / Facility Services with em-dash separators (doc 15 § Pillars marquee) |
+| Animations work | ✓ Marquee right-direction + ScrollSkew preserved; pause-on-hover preserved |
+
+**What changed:** stripped section bg + ground attr, set `h-[60vh] flex items-center overflow-hidden`. Bumped marquee font from `text-[clamp(8rem,12vw,16rem)]` (default headline) to explicit `text-[clamp(5rem,18vw,18rem)]` per doc 21. Each text span got inline `mixBlendMode: 'difference'` + white color; em-dashes got inline gold without blend.

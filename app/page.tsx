@@ -164,10 +164,13 @@ export default function HomePage() {
       </section>
 
       {/* ───── Section 4 · Pillars marquee ──────────────────────────
-          Ink ground, monumental. Hard cut from manifesto bone. */}
+          Per doc 21 § Section 4 — TRANSPARENT, viewport-centered, full
+          width. Massive headline marquee using Tool 4 (mix-blend-mode:
+          difference) so the text inverts against any canvas brightness
+          and is always legible. Em-dashes stay gold (no blend) so they
+          read as gold regardless. */}
       <section
-        data-ground="ink"
-        className="relative w-full bg-[var(--color-ink)] text-[var(--color-bone)] py-[6vh] overflow-hidden"
+        className="relative w-full h-[60vh] flex items-center overflow-hidden"
         aria-label="Three pillars marquee"
       >
         <ScrollSkew>
@@ -175,18 +178,16 @@ export default function HomePage() {
             variant="headline"
             speed={25}
             direction="right"
-            className="text-[var(--color-bone)]"
+            className="font-display text-[clamp(5rem,18vw,18rem)] leading-none"
           >
-            <span className="px-12">Trading</span>
-            <span className="px-12 text-[var(--color-gold)]">—</span>
-            <span className="px-12 italic">Contracting</span>
-            <span className="px-12 text-[var(--color-gold)]">—</span>
-            <span className="px-12">Facility Services</span>
-            <span className="px-12 text-[var(--color-gold)]">—</span>
+            <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Trading</span>
+            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
+            <span className="px-12 italic" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Contracting</span>
+            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
+            <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Facility Services</span>
+            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
           </Marquee>
         </ScrollSkew>
-        {/* Hairline gold rule between marquee and pin-scrub deep-dive */}
-        <div className="mt-[6vh] mx-auto w-3/5 h-px bg-[var(--color-gold)]/40" aria-hidden="true" />
       </section>
 
       {/* ───── Section 5 · Pillars (pin-and-scrub) ──────────────────
