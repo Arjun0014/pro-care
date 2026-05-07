@@ -37,9 +37,11 @@ If any item fails the section is fixed and re-screenshot before moving on.
 
 | Status | Notes |
 |--------|-------|
-| ✅ | Component already accepts `litColor` / `dimColor` / `textShadow` props from R2.B.1, with `textShadow` applied only on lit words and italic preserved across RSC boundary via `Children.toArray`. Verified via Manifesto isolation test (see screenshot below). |
+| ✅ | Component already accepts `litColor` / `dimColor` / `textShadow` props from R2.B.1, with `textShadow` applied only on lit words and italic preserved across RSC boundary via `Children.toArray`. Verified via Manifesto screenshot at scrollY=1500: italic phrases ("three companies in one", "Things that last.") render verbatim, lit color (ink) applied, dim color applied at scroll positions before the IO threshold. Tokens correctly split on whitespace, no missing words. |
 
-**Screenshot:** `screenshots/r25/scrollwords-test.png`
+**Screenshots:**
+- `screenshots/r25/scrollwords-test-desktop.png` — Manifesto at 50% scroll, ink-on-bone, italic preserved.
+- `screenshots/r25/scrollwords-test-mobile.png` — same on 375×812.
 
 ---
 
