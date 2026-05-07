@@ -16,6 +16,8 @@ import { SplitText } from '@/components/motion/split-text';
 export function WhyCluster() {
   return (
     <section
+      data-snap-section="why-pro-care"
+      data-snap-mode="standard"
       className="relative min-h-[100vh] w-full flex items-center justify-center px-6"
       aria-label="Why Pro Care"
     >

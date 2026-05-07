@@ -84,6 +84,8 @@ export default function HomePage() {
           Empty plot at dawn. Canvas IS the hero visual. */}
       <section
         data-ground="ink"
+        data-snap-section="hero"
+        data-snap-mode="standard"
         className="relative h-[100svh] w-full px-[5vw] flex flex-col justify-end pb-[10vh]"
         aria-label="Hero"
       >
@@ -126,6 +128,8 @@ export default function HomePage() {
           full-viewport section. No bg, no border. The 100vh just gives the
           canvas scroll-progress to advance. Bone text + Tool 2 halo. */}
       <section
+        data-snap-section="identity-ticker"
+        data-snap-mode="standard"
         className="relative h-[100vh] w-full"
         aria-label="Identity ticker"
       >
@@ -159,6 +163,8 @@ export default function HomePage() {
           + Tool 2 halo. Tool 3 radial pool centered behind text since
           Stage 2-3 frames are predominantly mid-bright outdoor scenes. */}
       <section
+        data-snap-section="manifesto"
+        data-snap-mode="standard"
         className="relative w-full min-h-[150vh] flex items-center justify-center px-[8vw] py-[10vh]"
         aria-label="Manifesto"
       >
@@ -216,6 +222,8 @@ export default function HomePage() {
           uses `divide-current/15` already; the parent's text-bone makes
           dividers bone). Hover thumbnail is edge-clamped (in HoverPreview).*/}
       <section
+        data-snap-section="selected-projects"
+        data-snap-mode="standard"
         className="relative w-full px-[clamp(1.5rem,5vw,8vw)] py-[14vh] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
         aria-label="Selected projects"
       >
@@ -244,6 +252,8 @@ export default function HomePage() {
           a solid bone pill so it reads against the lit building. */}
       <section
         data-ground="ink"
+        data-snap-section="closing-cta"
+        data-snap-mode="standard"
         className="relative min-h-[100vh] w-full px-[5vw] pt-[14vh] pb-[6vh] flex flex-col items-center justify-between text-center"
         aria-label="Closing call to action"
       >

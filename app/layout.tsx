@@ -7,6 +7,7 @@ import { Preloader }        from '@/components/preloader';
 import { RouteCurtain }     from '@/components/route-curtain';
 import { DesignEasterEgg }  from '@/components/design-easter-egg';
 import { ScrollBackdrop }   from '@/components/scroll-backdrop';
+import { SectionSnap }      from '@/components/scroll/section-snap';
 import './globals.css';
 
 // ── Latin typefaces ───────────────────────────────────────────
@@ -102,6 +103,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             pages (R3+) will get their own per-page footer where appropriate. */}
         <LenisProvider>
           <ScrollBackdrop />
+          {/* R2.6 — desktop-only velocity-and-progress section snap. Reads
+              `data-snap-section` / `data-snap-mode` from home sections,
+              opts out of pin-spacer regions automatically. */}
+          <SectionSnap />
           <Nav />
           <main id="main" className="relative z-10">
             {children}

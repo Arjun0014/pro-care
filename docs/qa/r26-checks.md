@@ -96,22 +96,111 @@ The clamp logic is identical to R2.5 (`clamp(e.clientX + 24, 24, innerWidth - 28
 
 ## Task 3 — Velocity-and-progress-aware soft section snap
 
-### 3.V1 — Desktop standard snap (8 sections)
+### Implementation summary
 
-(filled in)
+`components/scroll/section-snap.tsx` (Client Component) — single `useEffect`,
+no module singletons. Reads `data-snap-section` / `data-snap-mode` attributes
+from any element on the page; for opt-out sections it walks one parent up to
+the GSAP-inserted `.pin-spacer` so the snap range covers the full pinned
+scroll length, not just the visible section.
 
-### 3.V2 — Opt-out section behavior (Pillars deep-dive, Projects horizontal)
+```ts
+const SNAP_CONFIG = {
+  enabled:           true,
+  minViewportWidth:  1024,        // desktop only
+  scrollEndDelayMs:  150,
+  velocityThreshold: 0.05,
+  progressThreshold: 0.30,        // <30% snap back, ≥30% snap forward
+  snapDurationMs:    800,
+  cooldownMs:        250,
+  easing: t => 1 - Math.pow(1 - t, 3),  // easeOutCubic
+};
+```
 
-(filled in)
+Snap pipeline:
 
-### 3.V3 — Mobile no-snap
+1. `lenis.on('scroll')` → debounce 150 ms
+2. After scroll-end: check viewport width / cooldown / `isSnapping` / inside-opt-out
+3. Read `lenis.velocity`; bail if > 0.05
+4. Find current section via document-relative top + height
+5. Compute progress; pick `top` (back) or `top + height` (forward)
+6. Round target (subpixel `getBoundingClientRect()` heights would otherwise overshoot maxScroll by 0.x px)
+7. Bounds check: `0 ≤ target ≤ maxScroll`
+8. `lenis.scrollTo(target, { duration: 0.8s, easing: easeOutCubic, onComplete })`
+9. `wheel` / `touchstart` listener cancels in-flight snap if user reasserts control
 
-(filled in)
+### Section list at 1920 × 1080
 
-### 3.V4 — Velocity gating
+```
+hero                   standard   top=0     height=1080
+identity-ticker        standard   top=1080  height=1080
+manifesto              standard   top=2160  height=1620
+pillars-deep-dive      opt-out    top=3780  height=4968 (pin-spacer)
+projects-horizontal    opt-out    top=8748  height=1752 (pin-spacer)
+stats                  standard   top=10500 height=864
+why-pro-care           standard   top=11364 height=1080
+selected-projects      standard   top=12444 height=1592
+closing-cta            standard   top=14036 height=1080
+```
 
-(filled in)
+### Verification — `scripts/verify-snap.ts` (15/15 PASS)
 
-### 3.V5 — Canvas continuity during snap
+Programmatic Playwright harness driving the live dev server. Scrolls to set
+positions, waits past `scrollEndDelayMs + snapDurationMs + cooldownMs`,
+checks `window.scrollY` and canvas paint state.
 
-(filled in)
+#### 3.V1 — Desktop standard snap (8 sections × 2 cases)
+
+| Section | @18 % → back | @55 % → forward |
+|---|---|---|
+| identity-ticker | ✅ 1080 | ✅ 2160 |
+| manifesto | ✅ 2160 | ✅ 3780 |
+| stats | ✅ 10500 | ✅ 11364 |
+| why-pro-care | ✅ 11364 | ✅ 12444 |
+| selected-projects | ✅ 12444 | ✅ 14036 |
+
+(Hero @18 % skipped because target = 0 = top of doc; closing-cta @55 %
+skipped because forward target would push past maxScroll.)
+
+#### 3.V2 — Opt-out sections preserve internal scroll
+
+| Section | scrolled to mid | result |
+|---|---|---|
+| pillars-deep-dive (top=3780, h=4968) | 6264 | ✅ unchanged 6264 |
+| projects-horizontal (top=8748, h=1752) | 9624 | ✅ unchanged 9624 |
+
+Snap ignores positions inside opt-out sections; pin-and-scrub mechanic
+runs uninterrupted.
+
+#### 3.V3 — Mobile (375 × 812) no-snap
+
+Set scroll mid-Manifesto (target 2294 px). Verified scroll position
+unchanged after 1.6 s settle: `expected ≈ 2294, got 2294 ✅`. The
+`window.innerWidth < 1024` gate fires before any other snap logic.
+
+#### 3.V4 — Velocity gating + cooldown
+
+After a snap completes, a 250 ms cooldown blocks the next snap. Verified
+by attempting a manual `scroll +100` immediately after a snap — the
+manual scroll lands cleanly without being snapped away (`✅ +100 → +100`).
+
+#### 3.V5 — Canvas continuity
+
+After snapping into Stats (mid-document), sampled the centre canvas
+pixel — RGB sum > 30, confirming the canvas is painted (not blank).
+The snap uses `lenis.scrollTo()` which animates `scrollY` smoothly, and
+ScrollBackdrop reads `scrollY` on every frame, so the canvas scrubs
+continuously through the snap with no teleport.
+
+**Recording:** `screenshots/r26/snap-behavior.webm` — 25 s sweep showing
+all 14 desktop snap cases firing.
+
+### Bug found & fixed during verification
+
+**Subpixel max-scroll mismatch.** `getBoundingClientRect()` returned
+`selected-projects.height = 1592.375`, so the snap target for "@55 % →
+forward" computed to `14036.375`. The `target > maxScroll` bounds check
+treated this as out-of-range (maxScroll was the integer 14036) and
+returned `null`. Fix: `target = Math.round(rawTarget)` before bounds
+check. Without this, the very last standard section before Closing CTA
+silently failed to snap forward.
