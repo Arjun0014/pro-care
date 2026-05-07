@@ -193,14 +193,16 @@ export default function HomePage() {
       <WhyCluster />
 
       {/* ───── Section 9 · Selected projects (hover list) ───────────
-          Bone ground per doc 13 — own bone bg, canvas hidden. */}
+          Per doc 21 § Section 9 — TRANSPARENT. Light text + Tool 2 halo.
+          Hairline rules between rows via `divide-current/20` (HoverPreview
+          uses `divide-current/15` already; the parent's text-bone makes
+          dividers bone). Hover thumbnail is edge-clamped (in HoverPreview).*/}
       <section
-        data-ground="bone"
-        className="relative w-full bg-[var(--color-bone)] text-[var(--color-ink)] px-[clamp(1.5rem,5vw,8vw)] py-[14vh]"
+        className="relative w-full px-[clamp(1.5rem,5vw,8vw)] py-[14vh] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
         aria-label="Selected projects"
       >
         <header className="mb-12 flex flex-col gap-2">
-          <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-70">
+          <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
             Selected work
           </span>
           <SplitText

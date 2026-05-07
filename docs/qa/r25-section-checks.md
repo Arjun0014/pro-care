@@ -108,3 +108,33 @@ If any item fails the section is fixed and re-screenshot before moving on.
 | Animations work | ✓ count-up animation captured mid-flight on mobile screenshot (17+ → 20+, 75,853 → 100,000), proving IntersectionObserver still fires |
 
 **What changed:** Stats section converted from `bg-[var(--color-bone)] text-[var(--color-ink)] py-[14vh]` to `relative h-[80vh] flex items-end pb-[8vh]` with bone text + Tool 2 halo on the section. Inner grid markup preserved verbatim so count-up + locked copy untouched.
+
+---
+
+### S2.4 — Section 9 Selected projects (hover list)
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-4-selected-projects-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-4-selected-projects-mobile.png` |
+| No solid background block | ✓ section's `bg-[var(--color-bone)] text-[var(--color-ink)]` removed; now transparent with bone text |
+| Canvas visible | ✓ Stage 5/6 dusk frame: lit building at sunset reads through behind the row list |
+| Content anchored per spec | ✓ vertical list, hairline `divide-current/15` rules visible against canvas |
+| Text readable | ✓ bone + Tool 2 halo |
+| Hover thumbnail edge-clamping | ✓ all 3 cases (see below) |
+| Locked copy verbatim | ✓ all 8 names from doc 15 § Projects render in order |
+| Animations work | ✓ HoverPreview lerp + clip-path reveal still mounted; scroll-reset listener unchanged |
+
+**Hover edge-clamp verification (`scripts/screenshot-hover-edges.ts`):**
+
+| Case | File | Cursor | Expected | Result |
+|------|------|--------|----------|--------|
+| Top-left (row 0, x=25%) | `s2-4-hover-topleft.png` | 528, 271 | thumbnail right+below cursor | ✓ thumbnail at ~552, 295 |
+| Bottom (row 7, x=50%) | `s2-4-hover-bottom.png` | 960, 1079 | flipped ABOVE (clamped by maxY = vh-350-24) | ✓ thumbnail top at ~706 |
+| Right edge (row 3, x=95%) | `s2-4-hover-right.png` | 1738, 617 | flipped LEFT (clamped by maxX = vw-280-24) | ✓ thumbnail left at ~1616 |
+
+**What changed:**
+- `app/page.tsx`: Selected projects section lost `data-ground="bone"`, `bg-[var(--color-bone)]`, `text-[var(--color-ink)]`. Now transparent with bone text + Tool 2 halo.
+- `components/motion/hover-preview.tsx`: added clamp() in onMove → `mx = clamp(e.clientX + 24, 24, innerWidth - 280 - 24)`, same for y. Thumbnail wrapper got `border border-[var(--color-bone)]/25 overflow-hidden` so it's distinguishable from canvas.

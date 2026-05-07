@@ -41,9 +41,22 @@ export function HoverPreview({ items, className }: Props) {
     let px = 0;
     let py = 0;
 
+    // Per 21-CANVAS-FIRST-REDESIGN.md § Section 9 — clamp the thumbnail to
+    // the viewport with a 24px margin on every side. Cursor at the right
+    // edge → thumbnail flips left of cursor; near the bottom → flips above.
+    // Constants match the hard-coded thumbnail size below (280×350).
+    const TH_W = 280;
+    const TH_H = 350;
+    const MARGIN = 24;
+
+    const clamp = (v: number, lo: number, hi: number) =>
+      Math.max(lo, Math.min(hi, v));
+
     const onMove = (e: MouseEvent) => {
-      mx = e.clientX + 24;
-      my = e.clientY + 24;
+      const maxX = window.innerWidth  - TH_W - MARGIN;
+      const maxY = window.innerHeight - TH_H - MARGIN;
+      mx = clamp(e.clientX + MARGIN, MARGIN, maxX);
+      my = clamp(e.clientY + MARGIN, MARGIN, maxY);
     };
 
     const tick = () => {
@@ -138,7 +151,10 @@ export function HoverPreview({ items, className }: Props) {
       <div
         ref={previewRef}
         className={cn(
-          'fixed top-0 left-0 pointer-events-none z-50',
+          'fixed top-0 left-0 pointer-events-none z-50 overflow-hidden',
+          // Subtle border so the thumbnail is distinguishable from the
+          // canvas behind the rest of the page (doc 21 § Section 9).
+          'border border-[var(--color-bone)]/25',
           'transition-[clip-path,opacity] duration-300 ease-[cubic-bezier(0.83,0,0.17,1)]',
           active ? 'opacity-100' : 'opacity-0',
         )}
