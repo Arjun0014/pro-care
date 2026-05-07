@@ -28,36 +28,54 @@ type Viewport = { width: number; height: number; deviceScaleFactor?: number };
 const DESKTOP: Viewport = { width: 1920, height: 1080, deviceScaleFactor: 1 };
 const MOBILE:  Viewport = { width: 375,  height: 812,  deviceScaleFactor: 2 };
 
-async function snap(page: Page, viewport: Viewport, scrollY: number, outFile: string) {
+type ScrollTarget = { kind: 'y'; value: number } | { kind: 'center'; label: string } | { kind: 'top'; label: string };
+
+async function snap(page: Page, viewport: Viewport, target: ScrollTarget, outFile: string) {
   await page.setViewportSize({ width: viewport.width, height: viewport.height });
   await page.goto(URL_BASE, { waitUntil: 'networkidle', timeout: 30000 });
   // Wait for the ScrollBackdrop canvas to paint at least one frame.
-  // (The component sets data-ready or paints; we just sample the canvas pixel.)
   await page.waitForTimeout(800);
+
+  const scrollY = await page.evaluate((t: ScrollTarget) => {
+    if (t.kind === 'y') return t.value;
+    const sections = Array.from(document.querySelectorAll('section')) as HTMLElement[];
+    const match = sections.find((s) => s.getAttribute('aria-label') === t.label);
+    if (!match) return 0;
+    const rect = match.getBoundingClientRect();
+    const docTop = rect.top + window.scrollY;
+    if (t.kind === 'top') return docTop;
+    return docTop + rect.height / 2 - window.innerHeight / 2;
+  }, target);
+
   // Disable Lenis raf so we can snap to exact scrollY
-  await page.evaluate((target: number) => {
+  await page.evaluate((y: number) => {
     type WithLenis = Window & { __lenis?: { scrollTo: (n: number, opts?: { immediate?: boolean }) => void } };
     const w = window as WithLenis;
-    if (w.__lenis) w.__lenis.scrollTo(target, { immediate: true });
-    else window.scrollTo(0, target);
+    if (w.__lenis) w.__lenis.scrollTo(Math.max(0, y), { immediate: true });
+    else window.scrollTo(0, Math.max(0, y));
   }, scrollY);
   // Give canvas paint + IO observers a beat (rAF settle + 1 frame request)
   await page.waitForTimeout(2000);
   await page.screenshot({ path: outFile, fullPage: false });
 }
 
+function parseTarget(arg: string): ScrollTarget {
+  if (arg.startsWith('center:')) return { kind: 'center', label: arg.slice('center:'.length) };
+  if (arg.startsWith('top:'))    return { kind: 'top',    label: arg.slice('top:'.length) };
+  const n = Number(arg);
+  if (!Number.isFinite(n)) throw new Error(`invalid scroll target: ${arg}`);
+  return { kind: 'y', value: n };
+}
+
 async function main() {
-  const [, , slugArg, scrollYArg, mobileScrollYArg] = process.argv;
-  if (!slugArg || scrollYArg === undefined) {
-    console.error('Usage: tsx scripts/screenshot-section.ts <slug> <desktopScrollY> [mobileScrollY]');
+  const [, , slugArg, targetArg, mobileTargetArg] = process.argv;
+  if (!slugArg || targetArg === undefined) {
+    console.error('Usage: tsx scripts/screenshot-section.ts <slug> <target> [mobileTarget]');
+    console.error('  target forms: <scrollY> | center:<aria-label> | top:<aria-label>');
     process.exit(1);
   }
-  const scrollY = Number(scrollYArg);
-  const mobileScrollY = mobileScrollYArg !== undefined ? Number(mobileScrollYArg) : scrollY;
-  if (!Number.isFinite(scrollY) || !Number.isFinite(mobileScrollY)) {
-    console.error('scrollY values must be finite numbers');
-    process.exit(1);
-  }
+  const target = parseTarget(targetArg);
+  const mobileTarget = mobileTargetArg !== undefined ? parseTarget(mobileTargetArg) : target;
 
   await mkdir(OUT_DIR, { recursive: true });
 
@@ -75,7 +93,7 @@ async function main() {
   const desktopPath = join(OUT_DIR, `${slugArg}-desktop.png`);
   const mobilePath  = join(OUT_DIR, `${slugArg}-mobile.png`);
 
-  await snap(page, DESKTOP, scrollY, desktopPath);
+  await snap(page, DESKTOP, target, desktopPath);
   console.log(`✓ ${desktopPath}`);
 
   // Recreate context for mobile so DPR + viewport change cleanly
@@ -88,7 +106,7 @@ async function main() {
   });
   await mctx.addInitScript(initSkip);
   const mpage = await mctx.newPage();
-  await snap(mpage, MOBILE, mobileScrollY, mobilePath);
+  await snap(mpage, MOBILE, mobileTarget, mobilePath);
   console.log(`✓ ${mobilePath}`);
 
   await browser.close();

@@ -68,3 +68,23 @@ If any item fails the section is fixed and re-screenshot before moving on.
 | Animations work | ✓ Marquee variant="ticker" scrolls horizontally |
 
 **What changed:** removed `data-ground="bone"`, `bg-[var(--color-bone)]`, `py-5`, `border-y border-[var(--color-mist)]`. Promoted section to `relative h-[100vh] w-full`. Wrapped marquee in `absolute top-[8vh] inset-x-0 overflow-hidden`. Switched marquee text from ink to bone with Tool 2 halo.
+
+---
+
+### S2.2 — Section 8 Why Pro Care (typography only)
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-2-why-pro-care-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-2-why-pro-care-mobile.png` |
+| No solid background block | ✓ `relative min-h-[100vh]` only, no bg, no border |
+| Canvas visible | ✓ Stage 5 dusk frame: completed building lit at sunset reads through |
+| Content anchored per spec | ✓ centered, single SplitText headline, max-w-[20ch] |
+| Text readable on desktop and mobile | ✓ bone color + Tool 2 halo + Tool 3 radial pool (rgba(11,18,32,0.5→0.25→0)) |
+| No competing imagery | ✓ all 4 cluster `<Image>` + `<TiltImage>` + `<MaskedReveal>` instances removed; no JPGs loaded |
+| Locked copy verbatim | ✓ "Built on relationships *that outlast* projects." (doc 15 § Why Pro Care) |
+| Animations work | ✓ SplitText reveal still mounted (italic preserved on "that outlast") |
+
+**What changed:** entirely rewrote `components/sections/home/why-cluster.tsx`. Removed: `Image`, `TiltImage`, `MaskedReveal` imports; the `IMAGES` array; the desktop orbit cluster; the mobile 2×2 grid. Added: Tool 3 radial-pool overlay div + single centered SplitText headline with bone color + Tool 2 halo.
