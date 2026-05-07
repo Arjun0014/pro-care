@@ -149,33 +149,56 @@ function wire(
     return true;
   };
 
+  // Pick the scroll position that frames the section best. For sections
+  // taller than the viewport (e.g. Manifesto = 150 vh) the content is
+  // flex-centered inside the section, so landing at `section.top` puts
+  // the text in the lower half of the viewport. Land instead at the
+  // mid-point so the content reads as visually centered. Opt-out sections
+  // always snap to their pin entry (section.top) regardless of height.
+  const idealViewPos = (s: Section, vh: number): number => {
+    if (s.mode === 'opt-out')   return s.top;
+    if (s.height <= vh + 1)     return s.top;
+    return s.top + (s.height - vh) / 2;
+  };
+
   const computeSnapTarget = (scrollY: number): number | null => {
     // Find the section that contains the current scroll position (top of
     // viewport). Sections sorted by document order — first match wins.
-    let current: Section | null = null;
-    for (const s of state.sections) {
+    let currentIdx = -1;
+    for (let i = 0; i < state.sections.length; i++) {
+      const s = state.sections[i];
       if (scrollY >= s.top - 1 && scrollY < s.top + s.height) {
-        current = s;
+        currentIdx = i;
         break;
       }
     }
-    if (!current)                    return null;
-    if (current.mode === 'opt-out')  return null; // never snap inside an opt-out
+    if (currentIdx < 0)                                return null;
+    const current = state.sections[currentIdx];
+    if (current.mode === 'opt-out')                    return null; // never snap inside an opt-out
 
+    const vh       = window.innerHeight;
     const progress = (scrollY - current.top) / current.height;
+
+    let targetSection: Section;
+    if (progress < SNAP_CONFIG.progressThreshold) {
+      // Back-snap to current section's ideal-view position.
+      targetSection = current;
+    } else {
+      // Forward-snap to the next section's ideal-view position.
+      const next = state.sections[currentIdx + 1];
+      if (!next) return null;
+      targetSection = next;
+    }
+
     // Snap targets MUST be integers — getBoundingClientRect() returns
     // subpixel values (e.g. height=1592.375), and Lenis treats subpixel
     // targets as out-of-range when they're 0.x px past maxScroll.
-    const rawTarget =
-      progress < SNAP_CONFIG.progressThreshold
-        ? current.top
-        : current.top + current.height;
-    const target = Math.round(rawTarget);
+    const target = Math.round(idealViewPos(targetSection, vh));
 
     // Bounds — strict inequality so a snap target equal to the document
     // max-scroll (last section's top) is still valid; only skip when it
     // would push past the document edges.
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const maxScroll = document.documentElement.scrollHeight - vh;
     if (target < 0 || target > maxScroll) return null;
 
     // No-op if we're already at the target (within a few pixels).

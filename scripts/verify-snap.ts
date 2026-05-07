@@ -75,36 +75,47 @@ async function runDesktopTests() {
   // After each test, give plenty of time: scrollEndDelay (150) + snap duration (800) + cooldown (250) = 1.2 s buffer; use 2 s to absorb any tail jitter.
   const SETTLE = 2000;
 
-  // Test 3.V1: Standard 30 % snap — back vs forward
-  for (const s of sections) {
+  // idealViewPos: same formula as SectionSnap. For tall sections, the snap
+  // lands at content-centred position; small sections land at top.
+  const idealViewPos = (s: { mode: string; top: number; height: number }): number => {
+    if (s.mode === 'opt-out')      return Math.round(s.top);
+    if (s.height <= 1080 + 1)      return Math.round(s.top);
+    return Math.round(s.top + (s.height - 1080) / 2);
+  };
+
+  // Test 3.V1: Standard 30 % snap — back vs forward to ideal-view positions.
+  for (let i = 0; i < sections.length; i++) {
+    const s = sections[i];
     if (s.mode !== 'standard') continue;
     if (s.top === 0 || s.top + s.height >= 15000) continue; // skip very first/last
 
-    // <30 % → snap back
+    // <30 % → snap back to *current* section's ideal-view
     {
       const target = s.top + Math.round(s.height * 0.18);
       await setScroll(page, target);
       await page.waitForTimeout(SETTLE);
       const got = await getScroll(page);
-      const expected = s.top;
+      const expected = idealViewPos(s);
       const ok = Math.abs(got - expected) < 12;
       results.push({
-        name: `[${s.id}] @18% → back to top`,
+        name: `[${s.id}] @18% → back to ideal`,
         pass: ok,
         note: `expected scrollY≈${expected}, got ${got}`,
       });
     }
 
-    // ≥30 % → snap forward
+    // ≥30 % → snap forward to *next* section's ideal-view
     {
+      const next = sections[i + 1];
+      if (!next) continue;
       const target = s.top + Math.round(s.height * 0.55);
       await setScroll(page, target);
       await page.waitForTimeout(SETTLE);
       const got = await getScroll(page);
-      const expected = s.top + s.height;
+      const expected = idealViewPos(next);
       const ok = Math.abs(got - expected) < 12;
       results.push({
-        name: `[${s.id}] @55% → forward to next`,
+        name: `[${s.id}] @55% → forward to ${next.id} ideal`,
         pass: ok,
         note: `expected scrollY≈${expected}, got ${got}`,
       });
