@@ -7,25 +7,25 @@ import type Lenis from 'lenis';
 const TOTAL_FRAMES = 600;
 const FRAMES_PER_CLIP = 120;
 
-// V2: smaller initial blocking preload — just enough to cover the hero
-const INITIAL_PRELOAD = 20;
+// Eager-load strategy (R2.5 follow-up): drop V2's proximity-window +
+// LRU-evict scheme entirely. The "smart" loader meant fast scrollers
+// would hit blank canvas mid-page when the loader couldn't keep up.
+//
+// Now: small blocking preload to get the canvas painting quickly, then
+// fire EVERY remaining frame in the background with bounded concurrency.
+// After ~10-30s on a normal connection the entire 600-frame timelapse is
+// in memory and the experience is bulletproof regardless of scroll speed.
+//
+// Cache grows monotonically — no eviction, no maintenance loop. With WebP
+// at ~50-100 KB/frame this peaks at ~30-60 MB resident memory; well under
+// the budget for a marketing-site canvas where the visual IS the product.
+const INITIAL_PRELOAD = 12;          // blocking — canvas can paint after this
+const BACKGROUND_PARALLELISM = 8;    // concurrent fetches in the background
 
-// V2: proximity window around the target frame
-const WINDOW_BEFORE = 30;
-const WINDOW_AFTER = 50;
-
-// V2: LRU cache size — evict oldest when over this
-const MAX_CACHE_SIZE = 200;
-const EVICTION_BATCH = 30;
-
-// V2: mobile breakpoint and frame step
+// Mobile breakpoint and frame step (every-4th-frame on mobile cuts the
+// payload from 600 → 150 frames, ~7-15 MB).
 const MOBILE_BREAKPOINT = 768;
 const MOBILE_FRAME_STEP = 4;
-
-type CacheEntry = {
-  img: HTMLImageElement;
-  lastUsed: number;
-};
 
 function frameUrl(globalFrame: number, format: 'avif' | 'webp'): string {
   const clipIndex = Math.floor(globalFrame / FRAMES_PER_CLIP);
@@ -42,29 +42,16 @@ function detectFormat(): 'avif' | 'webp' {
   return 'webp';
 }
 
-// V2: snap a frame index to the mobile-allowed values (multiples of 4)
+// Snap a frame index to the mobile-allowed values (multiples of 4)
 function snapToStep(frame: number, isMobile: boolean): number {
   if (!isMobile) return Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(frame)));
   const stepped = Math.round(frame / MOBILE_FRAME_STEP) * MOBILE_FRAME_STEP;
   return Math.max(0, Math.min(TOTAL_FRAMES - 1, stepped));
 }
 
-// V2: list of frame indices that should be in cache around a target
-function getWindowFrames(target: number, isMobile: boolean): number[] {
-  const frames: number[] = [];
-  const step = isMobile ? MOBILE_FRAME_STEP : 1;
-  for (let offset = -WINDOW_BEFORE; offset <= WINDOW_AFTER; offset += step) {
-    const idx = snapToStep(target + offset, isMobile);
-    if (idx >= 0 && idx < TOTAL_FRAMES) {
-      frames.push(idx);
-    }
-  }
-  return Array.from(new Set(frames)).sort((a, b) => a - b);
-}
-
 export function ScrollBackdrop() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const cacheRef = useRef<Map<number, CacheEntry>>(new Map());
+  const cacheRef = useRef<Map<number, HTMLImageElement>>(new Map());
   const inFlightRef = useRef<Set<number>>(new Set());
   const currentFrameRef = useRef<number>(0);
   const targetFrameRef = useRef<number>(0);
@@ -81,22 +68,20 @@ export function ScrollBackdrop() {
     isMobileRef.current = window.innerWidth < MOBILE_BREAKPOINT;
   }, []);
 
-  // Single-frame loader with WebP fallback on AVIF failure
+  // Single-frame loader with WebP fallback on AVIF failure.
+  // Resolves to the loaded HTMLImageElement, or null on hard failure.
   const loadFrame = (index: number): Promise<HTMLImageElement | null> => {
     const cache = cacheRef.current;
     const cached = cache.get(index);
-    if (cached) {
-      cached.lastUsed = performance.now();
-      return Promise.resolve(cached.img);
-    }
+    if (cached) return Promise.resolve(cached);
     if (inFlightRef.current.has(index)) {
-      // Already requested; resolve when it lands
+      // Another caller already requested it; poll the cache until it lands.
       return new Promise((resolve) => {
         const checkInterval = setInterval(() => {
           const c = cache.get(index);
           if (c) {
             clearInterval(checkInterval);
-            resolve(c.img);
+            resolve(c);
           } else if (!inFlightRef.current.has(index)) {
             clearInterval(checkInterval);
             resolve(null);
@@ -109,19 +94,18 @@ export function ScrollBackdrop() {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        cache.set(index, { img, lastUsed: performance.now() });
+        cache.set(index, img);
         inFlightRef.current.delete(index);
-        // V2: trigger LRU eviction if over budget
-        if (cache.size > MAX_CACHE_SIZE) evictOldest();
         resolve(img);
       };
       img.onerror = () => {
         if (formatRef.current === 'avif') {
+          // AVIF detection said we should use AVIF but the URL 404'd —
+          // try WebP for this single frame.
           const fallback = new Image();
           fallback.onload = () => {
-            cache.set(index, { img: fallback, lastUsed: performance.now() });
+            cache.set(index, fallback);
             inFlightRef.current.delete(index);
-            if (cache.size > MAX_CACHE_SIZE) evictOldest();
             resolve(fallback);
           };
           fallback.onerror = () => {
@@ -138,88 +122,70 @@ export function ScrollBackdrop() {
     });
   };
 
-  // V2: LRU eviction — drop oldest entries when over budget, keep current frame
-  const evictOldest = () => {
-    const cache = cacheRef.current;
-    if (cache.size <= MAX_CACHE_SIZE) return;
-    const protectedFrame = Math.round(currentFrameRef.current);
-    const entries = Array.from(cache.entries())
-      .filter(([idx]) => idx !== protectedFrame)
-      .sort((a, b) => a[1].lastUsed - b[1].lastUsed);
-    const toEvict = entries.slice(0, EVICTION_BATCH);
-    for (const [idx] of toEvict) cache.delete(idx);
-  };
+  // Build the full list of frames we want to load (respects mobile step).
+  function buildFrameList(isMobile: boolean): number[] {
+    const list: number[] = [];
+    const step = isMobile ? MOBILE_FRAME_STEP : 1;
+    for (let i = 0; i < TOTAL_FRAMES; i += step) list.push(i);
+    return list;
+  }
 
-  // V2: load frames in the proximity window around the target
-  const loadWindow = async () => {
-    const target = Math.round(targetFrameRef.current);
-    const want = getWindowFrames(target, isMobileRef.current);
-    // Prioritize frames closest to target first
-    want.sort((a, b) => Math.abs(a - target) - Math.abs(b - target));
-    // Fire all loads (loadFrame dedupes via inFlight set)
-    await Promise.all(want.map((i) => loadFrame(i)));
-  };
-
-  // Initial preload + idle window maintenance
+  // Initial blocking preload + background full-load.
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     if (reducedMotion) {
-      // Reduced motion: load only the last frame statically
+      // Reduced motion: load only the last frame statically.
       loadFrame(TOTAL_FRAMES - 1).then(() => setReady(true));
       return;
     }
 
     let cancelled = false;
-    let idleHandle: number | null = null;
 
     async function bootstrap() {
       const isMobile = isMobileRef.current;
+      const allFrames = buildFrameList(isMobile);
       const step = isMobile ? MOBILE_FRAME_STEP : 1;
-      // V2: blocking preload of first 20 frames (or first 5 mobile frames = indices 0,4,8,12,16)
-      const initial: Promise<HTMLImageElement | null>[] = [];
+
+      // 1) Blocking preload — first INITIAL_PRELOAD frames in parallel.
+      //    On mobile this is INITIAL_PRELOAD / step frames (e.g. 12 → 3 actual).
+      const initialBatch: Promise<HTMLImageElement | null>[] = [];
       for (let i = 0; i < INITIAL_PRELOAD; i += step) {
         if (i >= TOTAL_FRAMES) break;
-        initial.push(loadFrame(i));
+        initialBatch.push(loadFrame(i));
       }
-      await Promise.all(initial);
+      await Promise.all(initialBatch);
       if (cancelled) return;
       setReady(true);
+
+      // 2) Background full-load — fetch every remaining frame, bounded
+      //    concurrency. Sequential through the timeline so frames the
+      //    user is most likely to scroll to next are cached first.
+      const remaining = allFrames.filter((idx) => !cacheRef.current.has(idx));
+      let cursor = 0;
+
+      async function worker() {
+        while (!cancelled && cursor < remaining.length) {
+          const idx = remaining[cursor++];
+          // remaining indices were captured at start; might already
+          // be cached (e.g. if a worker raced ahead). loadFrame dedupes.
+          await loadFrame(idx);
+        }
+      }
+
+      const workers: Promise<void>[] = [];
+      for (let w = 0; w < BACKGROUND_PARALLELISM; w++) workers.push(worker());
+      await Promise.all(workers);
     }
 
     bootstrap();
 
-    // V2: maintain window on idle ticks
-    const scheduleWindowMaintenance = () => {
-      if (cancelled) return;
-      const run = () => {
-        if (cancelled) return;
-        loadWindow().finally(() => {
-          if (!cancelled) {
-            idleHandle = (window as Window & {
-              requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-            }).requestIdleCallback
-              ? (window as unknown as { requestIdleCallback: (cb: () => void, opts: { timeout: number }) => number })
-                  .requestIdleCallback(scheduleWindowMaintenance, { timeout: 800 })
-              : (setTimeout(scheduleWindowMaintenance, 200) as unknown as number);
-          }
-        });
-      };
-      run();
-    };
-    scheduleWindowMaintenance();
-
     return () => {
       cancelled = true;
-      if (idleHandle !== null) {
-        const w = window as Window & { cancelIdleCallback?: (h: number) => void };
-        if (w.cancelIdleCallback) w.cancelIdleCallback(idleHandle);
-        else clearTimeout(idleHandle as unknown as number);
-      }
     };
   }, [reducedMotion]);
 
-  // Canvas resize handling — unchanged from V1
+  // Canvas resize handling
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -242,7 +208,9 @@ export function ScrollBackdrop() {
     return () => window.removeEventListener('resize', resize);
   }, [ready]);
 
-  // Draw — adds nearest-frame fallback for missing frames
+  // Draw — adds nearest-frame fallback for missing frames (still useful
+  // during the brief window between INITIAL_PRELOAD finishing and the
+  // background load completing).
   const drawFrame = (rawIndex: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -250,24 +218,18 @@ export function ScrollBackdrop() {
     if (!ctx) return;
     const index = snapToStep(rawIndex, isMobileRef.current);
     const cache = cacheRef.current;
-    let entry = cache.get(index);
-    if (!entry) {
+    let img = cache.get(index);
+    if (!img) {
       // Find nearest loaded frame within ±60
       for (let offset = 1; offset < 60; offset++) {
-        if (cache.has(index - offset)) {
-          entry = cache.get(index - offset);
-          break;
-        }
-        if (cache.has(index + offset)) {
-          entry = cache.get(index + offset);
-          break;
-        }
+        const lo = cache.get(index - offset);
+        if (lo) { img = lo; break; }
+        const hi = cache.get(index + offset);
+        if (hi) { img = hi; break; }
       }
-      if (!entry) return;
-    } else {
-      entry.lastUsed = performance.now();
+      if (!img) return;
     }
-    drawImageCover(ctx, entry.img, canvas);
+    drawImageCover(ctx, img, canvas);
   };
 
   const drawImageCover = (
@@ -297,7 +259,7 @@ export function ScrollBackdrop() {
     ctx.drawImage(img, dx, dy, dw, dh);
   };
 
-  // Scroll listener + lerp animation — unchanged from V1
+  // Scroll listener + lerp animation
   useEffect(() => {
     if (!ready) return;
     if (reducedMotion) {
