@@ -48,3 +48,23 @@ If any item fails the section is fixed and re-screenshot before moving on.
 ## Sections
 
 (filled in as each one is verified — newest at the bottom)
+
+---
+
+### S2.1 — Section 2 Identity ticker
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-1-identity-ticker-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-1-identity-ticker-mobile.png` |
+| No solid background block | ✓ section is `relative h-[100vh]` only, no bg, no border |
+| Canvas visible | ✓ Stage 1 dawn frame (Doha skyline + empty plot) reads through |
+| Content anchored per spec | ✓ ticker strip absolutely positioned at `top-[8vh]`, full width thin band |
+| Text readable on desktop and mobile | ✓ bone color + halo `[text-shadow:0_1px_2px_rgba(0,0,0,0.5),0_0_16px_rgba(0,0,0,0.3)]` reads against bright dawn sky |
+| No competing imagery | ✓ only the typographic ticker |
+| Locked copy verbatim | ✓ PRO CARE QATAR · TRADING · CONTRACTING · FACILITY SERVICES · CR# 217949 · ESTABLISHED IN DOHA · BUILT TO LAST (matches doc 15 § Identity strip) |
+| Animations work | ✓ Marquee variant="ticker" scrolls horizontally |
+
+**What changed:** removed `data-ground="bone"`, `bg-[var(--color-bone)]`, `py-5`, `border-y border-[var(--color-mist)]`. Promoted section to `relative h-[100vh] w-full`. Wrapped marquee in `absolute top-[8vh] inset-x-0 overflow-hidden`. Switched marquee text from ink to bone with Tool 2 halo.

@@ -101,28 +101,34 @@ export default function HomePage() {
       </section>
 
       {/* ───── Section 2 · Identity ticker ──────────────────────────
-          Bone ground per doc 13. Single ambient ribbon. */}
+          Per doc 21 § Section 2 — TRANSPARENT thin strip at top:8vh of a
+          full-viewport section. No bg, no border. The 100vh just gives the
+          canvas scroll-progress to advance. Bone text + Tool 2 halo. */}
       <section
-        data-ground="bone"
-        className="relative w-full bg-[var(--color-bone)] py-5 border-y border-[var(--color-mist)]"
+        className="relative h-[100vh] w-full"
         aria-label="Identity ticker"
       >
-        <Marquee variant="ticker" className="text-[var(--color-ink)]">
-          <span className="px-6">PRO CARE QATAR</span>
-          <span className="px-6">·</span>
-          <span className="px-6">TRADING</span>
-          <span className="px-6">·</span>
-          <span className="px-6">CONTRACTING</span>
-          <span className="px-6">·</span>
-          <span className="px-6">FACILITY SERVICES</span>
-          <span className="px-6">·</span>
-          <span className="px-6">CR# 217949</span>
-          <span className="px-6">·</span>
-          <span className="px-6">ESTABLISHED IN DOHA</span>
-          <span className="px-6">·</span>
-          <span className="px-6">BUILT TO LAST</span>
-          <span className="px-6">·</span>
-        </Marquee>
+        <div className="absolute top-[8vh] inset-x-0 overflow-hidden">
+          <Marquee
+            variant="ticker"
+            className="text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(0,0,0,0.5),0_0_16px_rgba(0,0,0,0.3)]"
+          >
+            <span className="px-6">PRO CARE QATAR</span>
+            <span className="px-6">·</span>
+            <span className="px-6">TRADING</span>
+            <span className="px-6">·</span>
+            <span className="px-6">CONTRACTING</span>
+            <span className="px-6">·</span>
+            <span className="px-6">FACILITY SERVICES</span>
+            <span className="px-6">·</span>
+            <span className="px-6">CR# 217949</span>
+            <span className="px-6">·</span>
+            <span className="px-6">ESTABLISHED IN DOHA</span>
+            <span className="px-6">·</span>
+            <span className="px-6">BUILT TO LAST</span>
+            <span className="px-6">·</span>
+          </Marquee>
+        </div>
       </section>
 
       {/* ───── Section 3 · Manifesto ────────────────────────────────

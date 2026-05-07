@@ -2,15 +2,18 @@
  * R2.5 — Section screenshot helper.
  *
  * Usage:
- *   npx tsx scripts/screenshot-section.ts <slug> <scrollY>
+ *   npx tsx scripts/screenshot-section.ts <slug> <desktopScrollY> [mobileScrollY]
  *
  * Captures one desktop (1920×1080) and one mobile (375×812) PNG of
  * `localhost:3000/` at the given scrollY, named:
  *   docs/qa/screenshots/r25/<slug>-desktop.png
  *   docs/qa/screenshots/r25/<slug>-mobile.png
  *
+ * If mobileScrollY is omitted, desktopScrollY is used for both. Useful when
+ * sections of different absolute Y on mobile vs desktop need different snaps.
+ *
  * Disables Lenis smooth-scroll for the snap so scrollY lands exactly.
- * Waits ~1s after scroll for canvas paint + IntersectionObserver fires.
+ * Waits ~2s after scroll for canvas paint + IntersectionObserver fires.
  */
 
 import { chromium, type Page } from '@playwright/test';
@@ -44,14 +47,15 @@ async function snap(page: Page, viewport: Viewport, scrollY: number, outFile: st
 }
 
 async function main() {
-  const [, , slugArg, scrollYArg] = process.argv;
+  const [, , slugArg, scrollYArg, mobileScrollYArg] = process.argv;
   if (!slugArg || scrollYArg === undefined) {
-    console.error('Usage: tsx scripts/screenshot-section.ts <slug> <scrollY>');
+    console.error('Usage: tsx scripts/screenshot-section.ts <slug> <desktopScrollY> [mobileScrollY]');
     process.exit(1);
   }
   const scrollY = Number(scrollYArg);
-  if (!Number.isFinite(scrollY)) {
-    console.error('scrollY must be a finite number');
+  const mobileScrollY = mobileScrollYArg !== undefined ? Number(mobileScrollYArg) : scrollY;
+  if (!Number.isFinite(scrollY) || !Number.isFinite(mobileScrollY)) {
+    console.error('scrollY values must be finite numbers');
     process.exit(1);
   }
 
@@ -84,7 +88,7 @@ async function main() {
   });
   await mctx.addInitScript(initSkip);
   const mpage = await mctx.newPage();
-  await snap(mpage, MOBILE, scrollY, mobilePath);
+  await snap(mpage, MOBILE, mobileScrollY, mobilePath);
   console.log(`✓ ${mobilePath}`);
 
   await browser.close();
