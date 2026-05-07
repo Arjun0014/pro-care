@@ -1,17 +1,24 @@
 import type { Metadata } from 'next';
-import { Fraunces, Geist, Geist_Mono } from 'next/font/google';
-import { Nav }           from '@/components/layout/nav';
-import { Footer }        from '@/components/layout/footer';
-import { Cursor }        from '@/components/layout/cursor';
-import { LenisProvider } from '@/components/layout/lenis-provider';
+import { Instrument_Serif, Geist, Geist_Mono, Reem_Kufi, Cairo } from 'next/font/google';
+import { Nav }              from '@/components/layout/nav';
+import { Cursor }           from '@/components/layout/cursor';
+import { LenisProvider }    from '@/components/layout/lenis-provider';
+import { Preloader }        from '@/components/preloader';
+import { RouteCurtain }     from '@/components/route-curtain';
+import { DesignEasterEgg }  from '@/components/design-easter-egg';
+import { ScrollBackdrop }   from '@/components/scroll-backdrop';
 import './globals.css';
 
-// Variable font — load SOFT and opsz axes so we can tune them in CSS.
-const fraunces = Fraunces({
+// ── Latin typefaces ───────────────────────────────────────────
+// Display: Instrument Serif (R2.A — replaces Fraunces). Ships only at
+// weight 400; anywhere the project previously used 600/700, tighten
+// letter-spacing to -0.01em instead of switching weight.
+const display = Instrument_Serif({
   subsets: ['latin'],
   variable: '--font-display',
-  display: 'swap',
-  axes: ['SOFT', 'opsz'],
+  weight:   ['400'],
+  style:    ['normal', 'italic'],
+  display:  'swap',
 });
 
 const geist = Geist({
@@ -26,6 +33,22 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
+// ── Arabic typefaces (V2 content; UI scaffolding only in V1) ──
+// Pair Reem Kufi (display) + Cairo (body) per 16-EXTRA-PATTERNS.md.
+const reemKufi = Reem_Kufi({
+  subsets: ['arabic'],
+  variable: '--font-display-ar',
+  weight: ['400', '600'],
+  display: 'swap',
+});
+
+const cairo = Cairo({
+  subsets: ['arabic'],
+  variable: '--font-sans-ar',
+  weight: ['400', '500'],
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: {
     default:  'Pro Care Qatar — Trading, Contracting, Facility Services',
@@ -36,11 +59,24 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://procareqatar.com'),
 };
 
+// Mount order per R1.7.C (extends R1.D, supersedes the earlier flat layout):
+//   <Preloader />                         — first child of body
+//   <RouteCurtain />
+//   <Cursor />
+//   noise-overlay div                     — z-1, above canvas, below content
+//   <LenisProvider>                       — wraps the page so Lenis runs alongside
+//     <ScrollBackdrop />                  — fixed inset-0, z-0  (the canvas)
+//     <Nav />                             — z-50
+//     <main className="relative z-10">    — home sections render above canvas
+//     <Footer />
+//   </LenisProvider>
+//   <DesignEasterEgg />                   — global Tab×5 listener
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${geist.variable} ${geistMono.variable}`}
+      dir="ltr"
+      className={`${display.variable} ${geist.variable} ${geistMono.variable} ${reemKufi.variable} ${cairo.variable}`}
     >
       <body className="bg-[var(--color-bone)] text-[var(--color-ink)] font-sans antialiased">
         {/* Skip-to-content link — always the first focusable element */}
@@ -51,15 +87,29 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
 
-        {/* Client-only providers — mount after hydration */}
-        <LenisProvider />
+        <Preloader />
+        <RouteCurtain />
         <Cursor />
 
-        <Nav />
+        {/* Film-grain noise overlay — fixed, hidden from assistive tech.
+            z-index from .noise-overlay class is 1 (above canvas, below content).
+            Per 15-ASSETS-AND-COPY.md "Texture / atmosphere". */}
+        <div className="noise-overlay" aria-hidden="true" />
 
-        <main id="main">{children}</main>
+        {/* R2.5 user feedback — the standalone <Footer/> chrome was redundant
+            with the home page's Closing CTA section, which now incorporates
+            brand + contact + legal inline over the night canvas. Interior
+            pages (R3+) will get their own per-page footer where appropriate. */}
+        <LenisProvider>
+          <ScrollBackdrop />
+          <Nav />
+          <main id="main" className="relative z-10">
+            {children}
+          </main>
+        </LenisProvider>
 
-        <Footer />
+        {/* Tab x5 design-system overlay — global keyboard listener. */}
+        <DesignEasterEgg />
       </body>
     </html>
   );

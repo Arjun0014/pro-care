@@ -1,46 +1,355 @@
+// app/page.tsx
+// Home page — full 10-section composition per 13-HOME-AWARD-TIER.md.
+// Sections that overlay the canvas (Hero, Identity ticker, Manifesto,
+// Pillars marquee, Why Pro Care, Selected projects, Closing CTA) are
+// transparent over the global ScrollBackdrop. Sections with their own
+// imagery (Pillars deep-dive, Projects horizontal, Stats) cover the canvas
+// with their own ground.
+
 import type { Metadata } from 'next';
-import { Hero }              from '@/components/sections/home/hero';
-import { IdentityStrip }     from '@/components/sections/home/identity-strip';
-import { IndustriesMatrix }  from '@/components/sections/home/industries-matrix';
-import { SelectedProjects }  from '@/components/sections/home/selected-projects';
-import { StatsStrip }        from '@/components/sections/home/stats-strip';
-import { WhyProCare }        from '@/components/sections/home/why-procare';
-import { ClientWall }        from '@/components/sections/home/client-wall';
-import { ClosingCta }        from '@/components/sections/home/closing-cta';
+import Link from 'next/link';
+import { SplitText }      from '@/components/motion/split-text';
+import { ScrollWords }    from '@/components/motion/scroll-words';
+import { Marquee }        from '@/components/motion/marquee';
+import { ScrollSkew }     from '@/components/motion/scroll-skew';
+import { MagneticButton } from '@/components/ui/magnetic-button';
+import { HoverPreview }   from '@/components/motion/hover-preview';
+import { Pillars }            from '@/components/sections/home/pillars';
+import { ProjectsHorizontal } from '@/components/sections/home/projects-horizontal';
+import { WhyCluster }         from '@/components/sections/home/why-cluster';
+import { StatsCountUp }       from '@/components/sections/home/stats-count-up';
+import { projects }       from '@/lib/content/projects';
 
 export const metadata: Metadata = {
-  title: 'Pro Care Qatar — Trading, Contracting, Facility Services',
-  description:
-    'Qatar-rooted operator delivering trading, contracting, and facility services across the Gulf.',
+  title:       'Pro Care Qatar — Trading, Contracting, Facility Services',
+  description: 'Qatar-rooted operator delivering trading, contracting, and facility services across the Gulf.',
 };
 
-// Phase 2 — sections build out one at a time per 09-IMPLEMENTATION-PLAN.md.
-// Build order: Hero, Identity strip, Industries matrix, Selected projects,
-// Stats, Why Pro Care, Client wall, Closing CTA, Pillars (last).
-// Visual order in the rendered page is different — Pillars sits between
-// Identity strip and Industries matrix. The placeholder below holds its slot.
+// Reusable typographic text-shadow combos for legibility against canvas.
+const SHADOW_HEAVY  = '0 2px 24px rgba(11,18,32,0.65), 0 1px 2px rgba(11,18,32,0.5)';
+const SHADOW_MEDIUM = '0 2px 16px rgba(11,18,32,0.55), 0 1px 2px rgba(11,18,32,0.4)';
+const SHADOW_LIGHT  = '0 1px 8px rgba(11,18,32,0.45)';
+
+// Ink-tinted radial veil — placed BETWEEN the canvas (z-0) and the section
+// content (z-10), so the canvas darkens slightly toward edges where text
+// usually sits. Kept transparent at center so the building stays the visible
+// subject. Per spec § Bug 4.
+function InkVeil() {
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none z-[1]"
+      style={{
+        background:
+          'radial-gradient(ellipse at center, rgba(11,18,32,0) 0%, rgba(11,18,32,0.35) 60%, rgba(11,18,32,0.55) 100%)',
+      }}
+      aria-hidden="true"
+    />
+  );
+}
+
+// Lighter ambient veil for the alternating-veil experiment (R2.5 user
+// feedback — "the transparent covering like in the first one, it can be
+// there for alternating sections, lets try that out also"). Sits at
+// roughly half the depth of InkVeil so the canvas still reads as the
+// subject; just adds a subtle tonal pool. Tool 3 in the doc 21 vocabulary.
+function AmbientPool({ position = 'center' as 'center' | 'top' | 'bottom' }) {
+  const at =
+    position === 'top'    ? '50% 25%' :
+    position === 'bottom' ? '50% 75%' : 'center';
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none"
+      aria-hidden="true"
+      style={{
+        background:
+          `radial-gradient(ellipse 80vw 50vh at ${at}, rgba(11,18,32,0.3) 0%, rgba(11,18,32,0.12) 45%, rgba(11,18,32,0) 80%)`,
+      }}
+    />
+  );
+}
+
+// HoverPreview item shape.
+const projectItems = projects.slice(0, 8).map((p) => ({
+  id:    p.slug,
+  name:  p.title,
+  image: p.image,
+  alt:   p.imageAlt,
+  href:  `/projects/${p.slug}`,
+}));
+
 export default function HomePage() {
   return (
     <>
-      <Hero />
-      <IdentityStrip />
-
-      {/* Pillars placeholder — bone ground, built last (Step 2.9). */}
+      {/* ───── Section 1 · Hero ─────────────────────────────────────
+          Empty plot at dawn. Canvas IS the hero visual. */}
       <section
-        data-ground="bone"
-        className="bg-[var(--color-bone)] text-[var(--color-ink)] min-h-[50vh] flex flex-col items-center justify-center px-[clamp(1.5rem,4vw,4rem)] py-[clamp(4rem,10vh,8rem)]"
+        data-ground="ink"
+        className="relative h-[100svh] w-full px-[5vw] flex flex-col justify-end pb-[10vh]"
+        aria-label="Hero"
       >
-        <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-gold)]">
-          Pillars (built last per 09-IMPLEMENTATION-PLAN.md)
-        </span>
+        <InkVeil />
+        <div className="relative z-10 flex flex-col">
+          <span
+            className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80"
+            style={{ textShadow: SHADOW_LIGHT }}
+          >
+            TRADING — CONTRACTING — FACILITY
+          </span>
+          <SplitText
+            as="h1"
+            className="mt-6 font-display text-[clamp(4rem,11vw,11rem)] leading-[0.92] tracking-[-0.02em] text-[var(--color-bone)] [text-shadow:0_2px_24px_rgba(11,18,32,0.65),0_1px_2px_rgba(11,18,32,0.5)]"
+          >
+            We build for <em>Qatar</em>.
+          </SplitText>
+          <div className="mt-10 flex items-end justify-between gap-8 flex-wrap">
+            <Link href="/contact" className="inline-block">
+              <MagneticButton
+                data-cursor-label="GET IN TOUCH"
+                className="text-[var(--color-bone)] border-[var(--color-bone)] hover:bg-[var(--color-bone)] hover:text-[var(--color-ink)]"
+              >
+                Get in touch
+              </MagneticButton>
+            </Link>
+            <span
+              className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-bone)]/70"
+              style={{ textShadow: SHADOW_LIGHT }}
+              aria-hidden="true"
+            >
+              ↓ Scroll
+            </span>
+          </div>
+        </div>
       </section>
 
-      <IndustriesMatrix />
-      <SelectedProjects />
-      <StatsStrip />
-      <WhyProCare />
-      <ClientWall />
-      <ClosingCta />
+      {/* ───── Section 2 · Identity ticker ──────────────────────────
+          Per doc 21 § Section 2 — TRANSPARENT thin strip at top:8vh of a
+          full-viewport section. No bg, no border. The 100vh just gives the
+          canvas scroll-progress to advance. Bone text + Tool 2 halo. */}
+      <section
+        className="relative h-[100vh] w-full"
+        aria-label="Identity ticker"
+      >
+        <AmbientPool position="top" />
+        <div className="absolute top-[8vh] inset-x-0 overflow-hidden">
+          <Marquee
+            variant="ticker"
+            className="text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(0,0,0,0.5),0_0_16px_rgba(0,0,0,0.3)]"
+          >
+            <span className="px-6">PRO CARE QATAR</span>
+            <span className="px-6">·</span>
+            <span className="px-6">TRADING</span>
+            <span className="px-6">·</span>
+            <span className="px-6">CONTRACTING</span>
+            <span className="px-6">·</span>
+            <span className="px-6">FACILITY SERVICES</span>
+            <span className="px-6">·</span>
+            <span className="px-6">CR# 217949</span>
+            <span className="px-6">·</span>
+            <span className="px-6">ESTABLISHED IN DOHA</span>
+            <span className="px-6">·</span>
+            <span className="px-6">BUILT TO LAST</span>
+            <span className="px-6">·</span>
+          </Marquee>
+        </div>
+      </section>
+
+      {/* ───── Section 3 · Manifesto ────────────────────────────────
+          Per doc 21 § Section 3 — TRANSPARENT. Centered ScrollWords with
+          adapted colors: dim = bone @ 25% (ghostly), lit = bone @ 100%
+          + Tool 2 halo. Tool 3 radial pool centered behind text since
+          Stage 2-3 frames are predominantly mid-bright outdoor scenes. */}
+      <section
+        className="relative w-full min-h-[150vh] flex items-center justify-center px-[8vw] py-[10vh]"
+        aria-label="Manifesto"
+      >
+        {/* Tool 3 — radial pool. Fully transparent at 80% so canvas reads
+            continuous, not interrupted. */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden="true"
+          style={{
+            background:
+              'radial-gradient(ellipse 80vw 60vh at center, rgba(11,18,32,0.45) 0%, rgba(11,18,32,0.2) 40%, rgba(11,18,32,0) 80%)',
+          }}
+        />
+        <ScrollWords
+          className="relative font-display text-[clamp(2rem,4.5vw,4.5rem)] leading-[1.2] max-w-[52ch] text-center"
+          dimColor="rgba(244, 239, 230, 0.25)"
+          litColor="rgb(244, 239, 230)"
+          textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+        >
+          We are <em>three companies in one</em>. Traders, contractors,
+          operators. We bring materials to Qatar, we build with them, and
+          we keep what we build running. One standard across all three.{' '}
+          <em>Things that last.</em>
+        </ScrollWords>
+      </section>
+
+      {/* ───── Section 4 · Pillars marquee ──────────────────────────
+          Per doc 21 § Section 4 — TRANSPARENT, viewport-centered, full
+          width. Massive headline marquee using Tool 4 (mix-blend-mode:
+          difference) so the text inverts against any canvas brightness
+          and is always legible. Em-dashes stay gold (no blend) so they
+          read as gold regardless. */}
+      <section
+        className="relative w-full h-[60vh] flex items-center overflow-hidden"
+        aria-label="Three pillars marquee"
+      >
+        {/* ScrollSkew kept but max reduced 1.5° → 0.4° so the marquee
+            doesn't appear to "race" when the user scrolls quickly past.
+            Marquee speed lowered 25 → 12 for the same reason. */}
+        <ScrollSkew max={0.4}>
+          <Marquee
+            variant="headline"
+            speed={12}
+            direction="right"
+            className="font-display text-[clamp(5rem,18vw,18rem)] leading-[1.15] py-[0.1em]"
+          >
+            <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Trading</span>
+            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
+            <span className="px-12 italic" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Contracting</span>
+            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
+            <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Facility Services</span>
+            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
+          </Marquee>
+        </ScrollSkew>
+      </section>
+
+      {/* ───── Section 5 · Pillars (pin-and-scrub) ──────────────────
+          Own ink ground; canvas hidden. */}
+      <Pillars />
+
+      {/* ───── Section 6 · Projects horizontal scroll ───────────────
+          Own bone ground. */}
+      <ProjectsHorizontal />
+
+      {/* ───── Section 7 · Stats (count-up) ─────────────────────────
+          Bone ground per doc 13. Three numbers, animated counters
+          on scroll-into-view. */}
+      <StatsCountUp />
+
+      {/* ───── Section 8 · Why Pro Care (image cluster) ─────────────
+          Own ink ground; canvas hidden. */}
+      <WhyCluster />
+
+      {/* ───── Section 9 · Selected projects (hover list) ───────────
+          Per doc 21 § Section 9 — TRANSPARENT. Light text + Tool 2 halo.
+          Hairline rules between rows via `divide-current/20` (HoverPreview
+          uses `divide-current/15` already; the parent's text-bone makes
+          dividers bone). Hover thumbnail is edge-clamped (in HoverPreview).*/}
+      <section
+        className="relative w-full px-[clamp(1.5rem,5vw,8vw)] py-[14vh] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
+        aria-label="Selected projects"
+      >
+        <AmbientPool />
+        <header className="relative mb-12 flex flex-col gap-2">
+          <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
+            Selected work
+          </span>
+          <SplitText
+            as="h2"
+            className="block font-display text-[clamp(2rem,5vw,5rem)] leading-[1.15] tracking-[-0.02em] max-w-[18ch]"
+          >
+            Eight projects. <em>Three disciplines.</em>
+          </SplitText>
+        </header>
+
+        <HoverPreview items={projectItems} />
+      </section>
+
+      {/* ───── Section 10 · Closing CTA + integrated footer ─────────
+          Per R2.5 user feedback — combine the closing CTA with the
+          contact/legal chrome so the last frame reads as one coherent
+          composition over the night canvas. The standalone Footer
+          (with its Navigate column) is replaced by inline contact info
+          below the headline. The "Start a conversation" button is now
+          a solid bone pill so it reads against the lit building. */}
+      <section
+        data-ground="ink"
+        className="relative min-h-[100vh] w-full px-[5vw] pt-[14vh] pb-[6vh] flex flex-col items-center justify-between text-center"
+        aria-label="Closing call to action"
+      >
+        {/* Top — Headline + CTA */}
+        <div className="relative z-10 flex flex-col items-center pt-[8vh]">
+          <ScrollSkew>
+            <SplitText
+              as="h2"
+              className="font-display text-[clamp(3rem,8vw,8rem)] leading-[1.15] tracking-[-0.02em] text-[var(--color-bone)] [text-shadow:0_2px_24px_rgba(11,18,32,0.6),0_1px_2px_rgba(11,18,32,0.55),0_0_48px_rgba(11,18,32,0.35)]"
+            >
+              Let's build <em>something durable</em>.
+            </SplitText>
+          </ScrollSkew>
+
+          <div className="mt-14">
+            <Link href="/contact" className="inline-block">
+              <MagneticButton
+                data-cursor-label="START"
+                className="bg-[var(--color-bone)] text-[var(--color-ink)] border-[var(--color-bone)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]"
+              >
+                Start a conversation
+              </MagneticButton>
+            </Link>
+          </div>
+
+          <span
+            className="mt-10 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/85"
+            style={{ textShadow: SHADOW_LIGHT }}
+          >
+            Doha · Qatar · CR# 217949
+          </span>
+        </div>
+
+        {/* Bottom — integrated footer chrome (no Navigate column).
+            Three blocks: brand + contact + legal. All transparent,
+            bone with halo. */}
+        <div className="relative z-10 w-full max-w-[1440px] mx-auto mt-[8vh] flex flex-col gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 text-left">
+            {/* Brand block */}
+            <div className="flex flex-col gap-3">
+              <span className="font-display text-[22px] tracking-[-0.01em] text-[var(--color-bone)]">
+                Pro Care
+              </span>
+              <p className="font-sans text-[14px] leading-[1.6] text-[var(--color-bone)]/80 max-w-[36ch]">
+                Trading, contracting and facility services across Qatar.
+              </p>
+            </div>
+
+            {/* Contact block */}
+            <div className="flex flex-col gap-3 md:items-end md:text-right">
+              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-gold)]">
+                Contact
+              </span>
+              <address className="not-italic flex flex-col gap-2 font-sans text-[14px] text-[var(--color-bone)]/85">
+                <span>Doha, Qatar</span>
+                {/* TODO(arjun): replace placeholders with real phone/email */}
+                <span className="opacity-70">// TODO: phone</span>
+                <span className="opacity-70">// TODO: email</span>
+              </address>
+            </div>
+          </div>
+
+          {/* Legal strip */}
+          <div className="border-t border-[var(--color-bone)]/20 pt-5 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <span className="font-mono text-[11px] tracking-[0.08em] text-[var(--color-bone)]/75">
+              CR# 217949 · © Pro Care Trading, Contracting and Facility Services W.L.L.
+            </span>
+            <nav className="flex items-center gap-6" aria-label="Legal">
+              <Link
+                href="/privacy"
+                className="font-sans text-[12px] text-[var(--color-bone)]/75 hover:text-[var(--color-bone)] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="font-sans text-[12px] text-[var(--color-bone)]/75 hover:text-[var(--color-bone)] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+              >
+                Terms
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

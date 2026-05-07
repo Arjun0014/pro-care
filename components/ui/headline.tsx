@@ -21,8 +21,7 @@ export function Headline({ children, size = 'h1', as: As = 'h2', className }: Pr
 
   return (
     <As
-      className={cn('font-display font-medium text-balance', sizeClass[size], className)}
-      style={{ fontOpticalSizing: 'auto' } as React.CSSProperties}
+      className={cn('font-display text-balance', sizeClass[size], className)}
     >
       {parts.map((part, i) =>
         part.startsWith('*') && part.endsWith('*') ? (
