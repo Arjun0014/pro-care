@@ -88,3 +88,23 @@ If any item fails the section is fixed and re-screenshot before moving on.
 | Animations work | ✓ SplitText reveal still mounted (italic preserved on "that outlast") |
 
 **What changed:** entirely rewrote `components/sections/home/why-cluster.tsx`. Removed: `Image`, `TiltImage`, `MaskedReveal` imports; the `IMAGES` array; the desktop orbit cluster; the mobile 2×2 grid. Added: Tool 3 radial-pool overlay div + single centered SplitText headline with bone color + Tool 2 halo.
+
+---
+
+### S2.3 — Section 7 Stats (count-up)
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-3-stats-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-3-stats-mobile.png` |
+| No solid background block | ✓ section is `relative h-[80vh]` only, no bg |
+| Canvas visible | ✓ Stage 4 cladding frame: building under construction with crane reads through behind stats |
+| Content anchored per spec | ✓ `flex items-end pb-[8vh]` — stats anchored to viewport bottom 30% |
+| Text readable on desktop and mobile | ✓ bone + Tool 2 halo, no veil needed (Stage 4-5 frames have darker ground at the bottom of frame) |
+| No competing imagery | ✓ no images |
+| Locked copy verbatim | ✓ "Three / Disciplines, one team.", "20+ / Projects delivered across Qatar.", "100,000 QAR / Registered capital · CR# 217949" (doc 15 § Stats) |
+| Animations work | ✓ count-up animation captured mid-flight on mobile screenshot (17+ → 20+, 75,853 → 100,000), proving IntersectionObserver still fires |
+
+**What changed:** Stats section converted from `bg-[var(--color-bone)] text-[var(--color-ink)] py-[14vh]` to `relative h-[80vh] flex items-end pb-[8vh]` with bone text + Tool 2 halo on the section. Inner grid markup preserved verbatim so count-up + locked copy untouched.

@@ -85,48 +85,53 @@ function CountUp({
 }
 
 export function StatsCountUp() {
+  // Per 21-CANVAS-FIRST-REDESIGN.md § Section 7 — TRANSPARENT, anchored to
+  // the viewport bottom (so the building rising mid-canvas isn't covered).
+  // Stage 4-5 cladding/dusk frames have plenty of dark contrast at the
+  // bottom of the frame, so no radial pool needed — Tools 1+2 only.
   return (
     <section
-      data-ground="bone"
-      className="relative w-full bg-[var(--color-bone)] text-[var(--color-ink)] px-[5vw] py-[14vh]"
+      className="relative h-[80vh] w-full flex items-end pb-[8vh] px-[5vw] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
       aria-label="By the numbers"
     >
-      <span className="block font-mono text-xs uppercase tracking-[0.2em] opacity-70 mb-12">
-        By the numbers
-      </span>
+      <div className="w-full">
+        <span className="block font-mono text-xs uppercase tracking-[0.2em] opacity-80 mb-8">
+          By the numbers
+        </span>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 items-baseline">
-        {/* Stat 1 — word "Three", italic display, just lifts in */}
-        <div className="flex flex-col gap-3 min-w-0">
-          <em className="not-italic md:italic font-display text-[clamp(3rem,8vw,7rem)] leading-[0.95] tracking-[-0.01em]">
-            Three
-          </em>
-          <span className="font-sans text-[15px] leading-[1.4] max-w-[28ch] opacity-80">
-            Disciplines, one team.
-          </span>
-        </div>
-
-        {/* Stat 2 — 20+ count-up */}
-        <div className="flex flex-col gap-3 min-w-0">
-          <span className="font-mono text-[clamp(3rem,8vw,7rem)] leading-[0.95] tracking-[-0.02em]">
-            <CountUp target={20} suffix="+" />
-          </span>
-          <span className="font-sans text-[15px] leading-[1.4] max-w-[28ch] opacity-80">
-            Projects delivered across Qatar.
-          </span>
-        </div>
-
-        {/* Stat 3 — 100,000 QAR count-up with comma formatting */}
-        <div className="flex flex-col gap-3 min-w-0">
-          <span className="font-mono text-[clamp(2.25rem,5.5vw,5rem)] leading-[0.95] tracking-[-0.02em]">
-            <CountUp target={100000} formatThousands />
-            <span className="ml-3 font-mono text-[clamp(0.875rem,1.4vw,1.25rem)] uppercase tracking-[0.16em] text-[var(--color-gold)]">
-              QAR
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16 items-baseline">
+          {/* Stat 1 — word "Three", italic display, just lifts in */}
+          <div className="flex flex-col gap-3 min-w-0">
+            <em className="not-italic md:italic font-display text-[clamp(3rem,8vw,7rem)] leading-[0.95] tracking-[-0.01em]">
+              Three
+            </em>
+            <span className="font-sans text-[15px] leading-[1.4] max-w-[28ch] opacity-90">
+              Disciplines, one team.
             </span>
-          </span>
-          <span className="font-sans text-[15px] leading-[1.4] max-w-[28ch] opacity-80">
-            Registered capital · CR# 217949
-          </span>
+          </div>
+
+          {/* Stat 2 — 20+ count-up */}
+          <div className="flex flex-col gap-3 min-w-0">
+            <span className="font-mono text-[clamp(3rem,8vw,7rem)] leading-[0.95] tracking-[-0.02em]">
+              <CountUp target={20} suffix="+" />
+            </span>
+            <span className="font-sans text-[15px] leading-[1.4] max-w-[28ch] opacity-90">
+              Projects delivered across Qatar.
+            </span>
+          </div>
+
+          {/* Stat 3 — 100,000 QAR count-up with comma formatting */}
+          <div className="flex flex-col gap-3 min-w-0">
+            <span className="font-mono text-[clamp(2.25rem,5.5vw,5rem)] leading-[0.95] tracking-[-0.02em]">
+              <CountUp target={100000} formatThousands />
+              <span className="ml-3 font-mono text-[clamp(0.875rem,1.4vw,1.25rem)] uppercase tracking-[0.16em] text-[var(--color-gold)]">
+                QAR
+              </span>
+            </span>
+            <span className="font-sans text-[15px] leading-[1.4] max-w-[28ch] opacity-90">
+              Registered capital · CR# 217949
+            </span>
+          </div>
         </div>
       </div>
     </section>
