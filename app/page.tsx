@@ -47,6 +47,27 @@ function InkVeil() {
   );
 }
 
+// Lighter ambient veil for the alternating-veil experiment (R2.5 user
+// feedback — "the transparent covering like in the first one, it can be
+// there for alternating sections, lets try that out also"). Sits at
+// roughly half the depth of InkVeil so the canvas still reads as the
+// subject; just adds a subtle tonal pool. Tool 3 in the doc 21 vocabulary.
+function AmbientPool({ position = 'center' as 'center' | 'top' | 'bottom' }) {
+  const at =
+    position === 'top'    ? '50% 25%' :
+    position === 'bottom' ? '50% 75%' : 'center';
+  return (
+    <div
+      className="absolute inset-0 pointer-events-none"
+      aria-hidden="true"
+      style={{
+        background:
+          `radial-gradient(ellipse 80vw 50vh at ${at}, rgba(11,18,32,0.3) 0%, rgba(11,18,32,0.12) 45%, rgba(11,18,32,0) 80%)`,
+      }}
+    />
+  );
+}
+
 // HoverPreview item shape.
 const projectItems = projects.slice(0, 8).map((p) => ({
   id:    p.slug,
@@ -108,6 +129,7 @@ export default function HomePage() {
         className="relative h-[100vh] w-full"
         aria-label="Identity ticker"
       >
+        <AmbientPool position="top" />
         <div className="absolute top-[8vh] inset-x-0 overflow-hidden">
           <Marquee
             variant="ticker"
@@ -173,12 +195,15 @@ export default function HomePage() {
         className="relative w-full h-[60vh] flex items-center overflow-hidden"
         aria-label="Three pillars marquee"
       >
-        <ScrollSkew>
+        {/* ScrollSkew kept but max reduced 1.5° → 0.4° so the marquee
+            doesn't appear to "race" when the user scrolls quickly past.
+            Marquee speed lowered 25 → 12 for the same reason. */}
+        <ScrollSkew max={0.4}>
           <Marquee
             variant="headline"
-            speed={25}
+            speed={12}
             direction="right"
-            className="font-display text-[clamp(5rem,18vw,18rem)] leading-none"
+            className="font-display text-[clamp(5rem,18vw,18rem)] leading-[1.15] py-[0.1em]"
           >
             <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Trading</span>
             <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
@@ -216,13 +241,14 @@ export default function HomePage() {
         className="relative w-full px-[clamp(1.5rem,5vw,8vw)] py-[14vh] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
         aria-label="Selected projects"
       >
-        <header className="mb-12 flex flex-col gap-2">
+        <AmbientPool />
+        <header className="relative mb-12 flex flex-col gap-2">
           <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
             Selected work
           </span>
           <SplitText
             as="h2"
-            className="block font-display text-[clamp(2rem,5vw,5rem)] leading-[1.05] tracking-[-0.02em] max-w-[18ch]"
+            className="block font-display text-[clamp(2rem,5vw,5rem)] leading-[1.15] tracking-[-0.02em] max-w-[18ch]"
           >
             Eight projects. <em>Three disciplines.</em>
           </SplitText>
@@ -231,29 +257,34 @@ export default function HomePage() {
         <HoverPreview items={projectItems} />
       </section>
 
-      {/* ───── Section 10 · Closing CTA ─────────────────────────────
-          Night-lit building behind. Canvas through. */}
+      {/* ───── Section 10 · Closing CTA + integrated footer ─────────
+          Per R2.5 user feedback — combine the closing CTA with the
+          contact/legal chrome so the last frame reads as one coherent
+          composition over the night canvas. The standalone Footer
+          (with its Navigate column) is replaced by inline contact info
+          below the headline. The "Start a conversation" button is now
+          a solid bone pill so it reads against the lit building. */}
       <section
         data-ground="ink"
-        className="relative min-h-[100vh] w-full px-[5vw] py-[14vh] flex flex-col items-center justify-center text-center"
+        className="relative min-h-[100vh] w-full px-[5vw] pt-[14vh] pb-[6vh] flex flex-col items-center justify-between text-center"
         aria-label="Closing call to action"
       >
-        <InkVeil />
-        <div className="relative z-10 flex flex-col items-center">
+        {/* Top — Headline + CTA */}
+        <div className="relative z-10 flex flex-col items-center pt-[8vh]">
           <ScrollSkew>
             <SplitText
               as="h2"
-              className="font-display text-[clamp(3rem,8vw,8rem)] leading-[1] tracking-[-0.02em] text-[var(--color-bone)] [text-shadow:0_2px_32px_rgba(11,18,32,0.85),0_1px_4px_rgba(11,18,32,0.7)]"
+              className="font-display text-[clamp(3rem,8vw,8rem)] leading-[1.15] tracking-[-0.02em] text-[var(--color-bone)] [text-shadow:0_2px_24px_rgba(11,18,32,0.6),0_1px_2px_rgba(11,18,32,0.55),0_0_48px_rgba(11,18,32,0.35)]"
             >
               Let's build <em>something durable</em>.
             </SplitText>
           </ScrollSkew>
 
-          <div className="mt-16">
+          <div className="mt-14">
             <Link href="/contact" className="inline-block">
               <MagneticButton
                 data-cursor-label="START"
-                className="text-[var(--color-bone)] border-[var(--color-bone)] hover:bg-[var(--color-bone)] hover:text-[var(--color-ink)]"
+                className="bg-[var(--color-bone)] text-[var(--color-ink)] border-[var(--color-bone)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]"
               >
                 Start a conversation
               </MagneticButton>
@@ -261,11 +292,62 @@ export default function HomePage() {
           </div>
 
           <span
-            className="mt-12 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80"
+            className="mt-10 font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/85"
             style={{ textShadow: SHADOW_LIGHT }}
           >
             Doha · Qatar · CR# 217949
           </span>
+        </div>
+
+        {/* Bottom — integrated footer chrome (no Navigate column).
+            Three blocks: brand + contact + legal. All transparent,
+            bone with halo. */}
+        <div className="relative z-10 w-full max-w-[1440px] mx-auto mt-[8vh] flex flex-col gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 text-left">
+            {/* Brand block */}
+            <div className="flex flex-col gap-3">
+              <span className="font-display text-[22px] tracking-[-0.01em] text-[var(--color-bone)]">
+                Pro Care
+              </span>
+              <p className="font-sans text-[14px] leading-[1.6] text-[var(--color-bone)]/80 max-w-[36ch]">
+                Trading, contracting and facility services across Qatar.
+              </p>
+            </div>
+
+            {/* Contact block */}
+            <div className="flex flex-col gap-3 md:items-end md:text-right">
+              <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-gold)]">
+                Contact
+              </span>
+              <address className="not-italic flex flex-col gap-2 font-sans text-[14px] text-[var(--color-bone)]/85">
+                <span>Doha, Qatar</span>
+                {/* TODO(arjun): replace placeholders with real phone/email */}
+                <span className="opacity-70">// TODO: phone</span>
+                <span className="opacity-70">// TODO: email</span>
+              </address>
+            </div>
+          </div>
+
+          {/* Legal strip */}
+          <div className="border-t border-[var(--color-bone)]/20 pt-5 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+            <span className="font-mono text-[11px] tracking-[0.08em] text-[var(--color-bone)]/75">
+              CR# 217949 · © Pro Care Trading, Contracting and Facility Services W.L.L.
+            </span>
+            <nav className="flex items-center gap-6" aria-label="Legal">
+              <Link
+                href="/privacy"
+                className="font-sans text-[12px] text-[var(--color-bone)]/75 hover:text-[var(--color-bone)] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="font-sans text-[12px] text-[var(--color-bone)]/75 hover:text-[var(--color-bone)] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+              >
+                Terms
+              </Link>
+            </nav>
+          </div>
         </div>
       </section>
     </>

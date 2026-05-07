@@ -1,8 +1,6 @@
 import Link from 'next/link';
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Marquee } from '@/components/motion/marquee';
-
 // Tool 2 halo — light text over the canvas (footer is transparent per doc 21).
 const HALO = '[text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]';
 
@@ -116,26 +114,10 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Footer marquee strip — Tool 4 (mix-blend-mode: difference) so the
-          full-width text is always legible against any canvas brightness.
-          Locked content from doc 15 § Footer marquee strip. */}
-      <div className="border-t border-[var(--color-bone)]/20">
-        <Marquee
-          variant="headline"
-          speed={30}
-          direction="left"
-          className="py-6 font-display text-[clamp(2rem,4vw,4rem)] leading-none"
-        >
-          <span className="px-8" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>
-            LET&apos;S BUILD SOMETHING DURABLE
-          </span>
-          <span className="px-8" style={{ color: 'var(--color-gold)' }}>—</span>
-          <span className="px-8" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>
-            LET&apos;S BUILD SOMETHING DURABLE
-          </span>
-          <span className="px-8" style={{ color: 'var(--color-gold)' }}>—</span>
-        </Marquee>
-      </div>
+      {/* Footer marquee strip removed per R2.5 user feedback —
+          "LET'S BUILD SOMETHING DURABLE" already lives in the Closing
+          CTA right above the footer; doubling it on the marquee was
+          redundant. */}
 
       {/* Bottom legal strip */}
       <div className="border-t border-[var(--color-bone)]/20">

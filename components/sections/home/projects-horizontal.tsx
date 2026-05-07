@@ -77,7 +77,16 @@ export function ProjectsHorizontal() {
             data-cursor
             data-cursor-label="VIEW"
             data-project-card
-            className="group block w-[80vw] md:w-[480px] h-[60vh] flex-shrink-0 border border-[var(--color-bone)]/15 hover:border-[var(--color-bone)]/30 transition-colors duration-300 p-8 sm:p-10 flex flex-col"
+            className={[
+              'group block w-[80vw] md:w-[480px] h-[60vh] flex-shrink-0 flex flex-col',
+              // R2.5 user feedback — each project card gets a dark
+              // transparent overlay box so cards read as discrete elements
+              // over the canvas, not just typography floating in space.
+              'bg-[var(--color-ink)]/45 border border-[var(--color-bone)]/15',
+              'hover:bg-[var(--color-ink)]/60 hover:border-[var(--color-bone)]/30',
+              'transition-[background-color,border-color] duration-300',
+              'p-8 sm:p-10',
+            ].join(' ')}
           >
             {/* Top row — index + year */}
             <div className="flex items-baseline justify-between font-mono text-[11px] uppercase tracking-[0.2em]">

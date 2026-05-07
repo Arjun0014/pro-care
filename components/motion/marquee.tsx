@@ -18,6 +18,8 @@ type Props = {
   speed?: number;
   variant?: Variant;
   direction?: 'left' | 'right';
+  /** Default false per R2.5 user feedback — the ticker should keep moving
+   *  even when the cursor is over it, otherwise the page feels frozen. */
   pauseOnHover?: boolean;
   className?: string;
 };
@@ -27,7 +29,7 @@ export function Marquee({
   speed,
   variant = 'ticker',
   direction = 'left',
-  pauseOnHover = true,
+  pauseOnHover = false,
   className,
 }: Props) {
   const reduceMotion = useReducedMotion();

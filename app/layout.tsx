@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Instrument_Serif, Geist, Geist_Mono, Reem_Kufi, Cairo } from 'next/font/google';
 import { Nav }              from '@/components/layout/nav';
-import { Footer }           from '@/components/layout/footer';
 import { Cursor }           from '@/components/layout/cursor';
 import { LenisProvider }    from '@/components/layout/lenis-provider';
 import { Preloader }        from '@/components/preloader';
@@ -97,13 +96,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Per 15-ASSETS-AND-COPY.md "Texture / atmosphere". */}
         <div className="noise-overlay" aria-hidden="true" />
 
+        {/* R2.5 user feedback — the standalone <Footer/> chrome was redundant
+            with the home page's Closing CTA section, which now incorporates
+            brand + contact + legal inline over the night canvas. Interior
+            pages (R3+) will get their own per-page footer where appropriate. */}
         <LenisProvider>
           <ScrollBackdrop />
           <Nav />
           <main id="main" className="relative z-10">
             {children}
           </main>
-          <Footer />
         </LenisProvider>
 
         {/* Tab x5 design-system overlay — global keyboard listener. */}

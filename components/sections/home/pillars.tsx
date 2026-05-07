@@ -221,10 +221,10 @@ export function Pillars() {
 
             {/* Headline + tagline */}
             <div data-pillar-head className="flex flex-col gap-3">
-              <h3 className="font-display text-[clamp(3rem,7vw,6rem)] leading-[1.0] tracking-[-0.02em]">
+              <h3 className="font-display text-[clamp(3rem,7vw,6rem)] leading-[1.1] tracking-[-0.02em] pb-[0.05em]">
                 {p.name}
               </h3>
-              <p className="font-display italic text-[clamp(1.25rem,2vw,1.875rem)] leading-[1.3] text-[var(--color-bone)]/85">
+              <p className="font-display italic text-[clamp(1.25rem,2vw,1.875rem)] leading-[1.35] text-[var(--color-bone)]/85 pb-[0.05em]">
                 {p.tagline}
               </p>
             </div>

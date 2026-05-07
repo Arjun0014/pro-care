@@ -126,6 +126,21 @@ export function SplitText({
                   display: 'inline-block',
                   overflow: 'hidden',
                   verticalAlign: 'baseline',
+                  // Per-side padding lets italic right-lean (forward-leaning
+                  // top of f, t, l etc.) and descenders (Q tail, j/p/y stems)
+                  // sit outside the per-character lift box without being
+                  // clipped. Negative margins FULLY cancel each padding so
+                  // the headline's visual extent is unchanged from the
+                  // pre-mask version (R2.5 user feedback — partial
+                  // compensation made "We build for Qatar." 17% wider).
+                  paddingTop:    '0.1em',
+                  paddingRight:  '0.12em',
+                  paddingBottom: '0.3em',
+                  paddingLeft:   '0.04em',
+                  marginTop:     '-0.1em',
+                  marginRight:   '-0.12em',
+                  marginBottom:  '-0.3em',
+                  marginLeft:    '-0.04em',
                 }}
               >
                 <motion.span

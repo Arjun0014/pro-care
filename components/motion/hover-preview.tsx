@@ -120,7 +120,7 @@ export function HoverPreview({ items, className }: Props) {
 
   return (
     <>
-      <ul className={cn('divide-y divide-current/15', className)}>
+      <ul className={cn('flex flex-col gap-3', className)}>
         {items.map((item, i) => (
           <li
             key={item.id}
@@ -128,19 +128,29 @@ export function HoverPreview({ items, className }: Props) {
             onMouseLeave={() => setActiveId((id) => (id === item.id ? null : id))}
             className="group"
           >
+            {/* Per R2.5 user feedback — each row has a subtle transparent
+                box (low-alpha bone tint + hairline border) so the rows
+                read as discrete elements over the canvas, like the
+                Hero's InkVeil but per-row. Hover brightens the tint. */}
             <a
               href={item.href}
               data-cursor
               data-cursor-label="VIEW"
-              className="flex items-baseline justify-between gap-6 py-6 sm:py-8 px-4 transition-[padding] duration-300 hover:px-8 min-w-0"
+              className={cn(
+                'flex items-baseline justify-between gap-6 py-6 sm:py-8 px-6 sm:px-8',
+                'border border-[var(--color-bone)]/15 bg-[var(--color-bone)]/[0.04]',
+                'transition-[padding,background-color,border-color] duration-300',
+                'group-hover:px-10 group-hover:bg-[var(--color-bone)]/[0.08] group-hover:border-[var(--color-bone)]/30',
+                'min-w-0',
+              )}
             >
-              <span className="shrink-0 font-mono text-[10px] sm:text-xs text-current opacity-50 tabular-nums">
+              <span className="shrink-0 font-mono text-[10px] sm:text-xs text-current opacity-60 tabular-nums">
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <span className="font-display text-[clamp(1.5rem,3vw,3rem)] leading-[1.05] flex-1 text-center min-w-0 truncate">
+              <span className="font-display text-[clamp(1.5rem,3vw,3rem)] leading-[1.15] flex-1 text-center min-w-0 truncate pb-[0.05em]">
                 {item.name}
               </span>
-              <span className="shrink-0 font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] opacity-60 group-hover:opacity-100 transition-opacity">
+              <span className="shrink-0 font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-opacity">
                 View →
               </span>
             </a>

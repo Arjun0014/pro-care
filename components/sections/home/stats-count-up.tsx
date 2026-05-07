@@ -94,7 +94,17 @@ export function StatsCountUp() {
       className="relative h-[80vh] w-full flex items-end pb-[8vh] px-[5vw] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
       aria-label="By the numbers"
     >
-      <div className="w-full">
+      {/* Ambient veil — alternating-veil experiment per R2.5 user feedback.
+          Bottom-anchored to match where the stats text sits. */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background:
+            'radial-gradient(ellipse 80vw 50vh at 50% 75%, rgba(11,18,32,0.3) 0%, rgba(11,18,32,0.12) 45%, rgba(11,18,32,0) 80%)',
+        }}
+      />
+      <div className="w-full relative">
         <span className="block font-mono text-xs uppercase tracking-[0.2em] opacity-80 mb-8">
           By the numbers
         </span>
@@ -102,7 +112,7 @@ export function StatsCountUp() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16 items-baseline">
           {/* Stat 1 — word "Three", italic display, just lifts in */}
           <div className="flex flex-col gap-3 min-w-0">
-            <em className="not-italic md:italic font-display text-[clamp(3rem,8vw,7rem)] leading-[0.95] tracking-[-0.01em]">
+            <em className="not-italic md:italic font-display text-[clamp(3rem,8vw,7rem)] leading-[1.1] tracking-[-0.01em]">
               Three
             </em>
             <span className="font-sans text-[15px] leading-[1.4] max-w-[28ch] opacity-90">
