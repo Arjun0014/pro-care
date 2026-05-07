@@ -200,3 +200,24 @@ If any item fails the section is fixed and re-screenshot before moving on.
 | Animations work | ✓ Marquee right-direction + ScrollSkew preserved; pause-on-hover preserved |
 
 **What changed:** stripped section bg + ground attr, set `h-[60vh] flex items-center overflow-hidden`. Bumped marquee font from `text-[clamp(8rem,12vw,16rem)]` (default headline) to explicit `text-[clamp(5rem,18vw,18rem)]` per doc 21. Each text span got inline `mixBlendMode: 'difference'` + white color; em-dashes got inline gold without blend.
+
+---
+
+### S2.8 — Section 6 Projects horizontal scroll
+
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot 1920×1080 | ✓ `screenshots/r25/s2-8-projects-horizontal-desktop.png` |
+| Mobile screenshot 375×812 | ✓ `screenshots/r25/s2-8-projects-horizontal-mobile.png` |
+| No solid background block | ✓ removed `bg-[var(--color-bone)]`, `text-[var(--color-ink)]`, `data-ground="bone"` |
+| Canvas visible | ✓ Stage 2-3 cladding frame (cranes + concrete pour + low-rise buildings) reads through cards |
+| Content anchored per spec | ✓ cards anchored to viewport bottom 60% via `md:pt-[20vh]` on the HorizontalScroll wrapper; section `pb-[10vh]` keeps space below |
+| Text readable | ✓ bone + Tool 2 halo on the section root |
+| Card images removed | ✓ `<Image>` + `<TiltImage>` imports + uses gone; cards are pure typography with `border border-[var(--color-bone)]/15` hairline |
+| Locked copy verbatim | ✓ project titles + sector + year still come from `lib/content/projects.ts` (8 doc-15 names, untouched in this section) |
+| Pin-and-scrub mechanic preserved | ✓ HorizontalScroll component untouched; counter still updates per active card |
+| Hover state | ✓ `hover:border-[var(--color-bone)]/30` brightens the hairline; "View details →" opacity ramps from /80 to /100 |
+
+**What changed:** rewrote `components/sections/home/projects-horizontal.tsx`. Removed: `Image`, `TiltImage` imports; `imageAlt`/`image` usage. Cards became `flex flex-col h-[60vh] border border-bone/15 p-8 sm:p-10` typography blocks: `01 → year` top row, large display project title in mid (`mt-auto`), sector + view-details bottom row. Section transparent + bone text + Tool 2 halo. Counter logic and HorizontalScroll wrapping untouched so pin-and-scrub still works on desktop and mobile gets the stack fallback.
