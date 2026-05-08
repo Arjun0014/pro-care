@@ -123,12 +123,23 @@ function wire(lenis: LenisLike): () => void {
       const top = r.top + window.scrollY;
 
       if (id === 'pillars-deep-dive') {
-        // Three sub-targets within the pin range. Fractions tuned so each
-        // lands in its stage's settled "hold" portion (post-entry-anim).
-        const h = r.height;
-        list.push({ id: 'pillars-trading',     y: Math.round(top + h * 0.18) });
-        list.push({ id: 'pillars-contracting', y: Math.round(top + h * 0.50) });
-        list.push({ id: 'pillars-facility',    y: Math.round(top + h * 0.82) });
+        // Three sub-targets within the pin range. The pin-spacer's TOTAL
+        // height includes the visible section (1 viewport) PLUS the pin
+        // extension (~3 × 120 vh). Fractions must be of the pin EXTENSION
+        // only (h - vh) — using the total pin-spacer height would push
+        // T5 past the pin end and the section would unpin / scroll away
+        // before the user sees the Facility panel.
+        //
+        // Fractions are tuned to each stage's settled "hold" zone:
+        //   Stage 1 (Trading):     timeline t=1.0–1.8 of 7.8 → frac 0.128-0.231
+        //   Stage 2 (Contracting): timeline t=4.0–4.8 of 7.8 → frac 0.513-0.615
+        //   Stage 3 (Facility):    timeline t=7.0–7.8 of 7.8 → frac 0.897-1.000
+        // We use the mid-hold of each so the pillar reads fully settled
+        // (post-entry, before transition).
+        const pinExtension = r.height - window.innerHeight;
+        list.push({ id: 'pillars-trading',     y: Math.round(top + pinExtension * 0.18) });
+        list.push({ id: 'pillars-contracting', y: Math.round(top + pinExtension * 0.56) });
+        list.push({ id: 'pillars-facility',    y: Math.round(top + pinExtension * 0.94) });
       } else {
         list.push({ id, y: Math.round(top) });
       }

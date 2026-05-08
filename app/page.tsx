@@ -161,74 +161,73 @@ export default function HomePage() {
       </section>
 
       {/* ───── Section 3 · Manifesto ────────────────────────────────
-          Per R2.7 § Task 5 — three asymmetric beats with breathing space.
-          Locked copy (doc 15) split into three ScrollWords instances, each
-          with its own progress and positioning:
-            Beat 1 — top third, left-aligned in left half
-            Beat 2 — middle third, right-aligned in right half
-            Beat 3 — bottom third, "One standard..." centred + italic
-                     "Things that last." floating below with indent
-          Section is now min-h-[150vh] so the three beats have room. The
-          ScrollWords ramp is per-beat: as each beat enters the viewport,
-          its words light up in a wave (Beat 1 lights first, then Beat 2,
-          then Beat 3). Tool 3 radial pool spans the section. */}
+          Per R2.7-fix § Task 5 — three asymmetric beats sized to fit ONE
+          viewport so the snap-target landing renders the entire manifesto
+          composition at once, including the closing italic line.
+          Layout (100 vh tall, justify-between distributes beats):
+            Beat 1 — top, left-aligned in left half
+            Beat 2 — middle, right-aligned in right half
+            Beat 3 — bottom, centred "One standard..." + indented italic
+                     "Things that last." right below (tight spacing)
+          Stronger radial pool (alpha 0.55→0.30→0) and per-ScrollWords
+          halos so the text reads cleanly against bright canvas frames. */}
       <section
         data-snap-target="manifesto"
-        className="relative w-full min-h-[150vh] py-[10vh]"
+        className="relative w-full min-h-[100vh] py-[8vh]"
         aria-label="Manifesto"
       >
-        {/* Tool 3 — radial pool. Fully transparent at 80% so canvas reads
-            continuous, not interrupted. */}
+        {/* Tool 3 — stronger radial pool (R2.7-fix). Centred ellipse,
+            fades to transparent at 80% so canvas reads continuous. */}
         <div
           className="absolute inset-0 pointer-events-none"
           aria-hidden="true"
           style={{
             background:
-              'radial-gradient(ellipse 80vw 60vh at center, rgba(11,18,32,0.45) 0%, rgba(11,18,32,0.2) 40%, rgba(11,18,32,0) 80%)',
+              'radial-gradient(ellipse 90vw 70vh at center, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.30) 40%, rgba(11,18,32,0) 80%)',
           }}
         />
 
-        <div className="relative mx-auto max-w-7xl px-[5vw] flex flex-col gap-[12vh] md:gap-[14vh]">
-          {/* Beat 1 — left-aligned, left half */}
+        <div className="relative mx-auto max-w-7xl px-[5vw] h-full min-h-[84vh] flex flex-col justify-between gap-[6vh]">
+          {/* Beat 1 — top, left-aligned in left half */}
           <div className="flex">
             <ScrollWords
-              className="font-display text-[clamp(2rem,4vw,4rem)] leading-[1.15] max-w-[26ch] text-left"
-              dimColor="rgba(244, 239, 230, 0.25)"
+              className="font-display text-[clamp(1.625rem,3.4vw,3.25rem)] leading-[1.15] max-w-[26ch] text-left [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
+              dimColor="rgba(244, 239, 230, 0.30)"
               litColor="rgb(244, 239, 230)"
-              textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+              textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
             >
               We are <em>three companies in one</em>. Traders, contractors, operators.
             </ScrollWords>
           </div>
 
-          {/* Beat 2 — right-aligned, right half */}
+          {/* Beat 2 — middle, right-aligned in right half */}
           <div className="flex justify-end">
             <ScrollWords
-              className="font-display text-[clamp(2rem,4vw,4rem)] leading-[1.15] max-w-[28ch] text-right"
-              dimColor="rgba(244, 239, 230, 0.25)"
+              className="font-display text-[clamp(1.625rem,3.4vw,3.25rem)] leading-[1.15] max-w-[28ch] text-right [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
+              dimColor="rgba(244, 239, 230, 0.30)"
               litColor="rgb(244, 239, 230)"
-              textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+              textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
             >
               We bring materials to Qatar, we build with them, and we keep what we build running.
             </ScrollWords>
           </div>
 
-          {/* Beat 3 — centred "One standard..." + italic "Things that last."
-              with indent below */}
-          <div className="flex flex-col items-center gap-[5vh]">
+          {/* Beat 3 — bottom, centred "One standard..." + tight italic
+              "Things that last." right below (gap-[2.5vh]) */}
+          <div className="flex flex-col items-center gap-[2.5vh]">
             <ScrollWords
-              className="font-display text-[clamp(2rem,4vw,4rem)] leading-[1.15] max-w-[24ch] text-center"
-              dimColor="rgba(244, 239, 230, 0.25)"
+              className="font-display text-[clamp(1.625rem,3.4vw,3.25rem)] leading-[1.15] max-w-[26ch] text-center [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
+              dimColor="rgba(244, 239, 230, 0.30)"
               litColor="rgb(244, 239, 230)"
-              textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+              textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
             >
               One standard across all three.
             </ScrollWords>
             <ScrollWords
-              className="font-display italic text-[clamp(1.5rem,3vw,3rem)] leading-[1.2] self-center md:self-start md:ml-[10vw]"
-              dimColor="rgba(244, 239, 230, 0.25)"
+              className="font-display italic text-[clamp(1.375rem,2.8vw,2.5rem)] leading-[1.2] [text-shadow:0_1px_2px_rgba(11,18,32,0.7),0_0_32px_rgba(11,18,32,0.55)]"
+              dimColor="rgba(244, 239, 230, 0.30)"
               litColor="rgb(244, 239, 230)"
-              textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+              textShadow="0 1px 2px rgba(11,18,32,0.7), 0 0 32px rgba(11,18,32,0.55)"
             >
               <em>Things that last.</em>
             </ScrollWords>

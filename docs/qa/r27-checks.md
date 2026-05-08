@@ -174,6 +174,86 @@ stays uncovered for canvas display.
 - `components/motion/hover-preview.tsx`: `HoverPreviewItem` extended with optional `sector` + `year`. Row layout swapped from "horizontal index | name | View" to "index left | name (display) + sector·year·VIEW (mono caps) stacked right". R2.5 per-row tint backdrop dropped in favour of a `border-b` hairline so the wider 1.4fr column reads cleaner.
 - `scripts/screenshot-hover-edges.ts`: row-count threshold 8 → ≥3 so it works with both R2.6 (8 rows) and R2.7 (3 rows) lists.
 
+## Post-R2.7 user-feedback fixes
+
+Three issues caught after R2.7 landed; addressed in a single pass:
+
+### Fix 1 — Pillars sub-target fractions wrong (Facility was past pin end)
+
+Old fractions used the pin-spacer's TOTAL height (4968 px on 1080
+viewport), which pushed T5 to scrollY 7854 — 186 px PAST the pin end
+(7668). Section unpinned and scrolled away before the user saw the
+Facility panel.
+
+Also, the fractions (0.18 / 0.50 / 0.82) didn't account for the
+inter-stage transitions in the GSAP timeline:
+- Stage 1 (Trading) hold:     timeline t=0.9–1.7 of 7.5 → frac 0.128–0.231
+- Stage 2 (Contracting) hold: timeline t=3.8–4.6 of 7.5 → frac 0.515–0.615
+- Stage 3 (Facility) hold:    timeline t=6.7–7.5 of 7.5 → frac 0.897–1.000
+
+Fix: changed denominator to pin extension only (`r.height -
+window.innerHeight`), and re-tuned fractions to mid-hold of each stage:
+0.18 / 0.56 / 0.94. All three sub-targets now land in their stage's
+settled-hold zone.
+
+### Fix 2 — Pillars text-align center inside the left-anchored column
+
+The R2.7 spec's "all text inside is text-aligned center" requirement
+was missed in the initial implementation (text was left-aligned). User
+feedback flagged it. Fix: changed inner column from `text-left` /
+`items-start` → `text-center` / `items-center`. The column itself
+still stays on the left at `md:left-[8vw] md:w-[min(45vw,600px)]`;
+only the text inside is now centred.
+
+Also tightened content for the longest panel (Facility):
+- Headline: `clamp(3rem, 7vw, 6rem)` → `clamp(2.5rem, 6vw, 5rem)`
+- Tagline:  `clamp(1.25rem, 2vw, 1.875rem)` → `clamp(1.125rem, 1.8vw, 1.625rem)`
+- Body:     `text-[15px] sm:text-[16px]` → `text-[14px] sm:text-[15px]`
+- Items:    `text-[14px]` → `text-[13px] sm:text-[14px]`
+- Gap:      `gap-6` → `gap-5`; deliverables `gap-2` → `gap-1.5`
+
+These bring the Facility panel's content height from ~600 px down to
+~493 px, so vertical-centred positioning fits cleanly within the 1080
+px viewport with no overflow at the top.
+
+### Fix 3 — Apply the asymmetric veil to ALL three pillars (was Trading only)
+
+Body + deliverables were getting lost against the bright/cloudy canvas
+on Contracting and Facility panels. Fixed by setting `needsPool: true`
+on all three pillar entries (was only true on Trading). Also bumped
+the veil's alpha 0.55→0.30→0 → 0.65→0.40→0 so the left side darkens
+more for legibility. Right half of viewport stays clean for canvas.
+
+### Fix 4 — Manifesto redesign: fit all 3 beats in one viewport
+
+The R2.7 Manifesto was 150vh tall with `gap-[12vh]` between beats, so
+when SectionScrollLock landed the user at `idealViewPos` (section
+centre), only the middle beat was visible. "Things that last." was
+below the viewport entirely.
+
+Fix:
+- Section `min-h-[150vh]` → `min-h-[100vh]`
+- Inner container: `flex flex-col justify-between gap-[6vh]` so beats
+  evenly distribute top / middle / bottom within 84 vh of inner space
+- Beat font: `clamp(2rem, 4vw, 4rem)` → `clamp(1.625rem, 3.4vw, 3.25rem)`
+- Beat 3a + 3b ("One standard…" + "*Things that last.*") collapsed
+  into a tight vertical stack with `gap-[2.5vh]` (was `gap-[5vh]` with
+  separate self-positioning quirks)
+- Stronger radial pool: `0.45→0.20→0` → `0.55→0.30→0`, ellipse
+  `80vw 60vh` → `90vw 70vh`
+- Per-ScrollWords explicit halo `0 1px 2px rgba(11,18,32,0.65),
+  0 0 28px rgba(11,18,32,0.5)` — stronger than the inherited section
+  text-shadow
+- Italic line gets even heavier halo (alpha 0.7 / 0.55)
+
+Result: all 3 beats render in one viewport, "*Things that last.*"
+clearly visible at the bottom, every word readable against the
+canvas. Snap target idealViewPos = section.top (since section.height
+now equals vh) so the snap lands the user with the full composition
+framed.
+
+---
+
 ## Task 5 — Manifesto three-beat composition
 
 **Result:** ✅ PASS
