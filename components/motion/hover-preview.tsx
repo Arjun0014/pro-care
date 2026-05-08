@@ -11,11 +11,14 @@ import { cn } from '@/lib/utils';
 import { useReducedMotion } from 'motion/react';
 
 export type HoverPreviewItem = {
-  id:    string;
-  name:  string;
-  image: string;
-  alt?:  string;
-  href:  string;
+  id:     string;
+  name:   string;
+  image:  string;
+  alt?:   string;
+  href:   string;
+  /** Optional metadata rendered as small uppercase mono caps under the name. */
+  sector?: string;
+  year?:   string;
 };
 
 type Props = {
@@ -120,53 +123,52 @@ export function HoverPreview({ items, className }: Props) {
 
   return (
     <>
-      <ul className={cn('flex flex-col gap-3', className)}>
+      <ul className={cn('flex flex-col', className)}>
         {items.map((item, i) => (
           <li
             key={item.id}
             onMouseEnter={() => setActiveId(item.id)}
             onMouseLeave={() => setActiveId((id) => (id === item.id ? null : id))}
-            className="group"
+            className="group border-b border-[var(--color-bone)]/15 last:border-b-0"
           >
-            {/* Per R2.5 user feedback — each row has a subtle transparent
-                box (low-alpha bone tint + hairline border) so the rows
-                read as discrete elements over the canvas, like the
-                Hero's InkVeil but per-row. Hover brightens the tint. */}
+            {/* Per R2.7 § Task 4 — index left, project name + meta stacked
+                vertically right. Hairline divider between rows replaces the
+                R2.6 per-row box tint (the divider reads cleaner against the
+                wider 1.4fr column). */}
             <a
               href={item.href}
               data-cursor
               data-cursor-label="VIEW"
               className={cn(
-                // R2.6 Task 2b — gap-6 → gap-4 so the long names ("Doha
-                // Industrial District Phase II") have more room before
-                // truncating; px-8 → px-6 for the same reason. Hover
-                // expands by 4 px instead of 12 so the row doesn't shove
-                // its content sideways out of viewport on tighter widths.
-                'flex items-baseline justify-between gap-4 sm:gap-6 py-6 sm:py-8 px-5 sm:px-7',
-                'border border-[var(--color-bone)]/15 bg-[var(--color-bone)]/[0.04]',
-                'transition-[padding,background-color,border-color] duration-300',
-                'group-hover:px-7 sm:group-hover:px-9 group-hover:bg-[var(--color-bone)]/[0.08] group-hover:border-[var(--color-bone)]/30',
+                'flex items-start gap-6 py-7 sm:py-9 px-2 sm:px-4',
+                'transition-[padding,background-color] duration-300',
+                'group-hover:px-4 sm:group-hover:px-6 group-hover:bg-[var(--color-bone)]/[0.04]',
                 'min-w-0',
               )}
             >
-              <span className="shrink-0 font-mono text-[10px] sm:text-xs text-current opacity-60 tabular-nums">
+              <span className="shrink-0 font-mono text-[11px] sm:text-xs text-current opacity-60 tabular-nums w-12 pt-2">
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <span
-                className={cn(
-                  // R2.6 Task 2b — drop max font-size from 3rem → 2.5rem
-                  // so the longest names fit on one line at 1280px without
-                  // needing truncate; keep the truncate as a safety net at
-                  // narrower viewports.
-                  'font-display text-[clamp(1.25rem,2.4vw,2.5rem)] leading-[1.15]',
-                  'flex-1 text-center min-w-0 truncate pb-[0.05em]',
-                )}
-              >
-                {item.name}
-              </span>
-              <span className="shrink-0 font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-opacity">
-                View →
-              </span>
+              <div className="flex-1 min-w-0 flex flex-col gap-2">
+                <h3 className="font-display text-[clamp(1.5rem,2.6vw,2.5rem)] leading-[1.1] tracking-[-0.01em] pb-[0.05em]">
+                  {item.name}
+                </h3>
+                <div className="flex items-baseline gap-3 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] opacity-75 group-hover:opacity-100 transition-opacity">
+                  {item.sector && (
+                    <>
+                      <span>{item.sector}</span>
+                      <span aria-hidden className="text-[var(--color-bone)]/40">·</span>
+                    </>
+                  )}
+                  {item.year && (
+                    <>
+                      <span className="tabular-nums">{item.year}</span>
+                      <span aria-hidden className="text-[var(--color-bone)]/40">·</span>
+                    </>
+                  )}
+                  <span>View →</span>
+                </div>
+              </div>
             </a>
           </li>
         ))}

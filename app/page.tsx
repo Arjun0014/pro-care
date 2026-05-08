@@ -69,12 +69,17 @@ function AmbientPool({ position = 'center' as 'center' | 'top' | 'bottom' }) {
 }
 
 // HoverPreview item shape.
-const projectItems = projects.slice(0, 8).map((p) => ({
-  id:    p.slug,
-  name:  p.title,
-  image: p.image,
-  alt:   p.imageAlt,
-  href:  `/projects/${p.slug}`,
+// R2.7 § Task 4 — home page surfaces only the first 3 projects.
+// The full set lives in `lib/content/projects.ts` and will populate the
+// R3 /projects interior page.
+const projectItems = projects.slice(0, 3).map((p) => ({
+  id:     p.slug,
+  name:   p.title,
+  image:  p.image,
+  alt:    p.imageAlt,
+  href:   `/projects/${p.slug}`,
+  sector: p.sector.toUpperCase(),
+  year:   p.year,
 }));
 
 export default function HomePage() {
@@ -214,29 +219,35 @@ export default function HomePage() {
       <WhyCluster />
 
       {/* ───── Section 8 · Selected projects (hover list) ───────────
-          Per doc 21 § Section 9 — TRANSPARENT. Light text + Tool 2 halo.
-          Hairline rules between rows via `divide-current/20` (HoverPreview
-          uses `divide-current/15` already; the parent's text-bone makes
-          dividers bone). Hover thumbnail is edge-clamped (in HoverPreview).*/}
+          Per R2.7 § Task 4 — 2-column side-by-side layout. Title block on
+          the left, 3 project rows on the right. Hover-thumbnail mechanic
+          and edge-clamping unchanged from R2.6. */}
       <section
         data-snap-target="selected-projects"
         className="relative w-full px-[clamp(1.5rem,5vw,8vw)] py-[14vh] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
         aria-label="Selected projects"
       >
         <AmbientPool />
-        <header className="relative mb-12 flex flex-col gap-2">
-          <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
-            Selected work
-          </span>
-          <SplitText
-            as="h2"
-            className="block font-display text-[clamp(2rem,5vw,5rem)] leading-[1.15] tracking-[-0.02em] max-w-[18ch]"
-          >
-            Eight projects. <em>Three disciplines.</em>
-          </SplitText>
-        </header>
+        <div className="relative mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-12 md:gap-16 items-start">
+          {/* Left column — title block */}
+          <header className="flex flex-col gap-5">
+            <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
+              Selected work
+            </span>
+            <SplitText
+              as="h2"
+              className="block font-display text-[clamp(2rem,4.5vw,4.25rem)] leading-[1.1] tracking-[-0.02em] max-w-[14ch]"
+            >
+              Selected <em>projects.</em>
+            </SplitText>
+            <p className="font-sans text-[15px] leading-[1.6] text-[var(--color-bone)]/80 max-w-[36ch]">
+              Three of our recent works across Qatar.
+            </p>
+          </header>
 
-        <HoverPreview items={projectItems} />
+          {/* Right column — 3 project rows */}
+          <HoverPreview items={projectItems} />
+        </div>
       </section>
 
       {/* ───── Section 9 · Closing CTA + integrated footer ──────────

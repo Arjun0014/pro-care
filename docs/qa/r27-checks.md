@@ -151,7 +151,28 @@ stays uncovered for canvas display.
 
 ## Task 4 — Selected projects 3-up side-by-side
 
-(filled in)
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Section screenshot (desktop) | ✓ `r27-task4-selected-desktop.png` |
+| 3 visible projects | ✓ slice(0, 3) — West Bay / Lusail Marina / Hamad Port |
+| 8 names retained in `lib/content/projects.ts` for R3 | ✓ comment updated; data array untouched |
+| 2-column layout (1fr / 1.4fr) | ✓ `grid grid-cols-[1fr_1.4fr] gap-12 md:gap-16` |
+| Left column: eyebrow + headline + descriptor | ✓ "SELECTED WORK" / "Selected *projects.*" / "Three of our recent works across Qatar." |
+| Right column: 3 rows with index + name + meta | ✓ each row: 01-03 mono index, large display name, sector·year·VIEW under |
+| Hairline divider between rows | ✓ `border-b border-[var(--color-bone)]/15` |
+| Hover thumbnail clamps top-left | ✓ `r27-task4-hover-topleft.png` |
+| Hover thumbnail flips above (bottom) | ✓ `r27-task4-hover-bottom.png` |
+| Hover thumbnail flips left (right edge) | ✓ `r27-task4-hover-right.png` |
+| Locked copy verbatim | ✓ project names from doc 15 § Projects unchanged; "Selected projects." / "Three of our recent works across Qatar." are placeholder home-section copy explicitly noted as such |
+| Build clean | ✓ |
+
+**What changed:**
+- `lib/content/projects.ts`: comment updated to flag R2.7 home slice (data untouched).
+- `app/page.tsx`: `projects.slice(0, 8)` → `slice(0, 3)`; mapping extended with `sector` (uppercased) + `year`. Selected projects section restructured into a `grid grid-cols-[1fr_1.4fr]` with title block on the left and `<HoverPreview/>` on the right.
+- `components/motion/hover-preview.tsx`: `HoverPreviewItem` extended with optional `sector` + `year`. Row layout swapped from "horizontal index | name | View" to "index left | name (display) + sector·year·VIEW (mono caps) stacked right". R2.5 per-row tint backdrop dropped in favour of a `border-b` hairline so the wider 1.4fr column reads cleaner.
+- `scripts/screenshot-hover-edges.ts`: row-count threshold 8 → ≥3 so it works with both R2.6 (8 rows) and R2.7 (3 rows) lists.
 
 ## Task 5 — Manifesto three-beat composition
 

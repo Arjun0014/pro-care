@@ -47,16 +47,19 @@ async function main() {
 
   // Find list rows.
   const rows = await page.$$('[aria-label="Selected projects"] li');
-  if (rows.length < 8) {
-    console.error(`expected 8 rows, found ${rows.length}`);
+  if (rows.length < 3) {
+    console.error(`expected ≥3 rows, found ${rows.length}`);
     process.exit(1);
   }
+  // Use first / last / middle so this works whether the list has 3 or 8 rows.
+  const lastIdx = rows.length - 1;
+  const midIdx  = Math.floor(rows.length / 2);
 
   const slugPrefix = process.env.PROCARE_SLUG ?? 's2-4';
   const cases: Array<{ slug: string; row: number; xFrac: number; yOffset: number }> = [
-    { slug: `${slugPrefix}-hover-topleft`, row: 0, xFrac: 0.25, yOffset: 0 },
-    { slug: `${slugPrefix}-hover-bottom`,  row: 7, xFrac: 0.5,  yOffset: 0 },
-    { slug: `${slugPrefix}-hover-right`,   row: 3, xFrac: 0.95, yOffset: 0 },
+    { slug: `${slugPrefix}-hover-topleft`, row: 0,       xFrac: 0.25, yOffset: 0 },
+    { slug: `${slugPrefix}-hover-bottom`,  row: lastIdx, xFrac: 0.5,  yOffset: 0 },
+    { slug: `${slugPrefix}-hover-right`,   row: midIdx,  xFrac: 0.95, yOffset: 0 },
   ];
 
   for (const c of cases) {
