@@ -16,7 +16,9 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const URL_BASE = process.env.PROCARE_URL ?? 'http://localhost:3000/';
-const OUT_DIR  = join(process.cwd(), 'docs', 'qa', 'screenshots', 'r26');
+const OUT_DIR  = process.env.PROCARE_OUT
+  ? join(process.cwd(), process.env.PROCARE_OUT)
+  : join(process.cwd(), 'docs', 'qa', 'screenshots', 'r27');
 
 async function main() {
   const out = process.argv[2] ?? 'baseline-fullpage';
