@@ -63,7 +63,7 @@ export function ProjectsHorizontal() {
           it doesn't affect card track layout. Section top = container top
           = pin activation point → no vertical jump on scroll. */}
       <HorizontalScroll
-        className="relative pl-[5vw] pr-[5vw] pb-[10vh] md:pt-[20vh]"
+        className="relative px-[5vw] pb-[10vh] pt-[20vh]"
         overlay={
           <div className="absolute top-0 left-0 right-0 z-10 px-[5vw] pt-[12vh] pb-4 flex items-baseline justify-between gap-6 pointer-events-none">
             <h2 className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
@@ -83,7 +83,7 @@ export function ProjectsHorizontal() {
             data-cursor-label="VIEW"
             data-project-card
             className={[
-              'group block w-[80vw] md:w-[480px] h-[60vh] flex-shrink-0 flex flex-col',
+              'group block w-[90vw] md:w-[480px] h-[60vh] flex-shrink-0 flex flex-col',
               // R2.5 user feedback — each project card gets a dark
               // transparent overlay box so cards read as discrete elements
               // over the canvas, not just typography floating in space.

@@ -104,8 +104,8 @@ export function Pillars() {
     const ctx = gsap.context(() => {
       const mm = gsap.matchMedia();
 
-      // Desktop: pinned multi-stage timeline.
-      mm.add('(min-width: 769px)', () => {
+      // Desktop & Mobile: pinned multi-stage timeline.
+      mm.add('all', () => {
         const stages = gsap.utils.toArray<HTMLElement>('[data-pillar-stage]', section);
         if (stages.length === 0) return;
 
@@ -175,13 +175,7 @@ export function Pillars() {
         };
       });
 
-      // Mobile fallback: each pillar becomes a stacked section, no pin.
-      mm.add('(max-width: 768px)', () => {
-        const stages = gsap.utils.toArray<HTMLElement>('[data-pillar-stage]', section);
-        stages.forEach((stage) => {
-          gsap.set(stage, { autoAlpha: 1, xPercent: 0, position: 'relative' });
-        });
-      });
+        // Fallback block removed since 'all' covers all viewports.
     }, section);
 
     return () => ctx.revert();
@@ -192,38 +186,46 @@ export function Pillars() {
       ref={sectionRef}
       data-cursor-label="EXPLORE"
       data-snap-target="pillars-deep-dive"
-      className={`relative w-full text-[var(--color-bone)] ${HALO} overflow-hidden md:h-screen`}
+      className={`relative w-full h-screen text-[var(--color-bone)] ${HALO} overflow-hidden`}
       aria-label="Three pillars in detail"
     >
       {PILLARS.map((p) => (
         <div
           key={p.number}
           data-pillar-stage
-          // Desktop: stages absolutely stacked over each other inside the
-          // pinned container. Mobile: position is overridden to relative
-          // by matchMedia.
-          className="md:absolute md:inset-0"
+          // Desktop & Mobile: stages absolutely stacked over each other inside the
+          // pinned container.
+          className="absolute inset-0"
         >
           {/* Tool 3 — LEFT-anchored radial pool (R2.8 — pushed further
               left to match content). Ellipse centre 18%/50%, slightly
               smaller (45vw × 75vh) so the right ~60% of the viewport
               stays clean canvas. Applied to all three panels (R2.7-fix). */}
           {p.needsPool && (
-            <div
-              className="absolute inset-0 pointer-events-none"
-              aria-hidden="true"
-              style={{
-                background:
-                  'radial-gradient(ellipse 45vw 75vh at 18% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
-              }}
-            />
+            <>
+              {/* Mobile: Centered, wider pool to cover the full-width centered text */}
+              <div
+                className="absolute inset-0 pointer-events-none block md:hidden"
+                aria-hidden="true"
+                style={{
+                  background:
+                    'radial-gradient(ellipse 120vw 80vh at 50% 50%, rgba(11,18,32,0.7) 0%, rgba(11,18,32,0.45) 40%, rgba(11,18,32,0) 80%)',
+                }}
+              />
+              {/* Desktop: Left-anchored pool */}
+              <div
+                className="absolute inset-0 pointer-events-none hidden md:block"
+                aria-hidden="true"
+                style={{
+                  background:
+                    'radial-gradient(ellipse 45vw 75vh at 18% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
+                }}
+              />
+            </>
           )}
 
-          {/* Left-anchored single-column composition (R2.8 — pushed
-              further left: 8vw → 4vw, width min(45vw,600px) → min(40vw,
-              560px)). Text-align centre inside the column.
-              Mobile (no pin): relative + full-width column with side padding. */}
-          <div className="relative md:absolute md:left-[4vw] md:top-1/2 md:-translate-y-1/2 w-full md:w-[min(40vw,560px)] max-w-[560px] px-[5vw] md:px-0 py-[10vh] md:py-0 flex flex-col gap-5 text-center items-center">
+          {/* Left-anchored single-column composition. Text-align centre inside. */}
+          <div className="absolute top-1/2 -translate-y-1/2 w-full md:left-[4vw] md:w-[min(40vw,560px)] max-w-[560px] px-[5vw] md:px-0 py-[10vh] md:py-0 flex flex-col gap-5 text-center items-center">
             {/* Number — small mono index */}
             <div data-pillar-number className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80">
               {p.number} / {String(PILLARS.length).padStart(2, '0')}

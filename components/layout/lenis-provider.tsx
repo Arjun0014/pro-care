@@ -11,8 +11,6 @@ gsap.registerPlugin(ScrollTrigger);
 // unchanged from R1.7.B.
 export function LenisProvider({ children }: { children?: ReactNode } = {}) {
   useEffect(() => {
-    // Never smooth-scroll on touch or reduced-motion — per 04-TECH-STACK.md.
-    if (window.matchMedia('(pointer: coarse)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const lenis = new Lenis({
