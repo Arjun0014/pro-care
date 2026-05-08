@@ -188,32 +188,36 @@ export default function HomePage() {
         />
 
         <div className="relative mx-auto max-w-7xl px-[5vw] h-full min-h-[84vh] flex flex-col justify-between gap-[6vh]">
-          {/* Beat 1 — top, left-aligned in left half */}
-          <div className="flex">
-            <ScrollWords
-              className="font-display text-[clamp(1.625rem,3.4vw,3.25rem)] leading-[1.15] max-w-[26ch] text-left [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
-              dimColor="rgba(244, 239, 230, 0.30)"
-              litColor="rgb(244, 239, 230)"
-              textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
-            >
-              We are <em>three companies in one</em>. Traders, contractors, operators.
-            </ScrollWords>
-          </div>
+          {/* Top row — Beat 1 (left) + Beat 2 (right) side-by-side, each
+              text-aligned centre within its half */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[6vh] md:gap-[4vw]">
+            {/* Beat 1 — left half, centred text */}
+            <div className="flex justify-center md:justify-start">
+              <ScrollWords
+                className="font-display text-[clamp(1.625rem,3.2vw,3rem)] leading-[1.15] max-w-[22ch] text-center [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
+                dimColor="rgba(244, 239, 230, 0.30)"
+                litColor="rgb(244, 239, 230)"
+                textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
+              >
+                We are <em>three companies in one</em>. Traders, contractors, operators.
+              </ScrollWords>
+            </div>
 
-          {/* Beat 2 — middle, right-aligned in right half */}
-          <div className="flex justify-end">
-            <ScrollWords
-              className="font-display text-[clamp(1.625rem,3.4vw,3.25rem)] leading-[1.15] max-w-[28ch] text-right [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
-              dimColor="rgba(244, 239, 230, 0.30)"
-              litColor="rgb(244, 239, 230)"
-              textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
-            >
-              We bring materials to Qatar, we build with them, and we keep what we build running.
-            </ScrollWords>
+            {/* Beat 2 — right half, centred text */}
+            <div className="flex justify-center md:justify-end">
+              <ScrollWords
+                className="font-display text-[clamp(1.625rem,3.2vw,3rem)] leading-[1.15] max-w-[22ch] text-center [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
+                dimColor="rgba(244, 239, 230, 0.30)"
+                litColor="rgb(244, 239, 230)"
+                textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
+              >
+                We bring materials to Qatar, we build with them, and we keep what we build running.
+              </ScrollWords>
+            </div>
           </div>
 
           {/* Beat 3 — bottom, centred "One standard..." + tight italic
-              "Things that last." right below (gap-[2.5vh]) */}
+              "Things that last." right below */}
           <div className="flex flex-col items-center gap-[2.5vh]">
             <ScrollWords
               className="font-display text-[clamp(1.625rem,3.4vw,3.25rem)] leading-[1.15] max-w-[26ch] text-center [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
