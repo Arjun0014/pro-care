@@ -176,4 +176,25 @@ stays uncovered for canvas display.
 
 ## Task 5 — Manifesto three-beat composition
 
-(filled in)
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Three beats visible with breathing space | ✓ `screenshots/r27/r27-task5-manifesto-beat1-desktop.png` |
+| Beat 1 left-aligned (left half) | ✓ `<div className="flex">` + `text-left max-w-[26ch]` |
+| Beat 2 right-aligned (right half) | ✓ `<div className="flex justify-end">` + `text-right max-w-[28ch]` |
+| Beat 3 centered "One standard..." + italic indent line below | ✓ `flex flex-col items-center gap-[5vh]`; italic line has `md:self-start md:ml-[10vw]` |
+| Locked copy verbatim | ✓ "We are *three companies in one*. Traders, contractors, operators." / "We bring materials to Qatar, we build with them, and we keep what we build running." / "One standard across all three." / "*Things that last.*" — exactly per doc 15 |
+| Italic emphasis preserved | ✓ `<em>three companies in one</em>` + `<em>Things that last.</em>` rendered italic |
+| ScrollWords mechanic preserved | ✓ each beat is its own ScrollWords instance with the same `dimColor / litColor / textShadow` props; words light up per-beat as the user scrolls through |
+| Tool 3 radial pool spans the section | ✓ unchanged centred `radial-gradient(ellipse 80vw 60vh at center, ...)` |
+| Section min-h bumped to 150 vh | ✓ from 150vh (was already there); inner container uses `gap-[12vh] md:gap-[14vh]` for breathing room |
+| Wheel-snap still lands at manifesto idealView | ✓ Task 1 V1b verifies — scroll to T2 lands at 2160 (top of section) |
+| Build clean | ✓ |
+
+**What changed:** `app/page.tsx` Manifesto section restructured. The single
+`<ScrollWords>` was replaced by three separate instances inside a flex column
+with `gap-[12vh]`. Each ScrollWords renders one beat with its own
+positioning (left-aligned, right-aligned, centered). The italic
+"Things that last." sits inside Beat 3 as a fourth ScrollWords instance,
+indented `md:ml-[10vw]` for asymmetric float.

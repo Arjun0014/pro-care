@@ -161,13 +161,20 @@ export default function HomePage() {
       </section>
 
       {/* ───── Section 3 · Manifesto ────────────────────────────────
-          Per doc 21 § Section 3 — TRANSPARENT. Centered ScrollWords with
-          adapted colors: dim = bone @ 25% (ghostly), lit = bone @ 100%
-          + Tool 2 halo. Tool 3 radial pool centered behind text since
-          Stage 2-3 frames are predominantly mid-bright outdoor scenes. */}
+          Per R2.7 § Task 5 — three asymmetric beats with breathing space.
+          Locked copy (doc 15) split into three ScrollWords instances, each
+          with its own progress and positioning:
+            Beat 1 — top third, left-aligned in left half
+            Beat 2 — middle third, right-aligned in right half
+            Beat 3 — bottom third, "One standard..." centred + italic
+                     "Things that last." floating below with indent
+          Section is now min-h-[150vh] so the three beats have room. The
+          ScrollWords ramp is per-beat: as each beat enters the viewport,
+          its words light up in a wave (Beat 1 lights first, then Beat 2,
+          then Beat 3). Tool 3 radial pool spans the section. */}
       <section
         data-snap-target="manifesto"
-        className="relative w-full min-h-[150vh] flex items-center justify-center px-[8vw] py-[10vh]"
+        className="relative w-full min-h-[150vh] py-[10vh]"
         aria-label="Manifesto"
       >
         {/* Tool 3 — radial pool. Fully transparent at 80% so canvas reads
@@ -180,17 +187,53 @@ export default function HomePage() {
               'radial-gradient(ellipse 80vw 60vh at center, rgba(11,18,32,0.45) 0%, rgba(11,18,32,0.2) 40%, rgba(11,18,32,0) 80%)',
           }}
         />
-        <ScrollWords
-          className="relative font-display text-[clamp(2rem,4.5vw,4.5rem)] leading-[1.2] max-w-[52ch] text-center"
-          dimColor="rgba(244, 239, 230, 0.25)"
-          litColor="rgb(244, 239, 230)"
-          textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
-        >
-          We are <em>three companies in one</em>. Traders, contractors,
-          operators. We bring materials to Qatar, we build with them, and
-          we keep what we build running. One standard across all three.{' '}
-          <em>Things that last.</em>
-        </ScrollWords>
+
+        <div className="relative mx-auto max-w-7xl px-[5vw] flex flex-col gap-[12vh] md:gap-[14vh]">
+          {/* Beat 1 — left-aligned, left half */}
+          <div className="flex">
+            <ScrollWords
+              className="font-display text-[clamp(2rem,4vw,4rem)] leading-[1.15] max-w-[26ch] text-left"
+              dimColor="rgba(244, 239, 230, 0.25)"
+              litColor="rgb(244, 239, 230)"
+              textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+            >
+              We are <em>three companies in one</em>. Traders, contractors, operators.
+            </ScrollWords>
+          </div>
+
+          {/* Beat 2 — right-aligned, right half */}
+          <div className="flex justify-end">
+            <ScrollWords
+              className="font-display text-[clamp(2rem,4vw,4rem)] leading-[1.15] max-w-[28ch] text-right"
+              dimColor="rgba(244, 239, 230, 0.25)"
+              litColor="rgb(244, 239, 230)"
+              textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+            >
+              We bring materials to Qatar, we build with them, and we keep what we build running.
+            </ScrollWords>
+          </div>
+
+          {/* Beat 3 — centred "One standard..." + italic "Things that last."
+              with indent below */}
+          <div className="flex flex-col items-center gap-[5vh]">
+            <ScrollWords
+              className="font-display text-[clamp(2rem,4vw,4rem)] leading-[1.15] max-w-[24ch] text-center"
+              dimColor="rgba(244, 239, 230, 0.25)"
+              litColor="rgb(244, 239, 230)"
+              textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+            >
+              One standard across all three.
+            </ScrollWords>
+            <ScrollWords
+              className="font-display italic text-[clamp(1.5rem,3vw,3rem)] leading-[1.2] self-center md:self-start md:ml-[10vw]"
+              dimColor="rgba(244, 239, 230, 0.25)"
+              litColor="rgb(244, 239, 230)"
+              textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
+            >
+              <em>Things that last.</em>
+            </ScrollWords>
+          </div>
+        </div>
       </section>
 
       {/* Section 4 (mid-page Pillars marquee) was REMOVED in R2.6 per
