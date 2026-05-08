@@ -103,7 +103,7 @@ function Beat1() {
       data-beat="1"
       className={`absolute inset-0 left-[5vw] top-0 flex items-center font-display text-[var(--color-bone)] ${HALO}`}
     >
-      <h2 className="text-[clamp(5rem,11vw,13rem)] leading-[0.92] tracking-[-0.02em] max-w-[16ch]">
+      <h2 className="text-[clamp(3.5rem,11vw,13rem)] leading-[0.92] tracking-[-0.02em] max-w-[16ch]">
         <BeatLine tokens={tokenizeBeat(['We are'])} delay={0} />
         <BeatLine
           tokens={tokenizeBeat([{ italic: 'three companies' }])}
@@ -125,7 +125,7 @@ function Beat2() {
       data-beat="2"
       className={`absolute inset-0 px-[5vw] flex items-center font-display text-[var(--color-bone)] ${HALO}`}
     >
-      <h2 className="text-[clamp(3.5rem,8vw,9rem)] leading-[0.92] tracking-[-0.02em]">
+      <h2 className="text-[clamp(2.75rem,8vw,9rem)] leading-[0.92] tracking-[-0.02em]">
         <BeatLine tokens={tokenizeBeat(['Traders.'])} delay={0} />
         <BeatLine tokens={tokenizeBeat(['Contractors.'])} delay={(WORD_STAGGER_MS * 1) / 1000} />
         <BeatLine tokens={tokenizeBeat(['Operators.'])} delay={(WORD_STAGGER_MS * 2) / 1000} />
@@ -141,7 +141,7 @@ function Beat3() {
       data-beat="3"
       className={`absolute inset-0 flex items-center justify-center font-display text-[var(--color-bone)] ${HALO}`}
     >
-      <div className="text-center text-[clamp(2.25rem,4.5vw,5rem)] leading-[1.25] tracking-[-0.015em]">
+      <div className="text-center text-[clamp(1.75rem,4.5vw,5rem)] leading-[1.25] tracking-[-0.015em]">
         <span className="block">
           <StaggeredWords tokens={tokenizeBeat(['We bring materials,'])} delay={0} />
         </span>
@@ -165,7 +165,7 @@ function Beat4() {
       className={`absolute inset-0 flex items-center justify-center text-center font-display text-[var(--color-bone)] ${HALO}`}
     >
       <div>
-        <h2 className="text-[clamp(3.5rem,8vw,9rem)] leading-[0.92] tracking-[-0.02em]">
+        <h2 className="text-[clamp(2.75rem,8vw,9rem)] leading-[0.92] tracking-[-0.02em]">
           <BeatLine tokens={tokenizeBeat(['One standard.'])} delay={0} />
           <BeatLine tokens={tokenizeBeat(['Across all three.'])} delay={(WORD_STAGGER_MS * 2) / 1000} />
         </h2>

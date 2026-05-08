@@ -38,7 +38,7 @@ export function HorizontalScroll({ children, className, overlay }: Props) {
 
     const mm = gsap.matchMedia();
 
-    mm.add('(min-width: 769px)', () => {
+    mm.add('all', () => {
       const trackWidth    = track.scrollWidth;
       const viewportWidth = window.innerWidth;
       const distance      = trackWidth - viewportWidth;
@@ -76,7 +76,7 @@ export function HorizontalScroll({ children, className, overlay }: Props) {
       {overlay}
       <div
         ref={trackRef}
-        className="flex flex-col md:flex-row gap-8 will-change-transform"
+        className="flex flex-row gap-8 will-change-transform"
       >
         {children}
       </div>

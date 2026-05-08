@@ -22,10 +22,7 @@ const FRAMES_PER_CLIP = 120;
 const INITIAL_PRELOAD = 12;          // blocking — canvas can paint after this
 const BACKGROUND_PARALLELISM = 8;    // concurrent fetches in the background
 
-// Mobile breakpoint and frame step (every-4th-frame on mobile cuts the
-// payload from 600 → 150 frames, ~7-15 MB).
 const MOBILE_BREAKPOINT = 768;
-const MOBILE_FRAME_STEP = 4;
 
 function frameUrl(globalFrame: number, format: 'avif' | 'webp'): string {
   const clipIndex = Math.floor(globalFrame / FRAMES_PER_CLIP);
@@ -42,11 +39,9 @@ function detectFormat(): 'avif' | 'webp' {
   return 'webp';
 }
 
-// Snap a frame index to the mobile-allowed values (multiples of 4)
-function snapToStep(frame: number, isMobile: boolean): number {
-  if (!isMobile) return Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(frame)));
-  const stepped = Math.round(frame / MOBILE_FRAME_STEP) * MOBILE_FRAME_STEP;
-  return Math.max(0, Math.min(TOTAL_FRAMES - 1, stepped));
+// Bound a frame index
+function snapToStep(frame: number): number {
+  return Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(frame)));
 }
 
 export function ScrollBackdrop() {
@@ -122,11 +117,10 @@ export function ScrollBackdrop() {
     });
   };
 
-  // Build the full list of frames we want to load (respects mobile step).
-  function buildFrameList(isMobile: boolean): number[] {
+  // Build the full list of frames we want to load.
+  function buildFrameList(): number[] {
     const list: number[] = [];
-    const step = isMobile ? MOBILE_FRAME_STEP : 1;
-    for (let i = 0; i < TOTAL_FRAMES; i += step) list.push(i);
+    for (let i = 0; i < TOTAL_FRAMES; i++) list.push(i);
     return list;
   }
 
@@ -143,14 +137,11 @@ export function ScrollBackdrop() {
     let cancelled = false;
 
     async function bootstrap() {
-      const isMobile = isMobileRef.current;
-      const allFrames = buildFrameList(isMobile);
-      const step = isMobile ? MOBILE_FRAME_STEP : 1;
+      const allFrames = buildFrameList();
 
       // 1) Blocking preload — first INITIAL_PRELOAD frames in parallel.
-      //    On mobile this is INITIAL_PRELOAD / step frames (e.g. 12 → 3 actual).
       const initialBatch: Promise<HTMLImageElement | null>[] = [];
-      for (let i = 0; i < INITIAL_PRELOAD; i += step) {
+      for (let i = 0; i < INITIAL_PRELOAD; i++) {
         if (i >= TOTAL_FRAMES) break;
         initialBatch.push(loadFrame(i));
       }
@@ -216,7 +207,7 @@ export function ScrollBackdrop() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    const index = snapToStep(rawIndex, isMobileRef.current);
+    const index = snapToStep(rawIndex);
     const cache = cacheRef.current;
     let img = cache.get(index);
     if (!img) {
@@ -247,7 +238,12 @@ export function ScrollBackdrop() {
     if (ir > cr) {
       dh = ch;
       dw = ch * ir;
-      dx = (cw - dw) / 2;
+      // On mobile, pin the crop to the center-right (65%) to frame the building.
+      if (isMobileRef.current) {
+        dx = (cw - dw) * 0.65;
+      } else {
+        dx = (cw - dw) / 2;
+      }
       dy = 0;
     } else {
       dw = cw;
@@ -283,7 +279,7 @@ export function ScrollBackdrop() {
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const progress = maxScroll > 0 ? scrollY / maxScroll : 0;
       const target = progress * (TOTAL_FRAMES - 1);
-      targetFrameRef.current = snapToStep(target, isMobileRef.current);
+      targetFrameRef.current = snapToStep(target);
     };
 
     handleScroll();

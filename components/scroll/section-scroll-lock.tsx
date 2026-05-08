@@ -57,9 +57,9 @@ const SCROLL_LOCK_CONFIG = {
     'beat-2': 1200,
     'beat-3': 1200,
     'beat-4': 1200,
-    'pillars-trading': 2500,
-    'pillars-contracting': 2500,
-    'pillars-facility': 2500,
+    // 'pillars-trading': 2500,
+    // 'pillars-contracting': 2500,
+    // 'pillars-facility': 2500,
   } as Record<string, number>,
 };
 
@@ -120,6 +120,8 @@ function wire(lenis: LenisLike): () => void {
     gestureActive: false,
     gestureTimer: null as ReturnType<typeof setTimeout> | null,
     cooldownUntil: 0,
+    touchStartY: 0,
+    touchStartTime: 0,
   };
 
   // ── Build snap-target list from the DOM ──────────────────────────
@@ -247,7 +249,7 @@ function wire(lenis: LenisLike): () => void {
           state.queuedDirection = 0;
           setTimeout(() => {
             advanceToTarget(state.currentIdx + dir);
-          }, SCROLL_LOCK_CONFIG.cooldownAfterTransitionMs);
+          }, 0); // Removed the cooldown delay for queued advances so rapid inputs feel tighter
         }
       },
     });
@@ -255,7 +257,6 @@ function wire(lenis: LenisLike): () => void {
 
   // ── Wheel handler ────────────────────────────────────────────────
   const handleWheel = (e: WheelEvent) => {
-    if (window.innerWidth < SCROLL_LOCK_CONFIG.minViewportWidth) return;
     if (isInHorizontalFree()) return; // pass through to Lenis + ScrollTrigger
 
     // preventDefault stops the browser's native scroll; stopImmediate-
@@ -305,7 +306,6 @@ function wire(lenis: LenisLike): () => void {
 
   // ── Keyboard handler ─────────────────────────────────────────────
   const handleKeydown = (e: KeyboardEvent) => {
-    if (window.innerWidth < SCROLL_LOCK_CONFIG.minViewportWidth) return;
 
     // Home/End always work — they're escape hatches that should fire
     // even from inside an opt-out (horizontal-free) section.
@@ -337,12 +337,48 @@ function wire(lenis: LenisLike): () => void {
     advanceToTarget(state.currentIdx + direction);
   };
 
+  // ── Touch handler (Swipe) ────────────────────────────────────────
+  const handleTouchStart = (e: TouchEvent) => {
+    if (isInHorizontalFree()) return;
+    state.touchStartY = e.touches[0].clientY;
+    state.touchStartTime = Date.now();
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    if (isInHorizontalFree()) return;
+    // Prevent native scrolling so our snap engine has full control
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    if (isInHorizontalFree()) return;
+
+    const touchEndY = e.changedTouches[0].clientY;
+    const dy = state.touchStartY - touchEndY;
+    const dt = Date.now() - state.touchStartTime;
+
+    // Minimum distance for a swipe is 40px, max time is 500ms
+    if (Math.abs(dy) > 40 && dt < 500) {
+      // Touch swipes are allowed to interrupt ongoing transitions
+      // so rapid tandem swipes feel instantaneous.
+      const direction = dy > 0 ? 1 : -1;
+
+      // We cap rapid swiping speed by adjusting the duration
+      // The advanceToTarget function uses Lenis which seamlessly
+      // redirects the scroll to the new target.
+      advanceToTarget(state.currentIdx + direction);
+    }
+  };
+
   // Wheel needs `passive: false` so we can preventDefault. `capture: true`
   // ensures we run BEFORE Lenis's listener; combined with
   // stopImmediatePropagation in the handler, Lenis never sees the event
   // when we want to intercept it.
   window.addEventListener('wheel', handleWheel, { passive: false, capture: true });
   window.addEventListener('keydown', handleKeydown);
+  window.addEventListener('touchstart', handleTouchStart, { passive: true });
+  window.addEventListener('touchmove', handleTouchMove, { passive: false });
+  window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
   // Diagnostic — exposes state for Playwright probes / debugging. Cheap
   // (two property writes) and gated by typeof window check.
@@ -360,8 +396,11 @@ function wire(lenis: LenisLike): () => void {
   return () => {
     ro.disconnect();
     window.removeEventListener('resize', onResize);
-    window.removeEventListener('wheel', handleWheel, { capture: true } as EventListenerOptions);
+    window.removeEventListener('wheel', handleWheel, { capture: true });
     window.removeEventListener('keydown', handleKeydown);
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+    window.removeEventListener('touchend', handleTouchEnd);
     if (state.gestureTimer) clearTimeout(state.gestureTimer);
   };
 }
