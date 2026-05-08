@@ -21,8 +21,8 @@ import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { Marquee } from '@/components/motion/marquee';
 import { easings } from '@/lib/motion';
 
-// Tool 2 halo class — light text over varied canvas brightness.
-const HALO = '[text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]';
+// Matches Hero headline text-shadow for consistent legibility over canvas.
+const HALO = '[text-shadow:0_2px_24px_rgba(11,18,32,0.65),0_1px_2px_rgba(11,18,32,0.5)]';
 
 // Per-word stagger so each line of the beat enters in a wave.
 const WORD_STAGGER_MS = 50;
@@ -118,14 +118,14 @@ function Beat1() {
   );
 }
 
-// Beat 2 — three roles, mid-large.
+// Beat 2 — three roles, RIGHT-aligned for visual contrast with Beat 1.
 function Beat2() {
   return (
     <div
       data-beat="2"
-      className={`absolute inset-0 left-[5vw] top-0 flex items-center font-display text-[var(--color-bone)] ${HALO}`}
+      className={`absolute inset-0 px-[5vw] flex items-center font-display text-[var(--color-bone)] ${HALO}`}
     >
-      <h2 className="text-[clamp(3.5rem,7vw,8rem)] leading-[1.0] tracking-[-0.02em]">
+      <h2 className="text-[clamp(3.5rem,8vw,9rem)] leading-[0.92] tracking-[-0.02em]">
         <BeatLine tokens={tokenizeBeat(['Traders.'])} delay={0} />
         <BeatLine tokens={tokenizeBeat(['Contractors.'])} delay={(WORD_STAGGER_MS * 1) / 1000} />
         <BeatLine tokens={tokenizeBeat(['Operators.'])} delay={(WORD_STAGGER_MS * 2) / 1000} />
@@ -134,21 +134,21 @@ function Beat2() {
   );
 }
 
-// Beat 3 — three actions, increasing indent.
+// Beat 3 — three actions with cascading indent, CENTERED.
 function Beat3() {
   return (
     <div
       data-beat="3"
-      className={`absolute inset-0 left-[5vw] top-0 flex items-center font-display text-[var(--color-bone)] ${HALO}`}
+      className={`absolute inset-0 flex items-center justify-center font-display text-[var(--color-bone)] ${HALO}`}
     >
-      <div className="text-[clamp(2.75rem,5.5vw,6rem)] leading-[1.15] tracking-[-0.02em] max-w-[28ch]">
+      <div className="text-center text-[clamp(2.25rem,4.5vw,5rem)] leading-[1.25] tracking-[-0.015em]">
         <span className="block">
           <StaggeredWords tokens={tokenizeBeat(['We bring materials,'])} delay={0} />
         </span>
-        <span className="block ml-[2vw]">
+        <span className="block">
           <StaggeredWords tokens={tokenizeBeat(['we build with them,'])} delay={(WORD_STAGGER_MS * 3) / 1000} />
         </span>
-        <span className="block ml-[4vw]">
+        <span className="block">
           <StaggeredWords tokens={tokenizeBeat(['we keep them running.'])} delay={(WORD_STAGGER_MS * 7) / 1000} />
         </span>
       </div>
@@ -156,32 +156,23 @@ function Beat3() {
   );
 }
 
-// Beat 4 — Part 4a top-left, Part 4b bottom-right (delayed 600 ms).
+// Beat 4 — closing, CENTERED with coda line beneath.
 function Beat4() {
   const reduced = useReducedMotion();
   return (
-    <>
-      {/* Part 4a — top-left, dominant */}
-      <div
-        data-beat="4a"
-        className={`absolute left-[5vw] top-[25vh] font-display text-[var(--color-bone)] ${HALO}`}
-      >
-        <h2 className="text-[clamp(4rem,8vw,9rem)] leading-[1.0] tracking-[-0.02em] max-w-[15ch]">
+    <div
+      data-beat="4"
+      className={`absolute inset-0 flex items-center justify-center text-center font-display text-[var(--color-bone)] ${HALO}`}
+    >
+      <div>
+        <h2 className="text-[clamp(3.5rem,8vw,9rem)] leading-[0.92] tracking-[-0.02em]">
           <BeatLine tokens={tokenizeBeat(['One standard.'])} delay={0} />
           <BeatLine tokens={tokenizeBeat(['Across all three.'])} delay={(WORD_STAGGER_MS * 2) / 1000} />
         </h2>
-      </div>
-
-      {/* Part 4b — bottom-right, italic, slightly desaturated, delayed */}
-      <div
-        data-beat="4b"
-        className={`absolute right-[5vw] bottom-[14vh] font-display italic ${HALO}`}
-        style={{ color: 'rgba(244, 239, 230, 0.85)' }}
-      >
-        <motion.div
-          className="text-[clamp(1.25rem,2vw,2.5rem)] leading-[1.2] tracking-[-0.01em]"
+        <motion.p
+          className="mt-10 text-[clamp(1.5rem,2.5vw,2.75rem)] leading-[1.3] tracking-[-0.01em] italic opacity-80"
           initial={reduced ? { opacity: 0 } : { y: 20, opacity: 0 }}
-          animate={reduced ? { opacity: 1 } : { y: 0, opacity: 1 }}
+          animate={reduced ? { opacity: 0.8 } : { y: 0, opacity: 0.8 }}
           exit={reduced ? { opacity: 0 } : { y: -20, opacity: 0 }}
           transition={{
             duration: reduced ? 0.2 : ENTER_DURATION_S,
@@ -190,9 +181,9 @@ function Beat4() {
           }}
         >
           Things that last.
-        </motion.div>
+        </motion.p>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -200,7 +191,9 @@ function Beat4() {
 
 export function IdentityManifesto() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [activeBeat, setActiveBeat] = useState(0);
+  // Start at -1 so Beat 1's AnimatePresence entry animation triggers
+  // when the user actually scrolls to the section, not on page load.
+  const [activeBeat, setActiveBeat] = useState(-1);
 
   // Read scroll position to determine which beat is "active".
   useEffect(() => {
@@ -210,12 +203,24 @@ export function IdentityManifesto() {
       const sec = sectionRef.current;
       if (!sec) return;
       const r = sec.getBoundingClientRect();
-      const sectionTop = r.top + window.scrollY;
       const vh = window.innerHeight;
-      // 4 beats × 1 vh each within the 400 vh section. The user's scroll
-      // anchor is the TOP of viewport, so beat N starts at sectionTop +
-      // N × vh. Pick the beat whose anchor most matches scrollY.
-      const offset = window.scrollY - sectionTop;
+
+      // Section is still below the viewport — don't activate yet.
+      // This keeps activeBeat at -1 until the snap animation actually
+      // brings the section into view, so the fade-in is visible on arrival.
+      if (r.top > vh * 0.15) {
+        setActiveBeat(-1);
+        return;
+      }
+
+      // Section has scrolled entirely past the viewport (scrolling back up)
+      if (r.bottom < 0) {
+        setActiveBeat(-1);
+        return;
+      }
+
+      // Use the visual offset from the section top to viewport top
+      const offset = -r.top;
       const idx = Math.max(0, Math.min(BEAT_COUNT - 1, Math.round(offset / vh)));
       setActiveBeat(idx);
     };
@@ -256,13 +261,25 @@ export function IdentityManifesto() {
         style={{ marginTop: '-400vh' } as CSSProperties}
         aria-hidden
       >
+        {/* Ink veil — same as Hero. Darkens canvas edges for text legibility
+            while keeping center transparent so the building remains visible. */}
+        <div
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{
+            background:
+              'radial-gradient(ellipse at center, rgba(11,18,32,0) 0%, rgba(11,18,32,0.35) 60%, rgba(11,18,32,0.55) 100%)',
+          }}
+        />
+
         {/* Active beat with AnimatePresence — only one rendered at a time */}
-        <BeatStage activeBeat={activeBeat} />
+        <div className="absolute inset-0 z-10">
+          <BeatStage activeBeat={activeBeat} />
+        </div>
 
         {/* Ticker pinned at the bottom of the viewport for the entire
             400 vh range. Same locked content + Tool 2 halo as before. */}
         <div
-          className="absolute bottom-[6vh] inset-x-0 overflow-hidden pointer-events-auto"
+          className="absolute bottom-[6vh] inset-x-0 overflow-hidden pointer-events-auto z-10"
           aria-hidden="false"
         >
           <Marquee
@@ -295,19 +312,21 @@ function BeatStage({ activeBeat }: { activeBeat: number }) {
   const beats: ReactNode[] = [<Beat1 key="b1" />, <Beat2 key="b2" />, <Beat3 key="b3" />, <Beat4 key="b4" />];
   return (
     <AnimatePresence mode="wait">
-      <motion.div
-        key={activeBeat}
-        className="absolute inset-0"
-        initial={{ opacity: 1 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{
-          duration: EXIT_DURATION_S,
-          ease: easings.cinema as [number, number, number, number],
-        }}
-      >
-        {beats[activeBeat]}
-      </motion.div>
+      {activeBeat >= 0 && (
+        <motion.div
+          key={activeBeat}
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{
+            duration: 0.5,
+            ease: easings.cinema as [number, number, number, number],
+          }}
+        >
+          {beats[activeBeat]}
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 }

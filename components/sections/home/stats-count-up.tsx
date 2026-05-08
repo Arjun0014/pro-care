@@ -10,9 +10,9 @@ import { useReducedMotion } from 'motion/react';
 
 type Props = {
   /** Final numeric target. */
-  target:   number;
+  target: number;
   /** Suffix appended after the number (e.g. '+'). */
-  suffix?:  string;
+  suffix?: string;
   /** Whether to comma-format the number (e.g. 100,000). */
   formatThousands?: boolean;
   /** Animation duration in ms. */

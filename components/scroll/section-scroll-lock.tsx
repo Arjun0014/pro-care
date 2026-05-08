@@ -57,6 +57,9 @@ const SCROLL_LOCK_CONFIG = {
     'beat-2': 1200,
     'beat-3': 1200,
     'beat-4': 1200,
+    'pillars-trading': 2500,
+    'pillars-contracting': 2500,
+    'pillars-facility': 2500,
   } as Record<string, number>,
 };
 

@@ -18,9 +18,13 @@ if (typeof window !== 'undefined') {
 type Props = {
   children: ReactNode;
   className?: string;
+  /** Content rendered inside the pinned container but above the horizontal
+   *  track. Use for overlay headers that should stay visible during scrub
+   *  without scrolling horizontally. */
+  overlay?: ReactNode;
 };
 
-export function HorizontalScroll({ children, className }: Props) {
+export function HorizontalScroll({ children, className, overlay }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef     = useRef<HTMLDivElement>(null);
 
@@ -49,6 +53,7 @@ export function HorizontalScroll({ children, className }: Props) {
           end:     () => `+=${distance}`,
           pin:     true,
           scrub:   1,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
         },
       });
@@ -68,6 +73,7 @@ export function HorizontalScroll({ children, className }: Props) {
       className={`overflow-hidden ${className ?? ''}`}
       data-cursor-label="DRAG SCROLL"
     >
+      {overlay}
       <div
         ref={trackRef}
         className="flex flex-col md:flex-row gap-8 will-change-transform"

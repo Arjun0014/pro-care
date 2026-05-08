@@ -58,20 +58,23 @@ export function ProjectsHorizontal() {
       className="relative w-full text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
       aria-label="Projects gallery"
     >
-      <header className="px-[5vw] pt-[10vh] pb-12 flex items-baseline justify-between gap-6">
-        <h2 className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
-          Selected projects
-        </h2>
-        <span className="font-mono text-xs tabular-nums opacity-80">
-          {String(counter).padStart(2, '0')} / {String(featured.length).padStart(2, '0')}
-        </span>
-      </header>
-
-      {/* Cards anchored to viewport bottom 60% so the canvas building (mid-
-          frame) stays visible behind them. `pt-[40vh]` pushes the card
-          track down within HorizontalScroll's pinned viewport on desktop;
-          mobile (no pin) just stacks naturally. */}
-      <HorizontalScroll className="pl-[5vw] pr-[5vw] pb-[10vh] md:pt-[20vh]">
+      {/* Header is inside the pinned container via overlay prop (renders
+          inside containerRef, outside trackRef). Absolutely positioned so
+          it doesn't affect card track layout. Section top = container top
+          = pin activation point → no vertical jump on scroll. */}
+      <HorizontalScroll
+        className="relative pl-[5vw] pr-[5vw] pb-[10vh] md:pt-[20vh]"
+        overlay={
+          <div className="absolute top-0 left-0 right-0 z-10 px-[5vw] pt-[12vh] pb-4 flex items-baseline justify-between gap-6 pointer-events-none">
+            <h2 className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
+              Selected projects
+            </h2>
+            <span className="font-mono text-xs tabular-nums opacity-80">
+              {String(counter).padStart(2, '0')} / {String(featured.length).padStart(2, '0')}
+            </span>
+          </div>
+        }
+      >
         {featured.map((p, i) => (
           <Link
             key={p.slug}
