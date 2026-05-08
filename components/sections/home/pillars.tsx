@@ -188,8 +188,7 @@ export function Pillars() {
     <section
       ref={sectionRef}
       data-cursor-label="EXPLORE"
-      data-snap-section="pillars-deep-dive"
-      data-snap-mode="opt-out"
+      data-snap-target="pillars-deep-dive"
       className={`relative w-full text-[var(--color-bone)] ${HALO} overflow-hidden md:h-screen`}
       aria-label="Three pillars in detail"
     >
