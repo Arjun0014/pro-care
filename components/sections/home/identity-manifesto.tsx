@@ -25,10 +25,10 @@ import { easings } from '@/lib/motion';
 const HALO = '[text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]';
 
 // Per-word stagger so each line of the beat enters in a wave.
-const WORD_STAGGER_MS  = 50;
-const ENTER_DURATION_S = 0.7;   // Lift in
-const EXIT_DURATION_S  = 0.5;   // Lift out
-const PART_4B_DELAY_S  = 0.6;   // Beat 4b appears 600 ms after 4a
+const WORD_STAGGER_MS = 50;
+const ENTER_DURATION_S = 0.2;   // Lift in
+const EXIT_DURATION_S = 0.2;   // Lift out
+const PART_4B_DELAY_S = 0.2;   // Beat 4b appears 600 ms after 4a
 
 const BEAT_COUNT = 4;
 
@@ -67,8 +67,8 @@ function StaggeredWords({ tokens, delay = 0 }: { tokens: Word[]; delay?: number 
             exit={reduced ? { opacity: 0 } : { y: -30, opacity: 0 }}
             transition={{
               duration: reduced ? 0.2 : ENTER_DURATION_S,
-              ease:     easings.cinema as [number, number, number, number],
-              delay:    wordDelay,
+              ease: easings.cinema as [number, number, number, number],
+              delay: wordDelay,
             }}
             style={{ fontStyle: t.italic ? 'italic' : 'normal' }}
           >
@@ -185,8 +185,8 @@ function Beat4() {
           exit={reduced ? { opacity: 0 } : { y: -20, opacity: 0 }}
           transition={{
             duration: reduced ? 0.2 : ENTER_DURATION_S,
-            ease:     easings.cinema as [number, number, number, number],
-            delay:    PART_4B_DELAY_S,
+            ease: easings.cinema as [number, number, number, number],
+            delay: PART_4B_DELAY_S,
           }}
         >
           Things that last.
@@ -298,12 +298,12 @@ function BeatStage({ activeBeat }: { activeBeat: number }) {
       <motion.div
         key={activeBeat}
         className="absolute inset-0"
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 1 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{
           duration: EXIT_DURATION_S,
-          ease:     easings.cinema as [number, number, number, number],
+          ease: easings.cinema as [number, number, number, number],
         }}
       >
         {beats[activeBeat]}

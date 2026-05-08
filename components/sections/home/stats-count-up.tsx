@@ -92,7 +92,7 @@ export function StatsCountUp() {
   return (
     <section
       data-snap-target="stats"
-      className="relative h-[80vh] w-full flex items-end pb-[8vh] px-[5vw] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
+      className="relative h-screen w-full flex items-end pb-[8vh] px-[5vw] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
       aria-label="By the numbers"
     >
       {/* Ambient veil — alternating-veil experiment per R2.5 user feedback.
