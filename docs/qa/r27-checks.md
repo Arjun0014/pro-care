@@ -123,7 +123,31 @@ desktop scenarios.
 
 ## Task 3 — Pillars deep-dive left-anchored composition
 
-(filled in)
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Trading panel screenshot | ✓ `r27-task3-trading-desktop.png` |
+| Contracting panel screenshot | ✓ `r27-task3-contracting-desktop.png` |
+| Facility Services panel screenshot | ✓ `r27-task3-facility-desktop.png` |
+| Content on left ~45 % of viewport | ✓ `md:absolute md:left-[8vw] md:w-[min(45vw,600px)]` |
+| All text left-aligned | ✓ removed `text-center`; `items-center` on list dropped |
+| Canvas building visible right ~55 % | ✓ visible in all 3 screenshots — building rising, crane, plot |
+| Trading-only asymmetric veil | ✓ `radial-gradient(ellipse 50vw 80vh at 25% 50%, ...)` only when `p.needsPool === true` (Trading) |
+| Contracting + Facility skip veil | ✓ verified visually — no left-side darkening |
+| Italic tagline gets stronger halo | ✓ added `[text-shadow:0_1px_2px_rgba(11,18,32,0.6),0_0_28px_rgba(11,18,32,0.4)]` to tagline |
+| Pin-and-scrub mechanic preserved | ✓ inner GSAP timeline + 3-stage absolute stacking unchanged |
+| Wheel-snap sub-targets still hit centred panels (T3/T4/T5) | ✓ — Task 1 V3 verifications pass |
+| All entry animations preserved | ✓ `data-pillar-{number,head,body,item,cta}` attributes intact, GSAP `tl.from()` calls unchanged |
+| Mobile fallback still stacks | ✓ `(max-width: 768px)` matchMedia block unchanged |
+
+**What changed:** in `components/sections/home/pillars.tsx`, the inner content
+container's classes flipped from centred (`mx-auto max-w-[700px] text-center
+items-center`) to left-anchored (`md:absolute md:left-[8vw] md:top-1/2
+md:-translate-y-1/2 w-full md:w-[min(45vw,600px)] text-left`). The radial-pool
+gradient on the Trading panel was retuned from a centred ellipse 80vw 60vh to a
+left-anchored ellipse 50vw 80vh at `25% 50%` so the right half of the viewport
+stays uncovered for canvas display.
 
 ## Task 4 — Selected projects 3-up side-by-side
 

@@ -199,22 +199,27 @@ export function Pillars() {
           // Desktop: stages absolutely stacked over each other inside the
           // pinned container. Mobile: position is overridden to relative
           // by matchMedia.
-          className="md:absolute md:inset-0 md:flex md:items-center md:justify-center"
+          className="md:absolute md:inset-0"
         >
-          {/* Tool 3 — radial pool, only on the Trading panel (canvas brightest here) */}
+          {/* Tool 3 — LEFT-anchored radial pool (R2.7), only on the Trading
+              panel where the canvas is brightest. Ellipse centred at 25%/50%
+              fades to transparent by 70% horizontally so the right half of
+              the viewport stays clean for canvas display. */}
           {p.needsPool && (
             <div
               className="absolute inset-0 pointer-events-none"
               aria-hidden="true"
               style={{
                 background:
-                  'radial-gradient(ellipse 80vw 60vh at center, rgba(11,18,32,0.45) 0%, rgba(11,18,32,0.2) 40%, rgba(11,18,32,0) 80%)',
+                  'radial-gradient(ellipse 50vw 80vh at 25% 50%, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.30) 35%, rgba(11,18,32,0) 70%)',
               }}
             />
           )}
 
-          {/* Centered single-column composition, max-w 700px per doc 21 */}
-          <div className="relative mx-auto w-full max-w-[700px] px-[5vw] py-[10vh] md:py-0 flex flex-col gap-8 text-center">
+          {/* Left-anchored single-column composition (R2.7).
+              Desktop: absolute left:8vw, vertically centred, width min(45vw, 600px).
+              Mobile (no pin): relative + full-width column with side padding. */}
+          <div className="relative md:absolute md:left-[8vw] md:top-1/2 md:-translate-y-1/2 w-full md:w-[min(45vw,600px)] max-w-[600px] px-[5vw] md:px-0 py-[10vh] md:py-0 flex flex-col gap-6 text-left">
             {/* Number — small mono index */}
             <div data-pillar-number className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80">
               {p.number} / {String(PILLARS.length).padStart(2, '0')}
@@ -225,18 +230,18 @@ export function Pillars() {
               <h3 className="font-display text-[clamp(3rem,7vw,6rem)] leading-[1.1] tracking-[-0.02em] pb-[0.05em]">
                 {p.name}
               </h3>
-              <p className="font-display italic text-[clamp(1.25rem,2vw,1.875rem)] leading-[1.35] text-[var(--color-bone)]/85 pb-[0.05em]">
+              <p className="font-display italic text-[clamp(1.25rem,2vw,1.875rem)] leading-[1.35] text-[var(--color-bone)]/90 pb-[0.05em] [text-shadow:0_1px_2px_rgba(11,18,32,0.6),0_0_28px_rgba(11,18,32,0.4)]">
                 {p.tagline}
               </p>
             </div>
 
             {/* Body */}
-            <p data-pillar-body className="font-sans text-[15px] sm:text-[16px] leading-[1.6] text-[var(--color-bone)]/85 max-w-[58ch] mx-auto">
+            <p data-pillar-body className="font-sans text-[15px] sm:text-[16px] leading-[1.6] text-[var(--color-bone)]/85 max-w-[42ch]">
               {p.body}
             </p>
 
-            {/* Deliverables — center-aligned list */}
-            <ul className="flex flex-col gap-2 items-center">
+            {/* Deliverables — left-aligned list */}
+            <ul className="flex flex-col gap-2">
               {p.deliverables.map((d) => (
                 <li
                   key={d}
