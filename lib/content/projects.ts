@@ -2,6 +2,9 @@
 // Project names locked from procare-design-package/docs/15-ASSETS-AND-COPY.md.
 // They are plausible Qatar projects for first-pass UI; treat as final until
 // the client supplies the real portfolio.
+//
+// R2.7 — home page shows the first 3 (slice 0..3) only. The full
+// Projects interior page will surface all 8 once R3 builds it.
 
 export type Project = {
   slug:     string;

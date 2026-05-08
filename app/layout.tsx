@@ -6,7 +6,8 @@ import { LenisProvider }    from '@/components/layout/lenis-provider';
 import { Preloader }        from '@/components/preloader';
 import { RouteCurtain }     from '@/components/route-curtain';
 import { DesignEasterEgg }  from '@/components/design-easter-egg';
-import { ScrollBackdrop }   from '@/components/scroll-backdrop';
+import { ScrollBackdrop }      from '@/components/scroll-backdrop';
+import { SectionScrollLock }   from '@/components/scroll/section-scroll-lock';
 import './globals.css';
 
 // ── Latin typefaces ───────────────────────────────────────────
@@ -102,6 +103,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             pages (R3+) will get their own per-page footer where appropriate. */}
         <LenisProvider>
           <ScrollBackdrop />
+          {/* R2.7 — wheel-stroke section navigation (replaces R2.6's
+              proximity SectionSnap). One wheel tick / arrow / page-down
+              animates to the next snap target over 1.5s with
+              easeInOutCubic. Pillars deep-dive has 3 sub-targets;
+              Projects horizontal opts out internally. Desktop only
+              (≥1024 px). Reads `data-snap-target` and
+              `data-scroll-mode` from home sections. */}
+          <SectionScrollLock />
           <Nav />
           <main id="main" className="relative z-10">
             {children}

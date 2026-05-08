@@ -91,6 +91,7 @@ export function StatsCountUp() {
   // bottom of the frame, so no radial pool needed — Tools 1+2 only.
   return (
     <section
+      data-snap-target="stats"
       className="relative h-[80vh] w-full flex items-end pb-[8vh] px-[5vw] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
       aria-label="By the numbers"
     >

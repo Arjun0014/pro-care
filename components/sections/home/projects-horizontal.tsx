@@ -53,6 +53,8 @@ export function ProjectsHorizontal() {
     <section
       ref={sectionRef}
       data-cursor-label="DRAG SCROLL"
+      data-snap-target="projects-horizontal"
+      data-scroll-mode="horizontal-free"
       className="relative w-full text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
       aria-label="Projects gallery"
     >

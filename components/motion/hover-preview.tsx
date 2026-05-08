@@ -11,11 +11,14 @@ import { cn } from '@/lib/utils';
 import { useReducedMotion } from 'motion/react';
 
 export type HoverPreviewItem = {
-  id:    string;
-  name:  string;
-  image: string;
-  alt?:  string;
-  href:  string;
+  id:     string;
+  name:   string;
+  image:  string;
+  alt?:   string;
+  href:   string;
+  /** Optional metadata rendered as small uppercase mono caps under the name. */
+  sector?: string;
+  year?:   string;
 };
 
 type Props = {
@@ -120,39 +123,52 @@ export function HoverPreview({ items, className }: Props) {
 
   return (
     <>
-      <ul className={cn('flex flex-col gap-3', className)}>
+      <ul className={cn('flex flex-col', className)}>
         {items.map((item, i) => (
           <li
             key={item.id}
             onMouseEnter={() => setActiveId(item.id)}
             onMouseLeave={() => setActiveId((id) => (id === item.id ? null : id))}
-            className="group"
+            className="group border-b border-[var(--color-bone)]/15 last:border-b-0"
           >
-            {/* Per R2.5 user feedback — each row has a subtle transparent
-                box (low-alpha bone tint + hairline border) so the rows
-                read as discrete elements over the canvas, like the
-                Hero's InkVeil but per-row. Hover brightens the tint. */}
+            {/* Per R2.7 § Task 4 — index left, project name + meta stacked
+                vertically right. Hairline divider between rows replaces the
+                R2.6 per-row box tint (the divider reads cleaner against the
+                wider 1.4fr column). */}
             <a
               href={item.href}
               data-cursor
               data-cursor-label="VIEW"
               className={cn(
-                'flex items-baseline justify-between gap-6 py-6 sm:py-8 px-6 sm:px-8',
-                'border border-[var(--color-bone)]/15 bg-[var(--color-bone)]/[0.04]',
-                'transition-[padding,background-color,border-color] duration-300',
-                'group-hover:px-10 group-hover:bg-[var(--color-bone)]/[0.08] group-hover:border-[var(--color-bone)]/30',
+                'flex items-start gap-6 py-7 sm:py-9 px-2 sm:px-4',
+                'transition-[padding,background-color] duration-300',
+                'group-hover:px-4 sm:group-hover:px-6 group-hover:bg-[var(--color-bone)]/[0.04]',
                 'min-w-0',
               )}
             >
-              <span className="shrink-0 font-mono text-[10px] sm:text-xs text-current opacity-60 tabular-nums">
+              <span className="shrink-0 font-mono text-[11px] sm:text-xs text-current opacity-60 tabular-nums w-12 pt-2">
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <span className="font-display text-[clamp(1.5rem,3vw,3rem)] leading-[1.15] flex-1 text-center min-w-0 truncate pb-[0.05em]">
-                {item.name}
-              </span>
-              <span className="shrink-0 font-mono text-[10px] sm:text-xs uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-opacity">
-                View →
-              </span>
+              <div className="flex-1 min-w-0 flex flex-col gap-2">
+                <h3 className="font-display text-[clamp(1.5rem,2.6vw,2.5rem)] leading-[1.1] tracking-[-0.01em] pb-[0.05em]">
+                  {item.name}
+                </h3>
+                <div className="flex items-baseline gap-3 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] opacity-75 group-hover:opacity-100 transition-opacity">
+                  {item.sector && (
+                    <>
+                      <span>{item.sector}</span>
+                      <span aria-hidden className="text-[var(--color-bone)]/40">·</span>
+                    </>
+                  )}
+                  {item.year && (
+                    <>
+                      <span className="tabular-nums">{item.year}</span>
+                      <span aria-hidden className="text-[var(--color-bone)]/40">·</span>
+                    </>
+                  )}
+                  <span>View →</span>
+                </div>
+              </div>
             </a>
           </li>
         ))}
@@ -168,18 +184,31 @@ export function HoverPreview({ items, className }: Props) {
           'transition-[clip-path,opacity] duration-300 ease-[cubic-bezier(0.83,0,0.17,1)]',
           active ? 'opacity-100' : 'opacity-0',
         )}
-        // Hard-coded size — 280×350 (4:5 portrait per HoverPreview spec).
-        // Inline style wins over any utility override.
-        style={{ ...previewStyle, width: 280, height: 350 }}
+        // Hard-coded size — 280×350 (4:5 portrait per doc 16 § HoverPreview
+        // spec). Inline `width`/`height` plus explicit min/max box-size
+        // ensure no parent or utility class can override the dimensions.
+        style={{
+          ...previewStyle,
+          width:    280,
+          height:   350,
+          minWidth: 280,
+          maxWidth: 280,
+          minHeight: 350,
+          maxHeight: 350,
+        }}
         aria-hidden
       >
         {active && (
           <Image
             src={active.image}
             alt={active.alt ?? active.name}
-            fill
+            // Explicit width/height instead of fill so Next.js Image
+            // can't introduce intrinsic-aspect quirks. Wrapper has
+            // overflow:hidden so any minor slice is hidden cleanly.
+            width={280}
+            height={350}
             sizes="280px"
-            className="object-cover"
+            className="block w-full h-full object-cover"
           />
         )}
       </div>

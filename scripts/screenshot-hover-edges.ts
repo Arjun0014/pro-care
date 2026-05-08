@@ -14,7 +14,9 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const URL_BASE = process.env.PROCARE_URL ?? 'http://localhost:3000/';
-const OUT_DIR  = join(process.cwd(), 'docs', 'qa', 'screenshots', 'r25');
+const OUT_DIR  = process.env.PROCARE_OUT
+  ? join(process.cwd(), process.env.PROCARE_OUT)
+  : join(process.cwd(), 'docs', 'qa', 'screenshots', 'r26');
 
 async function main() {
   await mkdir(OUT_DIR, { recursive: true });
@@ -45,25 +47,46 @@ async function main() {
 
   // Find list rows.
   const rows = await page.$$('[aria-label="Selected projects"] li');
-  if (rows.length < 8) {
-    console.error(`expected 8 rows, found ${rows.length}`);
+  if (rows.length < 3) {
+    console.error(`expected ≥3 rows, found ${rows.length}`);
     process.exit(1);
   }
+  // Use first / last / middle so this works whether the list has 3 or 8 rows.
+  const lastIdx = rows.length - 1;
+  const midIdx  = Math.floor(rows.length / 2);
 
+  const slugPrefix = process.env.PROCARE_SLUG ?? 's2-4';
   const cases: Array<{ slug: string; row: number; xFrac: number; yOffset: number }> = [
-    { slug: 's2-4-hover-topleft', row: 0, xFrac: 0.25, yOffset: 0 },  // first row, left-ish
-    { slug: 's2-4-hover-bottom',  row: 7, xFrac: 0.5,  yOffset: 0 },   // last row, center
-    { slug: 's2-4-hover-right',   row: 3, xFrac: 0.95, yOffset: 0 },   // mid row, right edge
+    { slug: `${slugPrefix}-hover-topleft`, row: 0,       xFrac: 0.25, yOffset: 0 },
+    { slug: `${slugPrefix}-hover-bottom`,  row: lastIdx, xFrac: 0.5,  yOffset: 0 },
+    { slug: `${slugPrefix}-hover-right`,   row: midIdx,  xFrac: 0.95, yOffset: 0 },
   ];
 
   for (const c of cases) {
     const row = rows[c.row]!;
-    const box = await row.boundingBox();
+    let box = await row.boundingBox();
     if (!box) continue;
+    // If the row is outside the viewport (e.g., row 7 at bottom of list,
+    // section centered), scroll so the row is visible. Then re-measure.
+    if (box.y < 0 || box.y + box.height > 1080) {
+      await page.evaluate((idx: number) => {
+        type WithLenis = Window & { __lenis?: { scrollTo: (n: number, opts?: { duration?: number }) => void } };
+        const w = window as WithLenis;
+        const list = document.querySelectorAll('[aria-label="Selected projects"] li');
+        const li = list[idx] as HTMLElement;
+        if (!li) return;
+        const r = li.getBoundingClientRect();
+        // Aim to put the row at ~70 % of viewport so its hover target is well inside.
+        const target = r.top + window.scrollY - window.innerHeight * 0.7;
+        if (w.__lenis) w.__lenis.scrollTo(Math.max(0, target), { duration: 0.1 });
+      }, c.row);
+      await page.waitForTimeout(900);
+      box = await row.boundingBox();
+      if (!box) continue;
+    }
     const x = box.x + box.width * c.xFrac;
     const y = box.y + box.height / 2 + c.yOffset;
     await page.mouse.move(x, y);
-    // Wait for thumbnail to lerp into place + clip-path open
     await page.waitForTimeout(700);
     const out = join(OUT_DIR, `${c.slug}.png`);
     await page.screenshot({ path: out, fullPage: false });

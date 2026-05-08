@@ -9,11 +9,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SplitText }      from '@/components/motion/split-text';
-import { ScrollWords }    from '@/components/motion/scroll-words';
-import { Marquee }        from '@/components/motion/marquee';
 import { ScrollSkew }     from '@/components/motion/scroll-skew';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { HoverPreview }   from '@/components/motion/hover-preview';
+import { IdentityManifesto }  from '@/components/sections/home/identity-manifesto';
 import { Pillars }            from '@/components/sections/home/pillars';
 import { ProjectsHorizontal } from '@/components/sections/home/projects-horizontal';
 import { WhyCluster }         from '@/components/sections/home/why-cluster';
@@ -69,12 +68,17 @@ function AmbientPool({ position = 'center' as 'center' | 'top' | 'bottom' }) {
 }
 
 // HoverPreview item shape.
-const projectItems = projects.slice(0, 8).map((p) => ({
-  id:    p.slug,
-  name:  p.title,
-  image: p.image,
-  alt:   p.imageAlt,
-  href:  `/projects/${p.slug}`,
+// R2.7 § Task 4 — home page surfaces only the first 3 projects.
+// The full set lives in `lib/content/projects.ts` and will populate the
+// R3 /projects interior page.
+const projectItems = projects.slice(0, 3).map((p) => ({
+  id:     p.slug,
+  name:   p.title,
+  image:  p.image,
+  alt:    p.imageAlt,
+  href:   `/projects/${p.slug}`,
+  sector: p.sector.toUpperCase(),
+  year:   p.year,
 }));
 
 export default function HomePage() {
@@ -84,6 +88,7 @@ export default function HomePage() {
           Empty plot at dawn. Canvas IS the hero visual. */}
       <section
         data-ground="ink"
+        data-snap-target="hero"
         className="relative h-[100svh] w-full px-[5vw] flex flex-col justify-end pb-[10vh]"
         aria-label="Hero"
       >
@@ -121,143 +126,72 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ───── Section 2 · Identity ticker ──────────────────────────
-          Per doc 21 § Section 2 — TRANSPARENT thin strip at top:8vh of a
-          full-viewport section. No bg, no border. The 100vh just gives the
-          canvas scroll-progress to advance. Bone text + Tool 2 halo. */}
-      <section
-        className="relative h-[100vh] w-full"
-        aria-label="Identity ticker"
-      >
-        <AmbientPool position="top" />
-        <div className="absolute top-[8vh] inset-x-0 overflow-hidden">
-          <Marquee
-            variant="ticker"
-            className="text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(0,0,0,0.5),0_0_16px_rgba(0,0,0,0.3)]"
-          >
-            <span className="px-6">PRO CARE QATAR</span>
-            <span className="px-6">·</span>
-            <span className="px-6">TRADING</span>
-            <span className="px-6">·</span>
-            <span className="px-6">CONTRACTING</span>
-            <span className="px-6">·</span>
-            <span className="px-6">FACILITY SERVICES</span>
-            <span className="px-6">·</span>
-            <span className="px-6">CR# 217949</span>
-            <span className="px-6">·</span>
-            <span className="px-6">ESTABLISHED IN DOHA</span>
-            <span className="px-6">·</span>
-            <span className="px-6">BUILT TO LAST</span>
-            <span className="px-6">·</span>
-          </Marquee>
-        </div>
-      </section>
+      {/* ───── Sections 2+3 · Combined Identity-Manifesto (R2.8) ────
+          The standalone Identity ticker + Manifesto sections are merged
+          into one 400 vh section with 4 wheel-snap sub-target beats and
+          a sticky ticker at the bottom. Each wheel tick advances ONE
+          beat; only one beat is visible at a time (Lift in/out via
+          AnimatePresence). All beats lean LEFT. */}
+      <IdentityManifesto />
 
-      {/* ───── Section 3 · Manifesto ────────────────────────────────
-          Per doc 21 § Section 3 — TRANSPARENT. Centered ScrollWords with
-          adapted colors: dim = bone @ 25% (ghostly), lit = bone @ 100%
-          + Tool 2 halo. Tool 3 radial pool centered behind text since
-          Stage 2-3 frames are predominantly mid-bright outdoor scenes. */}
-      <section
-        className="relative w-full min-h-[150vh] flex items-center justify-center px-[8vw] py-[10vh]"
-        aria-label="Manifesto"
-      >
-        {/* Tool 3 — radial pool. Fully transparent at 80% so canvas reads
-            continuous, not interrupted. */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          aria-hidden="true"
-          style={{
-            background:
-              'radial-gradient(ellipse 80vw 60vh at center, rgba(11,18,32,0.45) 0%, rgba(11,18,32,0.2) 40%, rgba(11,18,32,0) 80%)',
-          }}
-        />
-        <ScrollWords
-          className="relative font-display text-[clamp(2rem,4.5vw,4.5rem)] leading-[1.2] max-w-[52ch] text-center"
-          dimColor="rgba(244, 239, 230, 0.25)"
-          litColor="rgb(244, 239, 230)"
-          textShadow="0 1px 2px rgba(11,18,32,0.5), 0 0 24px rgba(11,18,32,0.35)"
-        >
-          We are <em>three companies in one</em>. Traders, contractors,
-          operators. We bring materials to Qatar, we build with them, and
-          we keep what we build running. One standard across all three.{' '}
-          <em>Things that last.</em>
-        </ScrollWords>
-      </section>
+      {/* Section 4 (mid-page Pillars marquee) was REMOVED in R2.6 per
+          user feedback — the giant "Trading — Contracting — Facility
+          Services" mix-blend-mode banner was redundant with the Pillars
+          deep-dive's own typography below it. The Identity ticker
+          (Section 2) still carries the trading/contracting/facility
+          chrome. ScrollBackdrop frame mapping is scrollY-based so it
+          adjusts automatically to the shorter document height. */}
 
-      {/* ───── Section 4 · Pillars marquee ──────────────────────────
-          Per doc 21 § Section 4 — TRANSPARENT, viewport-centered, full
-          width. Massive headline marquee using Tool 4 (mix-blend-mode:
-          difference) so the text inverts against any canvas brightness
-          and is always legible. Em-dashes stay gold (no blend) so they
-          read as gold regardless. */}
-      <section
-        className="relative w-full h-[60vh] flex items-center overflow-hidden"
-        aria-label="Three pillars marquee"
-      >
-        {/* ScrollSkew kept but max reduced 1.5° → 0.4° so the marquee
-            doesn't appear to "race" when the user scrolls quickly past.
-            Marquee speed lowered 25 → 12 for the same reason. */}
-        <ScrollSkew max={0.4}>
-          <Marquee
-            variant="headline"
-            speed={12}
-            direction="right"
-            className="font-display text-[clamp(5rem,18vw,18rem)] leading-[1.15] py-[0.1em]"
-          >
-            <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Trading</span>
-            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
-            <span className="px-12 italic" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Contracting</span>
-            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
-            <span className="px-12" style={{ color: '#FFFFFF', mixBlendMode: 'difference' }}>Facility Services</span>
-            <span className="px-12" style={{ color: 'var(--color-gold)' }}>—</span>
-          </Marquee>
-        </ScrollSkew>
-      </section>
-
-      {/* ───── Section 5 · Pillars (pin-and-scrub) ──────────────────
-          Own ink ground; canvas hidden. */}
+      {/* ───── Section 4 · Pillars (pin-and-scrub) ──────────────────
+          Per doc 21 § Section 5 — pure typography over canvas, pin and
+          scrub three pillar panels. */}
       <Pillars />
 
-      {/* ───── Section 6 · Projects horizontal scroll ───────────────
-          Own bone ground. */}
+      {/* ───── Section 5 · Projects horizontal scroll ───────────────
+          Typographic cards, pin-and-scrub. */}
       <ProjectsHorizontal />
 
-      {/* ───── Section 7 · Stats (count-up) ─────────────────────────
-          Bone ground per doc 13. Three numbers, animated counters
-          on scroll-into-view. */}
+      {/* ───── Section 6 · Stats (count-up) ─────────────────────────
+          Three numbers anchored to viewport bottom. */}
       <StatsCountUp />
 
-      {/* ───── Section 8 · Why Pro Care (image cluster) ─────────────
-          Own ink ground; canvas hidden. */}
+      {/* ───── Section 7 · Why Pro Care ─────────────────────────────
+          Single typographic headline over canvas. */}
       <WhyCluster />
 
-      {/* ───── Section 9 · Selected projects (hover list) ───────────
-          Per doc 21 § Section 9 — TRANSPARENT. Light text + Tool 2 halo.
-          Hairline rules between rows via `divide-current/20` (HoverPreview
-          uses `divide-current/15` already; the parent's text-bone makes
-          dividers bone). Hover thumbnail is edge-clamped (in HoverPreview).*/}
+      {/* ───── Section 8 · Selected projects (hover list) ───────────
+          Per R2.7 § Task 4 — 2-column side-by-side layout. Title block on
+          the left, 3 project rows on the right. Hover-thumbnail mechanic
+          and edge-clamping unchanged from R2.6. */}
       <section
+        data-snap-target="selected-projects"
         className="relative w-full px-[clamp(1.5rem,5vw,8vw)] py-[14vh] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
         aria-label="Selected projects"
       >
         <AmbientPool />
-        <header className="relative mb-12 flex flex-col gap-2">
-          <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
-            Selected work
-          </span>
-          <SplitText
-            as="h2"
-            className="block font-display text-[clamp(2rem,5vw,5rem)] leading-[1.15] tracking-[-0.02em] max-w-[18ch]"
-          >
-            Eight projects. <em>Three disciplines.</em>
-          </SplitText>
-        </header>
+        <div className="relative mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-12 md:gap-16 items-start">
+          {/* Left column — title block */}
+          <header className="flex flex-col gap-5">
+            <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
+              Selected work
+            </span>
+            <SplitText
+              as="h2"
+              className="block font-display text-[clamp(2rem,4.5vw,4.25rem)] leading-[1.1] tracking-[-0.02em] max-w-[14ch]"
+            >
+              Selected <em>projects.</em>
+            </SplitText>
+            <p className="font-sans text-[15px] leading-[1.6] text-[var(--color-bone)]/80 max-w-[36ch]">
+              Three of our recent works across Qatar.
+            </p>
+          </header>
 
-        <HoverPreview items={projectItems} />
+          {/* Right column — 3 project rows */}
+          <HoverPreview items={projectItems} />
+        </div>
       </section>
 
-      {/* ───── Section 10 · Closing CTA + integrated footer ─────────
+      {/* ───── Section 9 · Closing CTA + integrated footer ──────────
           Per R2.5 user feedback — combine the closing CTA with the
           contact/legal chrome so the last frame reads as one coherent
           composition over the night canvas. The standalone Footer
@@ -266,6 +200,7 @@ export default function HomePage() {
           a solid bone pill so it reads against the lit building. */}
       <section
         data-ground="ink"
+        data-snap-target="closing-cta"
         className="relative min-h-[100vh] w-full px-[5vw] pt-[14vh] pb-[6vh] flex flex-col items-center justify-between text-center"
         aria-label="Closing call to action"
       >

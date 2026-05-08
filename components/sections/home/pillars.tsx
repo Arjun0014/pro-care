@@ -24,6 +24,9 @@ import { gsapEasings } from '@/lib/motion';
 
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
+  // Diagnostic — expose ScrollTrigger so verification scripts can probe
+  // the pin timeline. Cheap (one property write).
+  (window as Window & { ScrollTrigger?: typeof ScrollTrigger }).ScrollTrigger = ScrollTrigger;
 }
 
 type Pillar = {
@@ -67,7 +70,7 @@ const PILLARS: readonly Pillar[] = [
       'Project management',
     ],
     href:      '/services/contracting',
-    needsPool: false,
+    needsPool: true,
   },
   {
     number:  '03',
@@ -82,7 +85,7 @@ const PILLARS: readonly Pillar[] = [
       'Operations support',
     ],
     href:      '/services/facility-services',
-    needsPool: false,
+    needsPool: true,
   },
 ];
 
@@ -188,6 +191,7 @@ export function Pillars() {
     <section
       ref={sectionRef}
       data-cursor-label="EXPLORE"
+      data-snap-target="pillars-deep-dive"
       className={`relative w-full text-[var(--color-bone)] ${HALO} overflow-hidden md:h-screen`}
       aria-label="Three pillars in detail"
     >
@@ -198,49 +202,55 @@ export function Pillars() {
           // Desktop: stages absolutely stacked over each other inside the
           // pinned container. Mobile: position is overridden to relative
           // by matchMedia.
-          className="md:absolute md:inset-0 md:flex md:items-center md:justify-center"
+          className="md:absolute md:inset-0"
         >
-          {/* Tool 3 — radial pool, only on the Trading panel (canvas brightest here) */}
+          {/* Tool 3 — LEFT-anchored radial pool (R2.8 — pushed further
+              left to match content). Ellipse centre 18%/50%, slightly
+              smaller (45vw × 75vh) so the right ~60% of the viewport
+              stays clean canvas. Applied to all three panels (R2.7-fix). */}
           {p.needsPool && (
             <div
               className="absolute inset-0 pointer-events-none"
               aria-hidden="true"
               style={{
                 background:
-                  'radial-gradient(ellipse 80vw 60vh at center, rgba(11,18,32,0.45) 0%, rgba(11,18,32,0.2) 40%, rgba(11,18,32,0) 80%)',
+                  'radial-gradient(ellipse 45vw 75vh at 18% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
               }}
             />
           )}
 
-          {/* Centered single-column composition, max-w 700px per doc 21 */}
-          <div className="relative mx-auto w-full max-w-[700px] px-[5vw] py-[10vh] md:py-0 flex flex-col gap-8 text-center">
+          {/* Left-anchored single-column composition (R2.8 — pushed
+              further left: 8vw → 4vw, width min(45vw,600px) → min(40vw,
+              560px)). Text-align centre inside the column.
+              Mobile (no pin): relative + full-width column with side padding. */}
+          <div className="relative md:absolute md:left-[4vw] md:top-1/2 md:-translate-y-1/2 w-full md:w-[min(40vw,560px)] max-w-[560px] px-[5vw] md:px-0 py-[10vh] md:py-0 flex flex-col gap-5 text-center items-center">
             {/* Number — small mono index */}
             <div data-pillar-number className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80">
               {p.number} / {String(PILLARS.length).padStart(2, '0')}
             </div>
 
             {/* Headline + tagline */}
-            <div data-pillar-head className="flex flex-col gap-3">
-              <h3 className="font-display text-[clamp(3rem,7vw,6rem)] leading-[1.1] tracking-[-0.02em] pb-[0.05em]">
+            <div data-pillar-head className="flex flex-col gap-3 items-center">
+              <h3 className="font-display text-[clamp(2.5rem,6vw,5rem)] leading-[1.1] tracking-[-0.02em] pb-[0.05em]">
                 {p.name}
               </h3>
-              <p className="font-display italic text-[clamp(1.25rem,2vw,1.875rem)] leading-[1.35] text-[var(--color-bone)]/85 pb-[0.05em]">
+              <p className="font-display italic text-[clamp(1.125rem,1.8vw,1.625rem)] leading-[1.35] text-[var(--color-bone)]/90 pb-[0.05em] [text-shadow:0_1px_2px_rgba(11,18,32,0.6),0_0_28px_rgba(11,18,32,0.4)] max-w-[28ch]">
                 {p.tagline}
               </p>
             </div>
 
             {/* Body */}
-            <p data-pillar-body className="font-sans text-[15px] sm:text-[16px] leading-[1.6] text-[var(--color-bone)]/85 max-w-[58ch] mx-auto">
+            <p data-pillar-body className="font-sans text-[14px] sm:text-[15px] leading-[1.55] text-[var(--color-bone)]/85 max-w-[42ch]">
               {p.body}
             </p>
 
-            {/* Deliverables — center-aligned list */}
-            <ul className="flex flex-col gap-2 items-center">
+            {/* Deliverables — centered list */}
+            <ul className="flex flex-col gap-1.5 items-center">
               {p.deliverables.map((d) => (
                 <li
                   key={d}
                   data-pillar-item
-                  className="flex items-baseline gap-3 font-sans text-[14px] text-[var(--color-bone)]/85"
+                  className="flex items-baseline gap-3 font-sans text-[13px] sm:text-[14px] text-[var(--color-bone)]/85"
                 >
                   <span className="text-[var(--color-gold)]" aria-hidden>·</span>
                   <span>{d}</span>
