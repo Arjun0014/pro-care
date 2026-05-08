@@ -106,7 +106,20 @@ desktop scenarios.
 
 ## Task 2 — Identity ticker to bottom of section
 
-(filled in)
+**Result:** ✅ PASS
+
+| Check | Result |
+|-------|--------|
+| Desktop screenshot | ✓ `screenshots/r27/r27-task2-identity-bottom-desktop.png` |
+| Ticker at bottom (~8vh from bottom) | ✓ `absolute bottom-[8vh] inset-x-0` (was `top-[8vh]`) |
+| Upper ~90 % viewport clean canvas | ✓ Stage 1 dawn plot visible, no overlay |
+| Marquee animation preserved | ✓ same `<Marquee variant="ticker">` |
+| Mix-blend treatment / Tool 2 halo preserved | ✓ unchanged classes |
+| `AmbientPool` position flipped to `"bottom"` | ✓ pool now darkens around the ticker for legibility |
+
+**What changed:** one CSS swap in `app/page.tsx` Identity ticker section —
+`top-[8vh]` → `bottom-[8vh]`, plus `AmbientPool position="top"` →
+`position="bottom"` so the legibility veil follows the ticker.
 
 ## Task 3 — Pillars deep-dive left-anchored composition
 

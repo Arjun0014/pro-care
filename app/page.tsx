@@ -123,16 +123,16 @@ export default function HomePage() {
       </section>
 
       {/* ───── Section 2 · Identity ticker ──────────────────────────
-          Per doc 21 § Section 2 — TRANSPARENT thin strip at top:8vh of a
-          full-viewport section. No bg, no border. The 100vh just gives the
-          canvas scroll-progress to advance. Bone text + Tool 2 halo. */}
+          Per R2.7 § Task 2 — moved from top:8vh to bottom:8vh so the upper
+          ~90% of the viewport is clean canvas. Same ticker content, same
+          marquee animation, same Tool 2 halo. */}
       <section
         data-snap-target="identity-ticker"
         className="relative h-[100vh] w-full"
         aria-label="Identity ticker"
       >
-        <AmbientPool position="top" />
-        <div className="absolute top-[8vh] inset-x-0 overflow-hidden">
+        <AmbientPool position="bottom" />
+        <div className="absolute bottom-[8vh] inset-x-0 overflow-hidden">
           <Marquee
             variant="ticker"
             className="text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(0,0,0,0.5),0_0_16px_rgba(0,0,0,0.3)]"
