@@ -38,12 +38,12 @@
 import { useEffect } from 'react';
 
 const SCROLL_LOCK_CONFIG = {
-  enabled:                   true,
-  minViewportWidth:          1024,
-  transitionDurationMs:      1500,
+  enabled: true,
+  minViewportWidth: 1024,
+  transitionDurationMs: 1500,
   cooldownAfterTransitionMs: 200,
-  maxQueuedAdvances:         1,
-  trackpadIdleMs:            200,
+  maxQueuedAdvances: 1,
+  trackpadIdleMs: 200,
   /**
    * R2.8 — per-target snap duration overrides. Keys are the snap target
    * id (matches `data-snap-target` or `data-beat-target` value). When
@@ -57,6 +57,9 @@ const SCROLL_LOCK_CONFIG = {
     'beat-2': 1200,
     'beat-3': 1200,
     'beat-4': 1200,
+    'pillars-trading': 2500,
+    'pillars-contracting': 2500,
+    'pillars-facility': 2500,
   } as Record<string, number>,
 };
 
@@ -66,10 +69,10 @@ const easeInOutCubic = (t: number): number =>
 
 type LenisLike = {
   scrollTo: (target: number, opts?: {
-    duration?:   number;
-    easing?:     (t: number) => number;
-    lock?:       boolean;
-    immediate?:  boolean;
+    duration?: number;
+    easing?: (t: number) => number;
+    lock?: boolean;
+    immediate?: boolean;
     onComplete?: () => void;
   }) => void;
   velocity?: number;
@@ -83,7 +86,7 @@ export function SectionScrollLock() {
     if (!SCROLL_LOCK_CONFIG.enabled) return;
 
     let detach: (() => void) | null = null;
-    let rafId  = 0;
+    let rafId = 0;
 
     // Wait for Lenis to be on window. LenisProvider sets it in its own
     // useEffect; SectionScrollLock may mount first.
@@ -108,15 +111,15 @@ export function SectionScrollLock() {
 
 function wire(lenis: LenisLike): () => void {
   const state = {
-    targets:           [] as Target[],
-    currentIdx:        0,
-    isTransitioning:   false,
-    queuedAdvances:    0,
-    queuedDirection:   0,
-    lastWheelTime:     0,
-    gestureActive:     false,
-    gestureTimer:      null as ReturnType<typeof setTimeout> | null,
-    cooldownUntil:     0,
+    targets: [] as Target[],
+    currentIdx: 0,
+    isTransitioning: false,
+    queuedAdvances: 0,
+    queuedDirection: 0,
+    lastWheelTime: 0,
+    gestureActive: false,
+    gestureTimer: null as ReturnType<typeof setTimeout> | null,
+    cooldownUntil: 0,
   };
 
   // ── Build snap-target list from the DOM ──────────────────────────
@@ -151,9 +154,9 @@ function wire(lenis: LenisLike): () => void {
         // We use the mid-hold of each so the pillar reads fully settled
         // (post-entry, before transition).
         const pinExtension = r.height - window.innerHeight;
-        list.push({ id: 'pillars-trading',     y: Math.round(top + pinExtension * 0.18) });
+        list.push({ id: 'pillars-trading', y: Math.round(top + pinExtension * 0.18) });
         list.push({ id: 'pillars-contracting', y: Math.round(top + pinExtension * 0.56) });
-        list.push({ id: 'pillars-facility',    y: Math.round(top + pinExtension * 0.94) });
+        list.push({ id: 'pillars-facility', y: Math.round(top + pinExtension * 0.94) });
       } else if (el.dataset.scrollMode === 'opt-in-subtargets') {
         // R2.8 — sections that opt out of being a snap target themselves
         // and instead surface their `[data-beat-target]` children as
@@ -163,8 +166,8 @@ function wire(lenis: LenisLike): () => void {
         for (const b of beats) {
           const beatId = b.dataset.beatTarget;
           if (!beatId) continue;
-          const br    = b.getBoundingClientRect();
-          const btop  = br.top + window.scrollY;
+          const br = b.getBoundingClientRect();
+          const btop = br.top + window.scrollY;
           list.push({ id: beatId, y: Math.round(btop) });
         }
       } else {
@@ -202,7 +205,13 @@ function wire(lenis: LenisLike): () => void {
       : sec;
     const r = target.getBoundingClientRect();
     const top = r.top + window.scrollY;
-    return window.scrollY >= top - 1 && window.scrollY < top + r.height;
+    // Leave a 1vh margin at the bottom of the pin range so the scroll-lock
+    // can reclaim control once the horizontal scrub is effectively done.
+    // Without this, the user gets stuck in "horizontal-free" pass-through
+    // at the very end of the pin range and needs multiple scrolls to
+    // escape into the next snap target (Stats).
+    const endMargin = window.innerHeight;
+    return window.scrollY >= top - 1 && window.scrollY < top + r.height - endMargin;
   };
 
   // ── Animate scrollY to targets[idx] ──────────────────────────────
@@ -213,7 +222,7 @@ function wire(lenis: LenisLike): () => void {
     if (idx === state.currentIdx) return;
 
     state.isTransitioning = true;
-    state.currentIdx      = idx;
+    state.currentIdx = idx;
 
     // R2.8 — per-target duration override (e.g. Identity-Manifesto beats
     // animate at 1200 ms instead of the default 1500 ms). Falls back to
@@ -225,16 +234,16 @@ function wire(lenis: LenisLike): () => void {
 
     lenis.scrollTo(targets[idx].y, {
       duration: durationMs / 1000,
-      easing:   easeInOutCubic,
-      lock:     true,
+      easing: easeInOutCubic,
+      lock: true,
       onComplete: () => {
         state.isTransitioning = false;
-        state.cooldownUntil   = Date.now() + SCROLL_LOCK_CONFIG.cooldownAfterTransitionMs;
+        state.cooldownUntil = Date.now() + SCROLL_LOCK_CONFIG.cooldownAfterTransitionMs;
 
         // Process queued advance, if any.
         if (state.queuedAdvances > 0) {
           const dir = state.queuedDirection;
-          state.queuedAdvances  = 0;
+          state.queuedAdvances = 0;
           state.queuedDirection = 0;
           setTimeout(() => {
             advanceToTarget(state.currentIdx + dir);
@@ -257,7 +266,7 @@ function wire(lenis: LenisLike): () => void {
     e.preventDefault();
     e.stopImmediatePropagation();
 
-    const now       = performance.now();
+    const now = performance.now();
     const sinceLast = now - state.lastWheelTime;
     state.lastWheelTime = now;
 
@@ -278,7 +287,7 @@ function wire(lenis: LenisLike): () => void {
         state.queuedAdvances < SCROLL_LOCK_CONFIG.maxQueuedAdvances &&
         sinceLast > SCROLL_LOCK_CONFIG.trackpadIdleMs
       ) {
-        state.queuedAdvances  = 1;
+        state.queuedAdvances = 1;
         state.queuedDirection = e.deltaY > 0 ? 1 : -1;
       }
       return;
@@ -315,14 +324,14 @@ function wire(lenis: LenisLike): () => void {
       return;
     }
 
-    if (isInHorizontalFree())         return;
-    if (state.isTransitioning)        return;
+    if (isInHorizontalFree()) return;
+    if (state.isTransitioning) return;
     if (Date.now() < state.cooldownUntil) return;
 
     let direction = 0;
     if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') direction = 1;
-    else if (e.key === 'ArrowUp' || e.key === 'PageUp')                 direction = -1;
-    else                                                                 return;
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp') direction = -1;
+    else return;
 
     e.preventDefault();
     advanceToTarget(state.currentIdx + direction);
@@ -332,7 +341,7 @@ function wire(lenis: LenisLike): () => void {
   // ensures we run BEFORE Lenis's listener; combined with
   // stopImmediatePropagation in the handler, Lenis never sees the event
   // when we want to intercept it.
-  window.addEventListener('wheel',   handleWheel,   { passive: false, capture: true });
+  window.addEventListener('wheel', handleWheel, { passive: false, capture: true });
   window.addEventListener('keydown', handleKeydown);
 
   // Diagnostic — exposes state for Playwright probes / debugging. Cheap
@@ -341,7 +350,7 @@ function wire(lenis: LenisLike): () => void {
     (window as Window & {
       __scrollLockState?: typeof state;
       __scrollLockMeasure?: () => void;
-    }).__scrollLockState   = state;
+    }).__scrollLockState = state;
     (window as Window & {
       __scrollLockState?: typeof state;
       __scrollLockMeasure?: () => void;
@@ -350,8 +359,8 @@ function wire(lenis: LenisLike): () => void {
 
   return () => {
     ro.disconnect();
-    window.removeEventListener('resize',  onResize);
-    window.removeEventListener('wheel',   handleWheel,   { capture: true } as EventListenerOptions);
+    window.removeEventListener('resize', onResize);
+    window.removeEventListener('wheel', handleWheel, { capture: true } as EventListenerOptions);
     window.removeEventListener('keydown', handleKeydown);
     if (state.gestureTimer) clearTimeout(state.gestureTimer);
   };
