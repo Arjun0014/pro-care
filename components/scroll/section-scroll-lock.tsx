@@ -44,6 +44,20 @@ const SCROLL_LOCK_CONFIG = {
   cooldownAfterTransitionMs: 200,
   maxQueuedAdvances:         1,
   trackpadIdleMs:            200,
+  /**
+   * R2.8 — per-target snap duration overrides. Keys are the snap target
+   * id (matches `data-snap-target` or `data-beat-target` value). When
+   * advanceToTarget runs, it looks up the override here before falling
+   * back to `transitionDurationMs`. The Identity-Manifesto beats animate
+   * faster (1200 ms) than the default 1500 ms so the four-tick journey
+   * doesn't drag.
+   */
+  perTargetDuration: {
+    'beat-1': 1200,
+    'beat-2': 1200,
+    'beat-3': 1200,
+    'beat-4': 1200,
+  } as Record<string, number>,
 };
 
 /** easeInOutCubic — slow start / slow finish, calm cinema feel. */
@@ -140,6 +154,19 @@ function wire(lenis: LenisLike): () => void {
         list.push({ id: 'pillars-trading',     y: Math.round(top + pinExtension * 0.18) });
         list.push({ id: 'pillars-contracting', y: Math.round(top + pinExtension * 0.56) });
         list.push({ id: 'pillars-facility',    y: Math.round(top + pinExtension * 0.94) });
+      } else if (el.dataset.scrollMode === 'opt-in-subtargets') {
+        // R2.8 — sections that opt out of being a snap target themselves
+        // and instead surface their `[data-beat-target]` children as
+        // individual snap targets. Used by the combined Identity-Manifesto
+        // section: 4 beats × 100 vh each, each beat is one wheel tick.
+        const beats = Array.from(el.querySelectorAll<HTMLElement>('[data-beat-target]'));
+        for (const b of beats) {
+          const beatId = b.dataset.beatTarget;
+          if (!beatId) continue;
+          const br    = b.getBoundingClientRect();
+          const btop  = br.top + window.scrollY;
+          list.push({ id: beatId, y: Math.round(btop) });
+        }
       } else {
         list.push({ id, y: Math.round(top) });
       }
@@ -188,8 +215,16 @@ function wire(lenis: LenisLike): () => void {
     state.isTransitioning = true;
     state.currentIdx      = idx;
 
+    // R2.8 — per-target duration override (e.g. Identity-Manifesto beats
+    // animate at 1200 ms instead of the default 1500 ms). Falls back to
+    // the global transitionDurationMs when no override is set.
+    const targetId = targets[idx].id;
+    const durationMs =
+      SCROLL_LOCK_CONFIG.perTargetDuration[targetId] ??
+      SCROLL_LOCK_CONFIG.transitionDurationMs;
+
     lenis.scrollTo(targets[idx].y, {
-      duration: SCROLL_LOCK_CONFIG.transitionDurationMs / 1000,
+      duration: durationMs / 1000,
       easing:   easeInOutCubic,
       lock:     true,
       onComplete: () => {

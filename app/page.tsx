@@ -9,11 +9,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { SplitText }      from '@/components/motion/split-text';
-import { ScrollWords }    from '@/components/motion/scroll-words';
-import { Marquee }        from '@/components/motion/marquee';
 import { ScrollSkew }     from '@/components/motion/scroll-skew';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { HoverPreview }   from '@/components/motion/hover-preview';
+import { IdentityManifesto }  from '@/components/sections/home/identity-manifesto';
 import { Pillars }            from '@/components/sections/home/pillars';
 import { ProjectsHorizontal } from '@/components/sections/home/projects-horizontal';
 import { WhyCluster }         from '@/components/sections/home/why-cluster';
@@ -127,117 +126,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ───── Section 2 · Identity ticker ──────────────────────────
-          Per R2.7 § Task 2 — moved from top:8vh to bottom:8vh so the upper
-          ~90% of the viewport is clean canvas. Same ticker content, same
-          marquee animation, same Tool 2 halo. */}
-      <section
-        data-snap-target="identity-ticker"
-        className="relative h-[100vh] w-full"
-        aria-label="Identity ticker"
-      >
-        <AmbientPool position="bottom" />
-        <div className="absolute bottom-[8vh] inset-x-0 overflow-hidden">
-          <Marquee
-            variant="ticker"
-            className="text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(0,0,0,0.5),0_0_16px_rgba(0,0,0,0.3)]"
-          >
-            <span className="px-6">PRO CARE QATAR</span>
-            <span className="px-6">·</span>
-            <span className="px-6">TRADING</span>
-            <span className="px-6">·</span>
-            <span className="px-6">CONTRACTING</span>
-            <span className="px-6">·</span>
-            <span className="px-6">FACILITY SERVICES</span>
-            <span className="px-6">·</span>
-            <span className="px-6">CR# 217949</span>
-            <span className="px-6">·</span>
-            <span className="px-6">ESTABLISHED IN DOHA</span>
-            <span className="px-6">·</span>
-            <span className="px-6">BUILT TO LAST</span>
-            <span className="px-6">·</span>
-          </Marquee>
-        </div>
-      </section>
-
-      {/* ───── Section 3 · Manifesto ────────────────────────────────
-          Per R2.7-fix § Task 5 — three asymmetric beats sized to fit ONE
-          viewport so the snap-target landing renders the entire manifesto
-          composition at once, including the closing italic line.
-          Layout (100 vh tall, justify-between distributes beats):
-            Beat 1 — top, left-aligned in left half
-            Beat 2 — middle, right-aligned in right half
-            Beat 3 — bottom, centred "One standard..." + indented italic
-                     "Things that last." right below (tight spacing)
-          Stronger radial pool (alpha 0.55→0.30→0) and per-ScrollWords
-          halos so the text reads cleanly against bright canvas frames. */}
-      <section
-        data-snap-target="manifesto"
-        className="relative w-full min-h-[100vh] py-[8vh]"
-        aria-label="Manifesto"
-      >
-        {/* Tool 3 — stronger radial pool (R2.7-fix). Centred ellipse,
-            fades to transparent at 80% so canvas reads continuous. */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          aria-hidden="true"
-          style={{
-            background:
-              'radial-gradient(ellipse 90vw 70vh at center, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.30) 40%, rgba(11,18,32,0) 80%)',
-          }}
-        />
-
-        <div className="relative mx-auto max-w-7xl px-[5vw] h-full min-h-[84vh] flex flex-col justify-between gap-[6vh]">
-          {/* Top row — Beat 1 (left) + Beat 2 (right) side-by-side, each
-              text-aligned centre within its half */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[6vh] md:gap-[4vw]">
-            {/* Beat 1 — left half, centred text */}
-            <div className="flex justify-center md:justify-start">
-              <ScrollWords
-                className="font-display text-[clamp(1.625rem,3.2vw,3rem)] leading-[1.15] max-w-[22ch] text-center [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
-                dimColor="rgba(244, 239, 230, 0.30)"
-                litColor="rgb(244, 239, 230)"
-                textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
-              >
-                We are <em>three companies in one</em>. Traders, contractors, operators.
-              </ScrollWords>
-            </div>
-
-            {/* Beat 2 — right half, centred text */}
-            <div className="flex justify-center md:justify-end">
-              <ScrollWords
-                className="font-display text-[clamp(1.625rem,3.2vw,3rem)] leading-[1.15] max-w-[22ch] text-center [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
-                dimColor="rgba(244, 239, 230, 0.30)"
-                litColor="rgb(244, 239, 230)"
-                textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
-              >
-                We bring materials to Qatar, we build with them, and we keep what we build running.
-              </ScrollWords>
-            </div>
-          </div>
-
-          {/* Beat 3 — bottom, centred "One standard..." + tight italic
-              "Things that last." right below */}
-          <div className="flex flex-col items-center gap-[2.5vh]">
-            <ScrollWords
-              className="font-display text-[clamp(1.625rem,3.4vw,3.25rem)] leading-[1.15] max-w-[26ch] text-center [text-shadow:0_1px_2px_rgba(11,18,32,0.65),0_0_28px_rgba(11,18,32,0.5)]"
-              dimColor="rgba(244, 239, 230, 0.30)"
-              litColor="rgb(244, 239, 230)"
-              textShadow="0 1px 2px rgba(11,18,32,0.65), 0 0 28px rgba(11,18,32,0.5)"
-            >
-              One standard across all three.
-            </ScrollWords>
-            <ScrollWords
-              className="font-display italic text-[clamp(1.375rem,2.8vw,2.5rem)] leading-[1.2] [text-shadow:0_1px_2px_rgba(11,18,32,0.7),0_0_32px_rgba(11,18,32,0.55)]"
-              dimColor="rgba(244, 239, 230, 0.30)"
-              litColor="rgb(244, 239, 230)"
-              textShadow="0 1px 2px rgba(11,18,32,0.7), 0 0 32px rgba(11,18,32,0.55)"
-            >
-              <em>Things that last.</em>
-            </ScrollWords>
-          </div>
-        </div>
-      </section>
+      {/* ───── Sections 2+3 · Combined Identity-Manifesto (R2.8) ────
+          The standalone Identity ticker + Manifesto sections are merged
+          into one 400 vh section with 4 wheel-snap sub-target beats and
+          a sticky ticker at the bottom. Each wheel tick advances ONE
+          beat; only one beat is visible at a time (Lift in/out via
+          AnimatePresence). All beats lean LEFT. */}
+      <IdentityManifesto />
 
       {/* Section 4 (mid-page Pillars marquee) was REMOVED in R2.6 per
           user feedback — the giant "Trading — Contracting — Facility

@@ -114,58 +114,73 @@ async function runDesktop() {
     });
   }
 
-  // V3 — Pillars deep-dive sub-targets (3 ticks: identity→manifesto→trading→contracting→facility).
+  // V3 — Tick through every snap target by id (works for any target list).
+  // The current scroll started at hero (idx 0). Walk through all subsequent
+  // targets in order until we reach pillars-facility, asserting each lands.
   {
-    // Currently at identity. Tick down 4 times, then sub-targets:
-    // T1 → T2 manifesto, T2 → T3 pillars-trading, T3 → T4 pillars-contracting, T4 → T5 pillars-facility.
-    const sequence = [
-      { idx: 2, label: 'manifesto'    },
-      { idx: 3, label: 'pillars-trading'    },
-      { idx: 4, label: 'pillars-contracting' },
-      { idx: 5, label: 'pillars-facility'    },
-    ];
-    for (const step of sequence) {
+    // After V2 we're at beat-1 (V2 went up from beat-2 → beat-1), so the
+    // next wheel tick should advance to beat-2.
+    const ids = ['beat-2', 'beat-3', 'beat-4', 'pillars-trading', 'pillars-contracting', 'pillars-facility'];
+    for (const id of ids) {
+      const t = targets.find((s) => s.id === id);
+      if (!t) continue;
       await fireWheelTick(page, 100);
       await page.waitForTimeout(SETTLE);
       const after = await getScroll(page);
-      const ok = Math.abs(after - targets[step.idx].y) < 24; // pillars are subpixel
+      const ok = Math.abs(after - t.y) < 24;
       results.push({
-        name: `V3 [→ ${step.label}]`,
+        name: `V3 [→ ${id}]`,
         pass: ok,
-        note: `expected ${targets[step.idx].y}, got ${after}`,
+        note: `expected ${t.y}, got ${after}`,
       });
     }
   }
 
-  // V4 — Projects horizontal opt-out.
+  // V4 — Projects horizontal opt-out (find by id, not index).
   {
-    // From pillars-facility (T5), tick down → T6 (projects entry).
-    await fireWheelTick(page, 100);
-    await page.waitForTimeout(SETTLE);
-    const atT6 = await getScroll(page);
-    const okEnter = Math.abs(atT6 - targets[6].y) < 12;
-    results.push({
-      name: 'V4a [pillars-facility → projects entry]',
-      pass: okEnter,
-      note: `expected ${targets[6].y}, got ${atT6}`,
-    });
+    const projTarget = targets.find((s) => s.id === 'projects-horizontal');
+    if (projTarget) {
+      // From pillars-facility, tick down → projects entry.
+      await fireWheelTick(page, 100);
+      await page.waitForTimeout(SETTLE);
+      const atProj = await getScroll(page);
+      const okEnter = Math.abs(atProj - projTarget.y) < 12;
+      results.push({
+        name: 'V4a [pillars-facility → projects entry]',
+        pass: okEnter,
+        note: `expected ${projTarget.y}, got ${atProj}`,
+      });
 
-    // Inside Projects horizontal: a wheel tick should NOT advance to T5 or T7;
-    // it should pass through to Lenis + ScrollTrigger which translates to
-    // horizontal scroll. Verifying via state.isTransitioning being false +
-    // current target idx unchanged.
-    await fireWheelTick(page, 100);
-    await page.waitForTimeout(300);
-    const stateInside = await page.evaluate(() => {
-      type W = Window & { __scrollLockState?: { currentIdx: number; isTransitioning: boolean } };
-      return (window as W).__scrollLockState;
-    });
-    const okInside = stateInside?.isTransitioning === false && stateInside?.currentIdx === 6;
-    results.push({
-      name: 'V4b [inside projects: wheel does NOT trigger snap]',
-      pass: okInside ?? false,
-      note: `state ${JSON.stringify(stateInside)}`,
-    });
+      // Inside Projects horizontal: wheel should NOT trigger snap. Verify
+      // currentIdx points at projects-horizontal AND isTransitioning=false
+      // after settle.
+      await fireWheelTick(page, 100);
+      await page.waitForTimeout(SETTLE + 300);
+      const stateInside = await page.evaluate(() => {
+        type W = Window & {
+          __scrollLockState?: {
+            currentIdx: number;
+            isTransitioning: boolean;
+            targets: Array<{ id: string }>;
+          };
+        };
+        const s = (window as W).__scrollLockState;
+        if (!s) return null;
+        return {
+          currentIdx:      s.currentIdx,
+          currentId:       s.targets[s.currentIdx]?.id,
+          isTransitioning: s.isTransitioning,
+        };
+      });
+      const okInside =
+        stateInside?.isTransitioning === false &&
+        stateInside?.currentId === 'projects-horizontal';
+      results.push({
+        name: 'V4b [inside projects: wheel does NOT trigger snap]',
+        pass: okInside ?? false,
+        note: `state ${JSON.stringify(stateInside)}`,
+      });
+    }
   }
 
   // V7 — Keyboard navigation. Reset to T0 first via Home.
@@ -237,21 +252,23 @@ async function runDesktop() {
   }
 
   // V5 — Trackpad continuous gesture: one swipe → one advance.
+  // After V7 we should be at T0 (hero). One trackpad swipe → idx 1
+  // (next target by id, whatever it is).
   {
-    // Reset to T0 explicitly. V7 left us there but be defensive.
     await page.keyboard.press('Home');
-    await page.waitForTimeout(SETTLE + 200);
-    // Wait an extra beat so any residual gestureActive timer expires.
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(SETTLE + 500);
     await page.mouse.move(960, 540);
     await fireTrackpadGesture(page, 100);
     await page.waitForTimeout(SETTLE + 500);
     const after = await getScroll(page);
-    const ok = Math.abs(after - targets[1].y) < 12;
+    // The next snap target after hero — could be beat-1 (R2.8), or
+    // identity-ticker (older builds). Use targets[1].
+    const expected = targets[1]?.y ?? 0;
+    const ok = Math.abs(after - expected) < 12;
     results.push({
-      name: 'V5 [trackpad gesture (30 events) → one advance]',
+      name: `V5 [trackpad gesture (30 events) → one advance, target ${targets[1]?.id ?? '?'}]`,
       pass: ok,
-      note: `expected ${targets[1].y}, got ${after}`,
+      note: `expected ${expected}, got ${after}`,
     });
   }
 

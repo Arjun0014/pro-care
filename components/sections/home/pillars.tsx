@@ -204,34 +204,26 @@ export function Pillars() {
           // by matchMedia.
           className="md:absolute md:inset-0"
         >
-          {/* Tool 3 — LEFT-anchored radial pool (R2.7-fix). Per user
-              feedback the body + deliverables were getting lost against
-              the bright/cloudy canvas, so the pool is now applied to all
-              three panels and pushed darker (alpha 0.65 / 0.40 / 0).
-              Ellipse centred at 25%/50% fades to transparent by 70%
-              horizontally so the right half of the viewport stays clean
-              for canvas display. */}
+          {/* Tool 3 — LEFT-anchored radial pool (R2.8 — pushed further
+              left to match content). Ellipse centre 18%/50%, slightly
+              smaller (45vw × 75vh) so the right ~60% of the viewport
+              stays clean canvas. Applied to all three panels (R2.7-fix). */}
           {p.needsPool && (
             <div
               className="absolute inset-0 pointer-events-none"
               aria-hidden="true"
               style={{
                 background:
-                  'radial-gradient(ellipse 50vw 80vh at 25% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
+                  'radial-gradient(ellipse 45vw 75vh at 18% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
               }}
             />
           )}
 
-          {/* Left-anchored single-column composition (R2.7).
-              Desktop: absolute left:8vw, vertically centred, width min(45vw, 600px).
-              Mobile (no pin): relative + full-width column with side padding.
-              R2.7-fix: text-align center INSIDE the column (per user feedback —
-              column stays on the left of the viewport, but the text inside it
-              is centred horizontally within the column). Tighter gap-5 + slightly
-              smaller body/list fonts so the longest panel (Facility Services
-              with 4 deliverables + long body) fits inside one viewport without
-              clipping at the top when vertically centred. */}
-          <div className="relative md:absolute md:left-[8vw] md:top-1/2 md:-translate-y-1/2 w-full md:w-[min(45vw,600px)] max-w-[600px] px-[5vw] md:px-0 py-[10vh] md:py-0 flex flex-col gap-5 text-center items-center">
+          {/* Left-anchored single-column composition (R2.8 — pushed
+              further left: 8vw → 4vw, width min(45vw,600px) → min(40vw,
+              560px)). Text-align centre inside the column.
+              Mobile (no pin): relative + full-width column with side padding. */}
+          <div className="relative md:absolute md:left-[4vw] md:top-1/2 md:-translate-y-1/2 w-full md:w-[min(40vw,560px)] max-w-[560px] px-[5vw] md:px-0 py-[10vh] md:py-0 flex flex-col gap-5 text-center items-center">
             {/* Number — small mono index */}
             <div data-pillar-number className="font-mono text-xs uppercase tracking-[0.2em] text-[var(--color-bone)]/80">
               {p.number} / {String(PILLARS.length).padStart(2, '0')}
