@@ -107,14 +107,13 @@ export default function HomePage() {
             We build for <em>Qatar</em>.
           </SplitText>
           <div className="mt-10 flex items-end justify-between gap-8 flex-wrap">
-            <Link href="/contact" className="inline-block">
-              <MagneticButton
-                data-cursor-label="GET IN TOUCH"
-                className="text-[var(--color-bone)] border-[var(--color-bone)] hover:bg-[var(--color-bone)] hover:text-[var(--color-ink)]"
-              >
-                Get in touch
-              </MagneticButton>
-            </Link>
+            <MagneticButton
+              href="/contact"
+              data-cursor-label="GET IN TOUCH"
+              className="text-[var(--color-bone)] border-[var(--color-bone)] hover:bg-[var(--color-bone)] hover:text-[var(--color-ink)]"
+            >
+              Get in touch
+            </MagneticButton>
             <span
               className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-bone)]/70"
               style={{ textShadow: SHADOW_LIGHT }}
@@ -222,14 +221,13 @@ export default function HomePage() {
           </ScrollSkew>
 
           <div className="mt-14">
-            <Link href="/contact" className="inline-block">
-              <MagneticButton
-                data-cursor-label="START"
-                className="bg-[var(--color-bone)] text-[var(--color-ink)] border-[var(--color-bone)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]"
-              >
-                Start a conversation
-              </MagneticButton>
-            </Link>
+            <MagneticButton
+              href="/contact"
+              data-cursor-label="START"
+              className="bg-[var(--color-bone)] text-[var(--color-ink)] border-[var(--color-bone)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]"
+            >
+              Start a conversation
+            </MagneticButton>
           </div>
 
           <span

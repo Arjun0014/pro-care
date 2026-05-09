@@ -7,8 +7,10 @@
 // Reduced motion: gsap.matchMedia branch is skipped so the track lays out
 // naturally; no pin, no scrub.
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useLayoutEffect, useEffect, useRef, type ReactNode } from 'react';
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 if (typeof window !== 'undefined') {
@@ -28,7 +30,7 @@ export function HorizontalScroll({ children, className, overlay }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef     = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (typeof window === 'undefined') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -65,7 +67,7 @@ export function HorizontalScroll({ children, className, overlay }: Props) {
     });
 
     return () => mm.revert();
-  }, []);
+  }, { scope: containerRef });
 
   return (
     <div

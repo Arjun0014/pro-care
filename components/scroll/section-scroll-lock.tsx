@@ -36,6 +36,7 @@
 // Desktop only (≥ minViewportWidth). Mobile gets natural touch scroll.
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 const SCROLL_LOCK_CONFIG = {
   enabled: true,
@@ -81,9 +82,12 @@ type LenisLike = {
 type Target = { id: string; y: number };
 
 export function SectionScrollLock() {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (!SCROLL_LOCK_CONFIG.enabled) return;
+    if (pathname !== '/') return;
 
     let detach: (() => void) | null = null;
     let rafId = 0;
@@ -104,7 +108,7 @@ export function SectionScrollLock() {
       cancelAnimationFrame(rafId);
       if (detach) detach();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
