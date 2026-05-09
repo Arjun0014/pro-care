@@ -168,8 +168,11 @@ export default function HomePage() {
         className="relative w-full px-[clamp(1.5rem,5vw,8vw)] py-[14vh] text-[var(--color-bone)] [text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0.35)]"
         aria-label="Selected projects"
       >
+        {/* Mobile-only dark overlay to improve legibility over the bright building */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-[var(--color-ink)]/70 via-[var(--color-ink)]/50 to-[var(--color-ink)]/30 block md:hidden pointer-events-none" />
+        
         <AmbientPool />
-        <div className="relative mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-12 md:gap-16 items-start">
+        <div className="relative z-10 mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-12 md:gap-16 items-start">
           {/* Left column — title block */}
           <header className="flex flex-col gap-5">
             <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-80">
@@ -204,6 +207,9 @@ export default function HomePage() {
         className="relative min-h-[100vh] w-full px-[5vw] pt-[14vh] pb-[6vh] flex flex-col items-center justify-between text-center"
         aria-label="Closing call to action"
       >
+        {/* Mobile-only dark overlay to make white text legible over the bright/busy building */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-[var(--color-ink)]/90 via-[var(--color-ink)]/50 to-transparent block md:hidden pointer-events-none" />
+
         {/* Top — Headline + CTA */}
         <div className="relative z-10 flex flex-col items-center pt-[8vh]">
           <ScrollSkew>

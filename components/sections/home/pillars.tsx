@@ -202,26 +202,14 @@ export function Pillars() {
               smaller (45vw × 75vh) so the right ~60% of the viewport
               stays clean canvas. Applied to all three panels (R2.7-fix). */}
           {p.needsPool && (
-            <>
-              {/* Mobile: Centered, wider pool to cover the full-width centered text */}
-              <div
-                className="absolute inset-0 pointer-events-none block md:hidden"
-                aria-hidden="true"
-                style={{
-                  background:
-                    'radial-gradient(ellipse 120vw 80vh at 50% 50%, rgba(11,18,32,0.7) 0%, rgba(11,18,32,0.45) 40%, rgba(11,18,32,0) 80%)',
-                }}
-              />
-              {/* Desktop: Left-anchored pool */}
-              <div
-                className="absolute inset-0 pointer-events-none hidden md:block"
-                aria-hidden="true"
-                style={{
-                  background:
-                    'radial-gradient(ellipse 45vw 75vh at 18% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
-                }}
-              />
-            </>
+            <div
+              className="absolute inset-0 pointer-events-none hidden md:block"
+              aria-hidden="true"
+              style={{
+                background:
+                  'radial-gradient(ellipse 45vw 75vh at 18% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
+              }}
+            />
           )}
 
           {/* Left-anchored single-column composition. Text-align centre inside. */}
