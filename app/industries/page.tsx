@@ -1,30 +1,48 @@
 import type { Metadata } from 'next';
-import { buildMetadata } from '@/lib/seo';
+import Link from 'next/link';
+import { SplitText } from '@/components/motion/split-text';
+import { MagneticButton } from '@/components/ui/magnetic-button';
+import { Footer } from '@/components/layout/footer';
+import { InkVeil } from '@/components/ui/ink-veil';
 
-export const metadata: Metadata = buildMetadata({
+export const metadata: Metadata = {
   title: 'Industries',
-  description: 'Pro Care Qatar serves Oil & Gas, Construction, Infrastructure, Hospitality, Power, Manufacturing, Healthcare, and Public Works sectors.',
-  path: '/industries',
-});
+  description: 'Pro Care Qatar Industries. Content coming soon.',
+};
 
-// TODO: Phase 3 — build Industries page:
-// - Sector grid (8 industries)
-// - Each cell expands to projects + capabilities
 export default function IndustriesPage() {
   return (
-    <section
-      data-ground="bone"
-      className="bg-[var(--color-bone)] text-[var(--color-ink)] min-h-screen pt-32 pb-24 px-[clamp(1.5rem,4vw,4rem)]"
-    >
-      <div className="mx-auto max-w-[1440px]">
-        <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-gold)]">
-          Industries
-        </span>
-        <h1 className="mt-4 font-display text-[clamp(2.5rem,4.5vw,4.5rem)] leading-[1.05] tracking-[-0.015em] text-balance max-w-2xl">
-          {/* TODO: client copy */}
-          Eight sectors. One <em>consistent standard.</em>
-        </h1>
+    <>
+      <InkVeil className="!fixed" />
+      <div className="relative z-10 min-h-[300vh]">
+        <div className="text-[var(--color-bone)] pt-40 pb-24 px-[5vw] flex flex-col items-start justify-center text-left min-h-screen">
+          <div className="max-w-3xl mr-auto flex flex-col items-start">
+            <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-gold)] mb-6">
+              Industries
+            </span>
+            <SplitText
+              as="h1"
+              className="font-display text-[clamp(3.5rem,8vw,6rem)] leading-[1.05] tracking-[-0.02em] mb-8"
+            >
+              Sectors we serve.
+            </SplitText>
+            <p className="font-sans text-[18px] md:text-[20px] leading-[1.6] opacity-80 mb-12 max-w-2xl">
+              Eight industries. Each with delivered references and a dedicated capability set.
+            </p>
+            
+            <div className="bg-[var(--color-bone)]/5 border border-[var(--color-bone)]/10 px-8 py-6 rounded-sm mb-16 inline-block">
+              <span className="font-mono text-[11px] uppercase tracking-[0.1em] opacity-70">
+                Content coming soon — check back shortly.
+              </span>
+            </div>
+
+            <MagneticButton href="/" className="bg-[var(--color-bone)] text-[var(--color-ink)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]">
+              ← Return Home
+            </MagneticButton>
+          </div>
+        </div>
       </div>
-    </section>
+      <Footer />
+    </>
   );
 }

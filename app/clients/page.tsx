@@ -1,32 +1,48 @@
 import type { Metadata } from 'next';
-import { buildMetadata } from '@/lib/seo';
+import Link from 'next/link';
+import { SplitText } from '@/components/motion/split-text';
+import { MagneticButton } from '@/components/ui/magnetic-button';
+import { Footer } from '@/components/layout/footer';
+import { InkVeil } from '@/components/ui/ink-veil';
 
-export const metadata: Metadata = buildMetadata({
+export const metadata: Metadata = {
   title: 'Clients',
-  description: 'Trusted by leading Qatar and Gulf operators — Pro Care client list and references.',
-  path: '/clients',
-});
+  description: 'Pro Care Qatar Clients. Content coming soon.',
+};
 
-// TODO: Phase 3 — build Clients page:
-// - Logo wall (40+ marks)
-// - 3–5 client testimonials with full attribution
-// - Sector breakdown stat strip
-// TODO(arjun): replace placeholder grid with real client logos when supplied.
 export default function ClientsPage() {
   return (
-    <section
-      data-ground="bone"
-      className="bg-[var(--color-bone)] text-[var(--color-ink)] min-h-screen pt-32 pb-24 px-[clamp(1.5rem,4vw,4rem)]"
-    >
-      <div className="mx-auto max-w-[1440px]">
-        <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-gold)]">
-          Clients
-        </span>
-        <h1 className="mt-4 font-display text-[clamp(2.5rem,4.5vw,4.5rem)] leading-[1.05] tracking-[-0.015em] text-balance max-w-2xl">
-          {/* TODO: client copy */}
-          Trusted by the <em>operators who build Qatar.</em>
-        </h1>
+    <>
+      <InkVeil className="!fixed" />
+      <div className="relative z-10 min-h-[300vh]">
+        <div className="text-[var(--color-bone)] pt-40 pb-24 px-[5vw] flex flex-col items-center justify-center text-center min-h-screen">
+          <div className="max-w-3xl mx-auto flex flex-col items-center">
+            <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-gold)] mb-6">
+              Clients
+            </span>
+            <SplitText
+              as="h1"
+              className="font-display text-[clamp(3.5rem,8vw,6rem)] leading-[1.05] tracking-[-0.02em] mb-8"
+            >
+              Trusted by operators across Qatar.
+            </SplitText>
+            <p className="font-sans text-[18px] md:text-[20px] leading-[1.6] opacity-80 mb-12 max-w-2xl">
+              End-users, main contractors, and partners we work with.
+            </p>
+            
+            <div className="bg-[var(--color-bone)]/5 border border-[var(--color-bone)]/10 px-8 py-6 rounded-sm mb-16 inline-block">
+              <span className="font-mono text-[11px] uppercase tracking-[0.1em] opacity-70">
+                Content coming soon — check back shortly.
+              </span>
+            </div>
+
+            <MagneticButton href="/" className="bg-[var(--color-bone)] text-[var(--color-ink)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]">
+              ← Return Home
+            </MagneticButton>
+          </div>
+        </div>
       </div>
-    </section>
+      <Footer />
+    </>
   );
 }

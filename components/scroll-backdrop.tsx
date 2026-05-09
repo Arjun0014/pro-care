@@ -4,6 +4,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type Lenis from 'lenis';
 
+import { usePathname } from 'next/navigation';
+
 const TOTAL_FRAMES = 600;
 const FRAMES_PER_CLIP = 120;
 
@@ -45,6 +47,7 @@ function snapToStep(frame: number): number {
 }
 
 export function ScrollBackdrop() {
+  const pathname = usePathname();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cacheRef = useRef<Map<number, HTMLImageElement>>(new Map());
   const inFlightRef = useRef<Set<number>>(new Set());
@@ -129,8 +132,8 @@ export function ScrollBackdrop() {
     if (typeof window === 'undefined') return;
 
     if (reducedMotion) {
-      // Reduced motion: load only the last frame statically.
-      loadFrame(TOTAL_FRAMES - 1).then(() => setReady(true));
+      // Reduced motion: load only the selected frame statically.
+      loadFrame(488).then(() => setReady(true));
       return;
     }
 
@@ -256,12 +259,43 @@ export function ScrollBackdrop() {
   };
 
   // Scroll listener + lerp animation
+  // Home: scrub 0 → 599 across the full document.
+  // Interior pages: scrub 488 → 599 across the full document scroll.
+  const INTERIOR_START_FRAME = 488;
+  const INTERIOR_END_FRAME = 599;
+
   useEffect(() => {
     if (!ready) return;
     if (reducedMotion) {
-      drawFrame(TOTAL_FRAMES - 1);
+      drawFrame(INTERIOR_START_FRAME);
       return;
     }
+
+    const isHome = pathname === '/';
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = maxScroll > 0 ? Math.min(scrollY / maxScroll, 1) : 0;
+
+      if (isHome) {
+        // Home: full timeline 0 → 599
+        const target = progress * (TOTAL_FRAMES - 1);
+        targetFrameRef.current = snapToStep(target);
+      } else {
+        // Interior: scrub 488 → 599
+        const range = INTERIOR_END_FRAME - INTERIOR_START_FRAME;
+        const target = INTERIOR_START_FRAME + progress * range;
+        targetFrameRef.current = snapToStep(target);
+      }
+    };
+
+    // Initialize scroll position immediately
+    handleScroll();
+    
+    // Snap to current scroll instantly so we don't show the wrong frame on mount
+    currentFrameRef.current = targetFrameRef.current;
+    drawFrame(currentFrameRef.current);
 
     let raf = 0;
     const tick = () => {
@@ -274,15 +308,6 @@ export function ScrollBackdrop() {
     };
     raf = requestAnimationFrame(tick);
 
-    const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? scrollY / maxScroll : 0;
-      const target = progress * (TOTAL_FRAMES - 1);
-      targetFrameRef.current = snapToStep(target);
-    };
-
-    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     const lenis = (window as Window & { __lenis?: Lenis }).__lenis;
@@ -293,7 +318,7 @@ export function ScrollBackdrop() {
       window.removeEventListener('scroll', handleScroll);
       if (lenis) lenis.off('scroll', handleScroll);
     };
-  }, [ready, reducedMotion]);
+  }, [ready, reducedMotion, pathname]);
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">

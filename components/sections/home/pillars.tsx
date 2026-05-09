@@ -15,9 +15,11 @@
 // Mobile (<769px): no pin (matchMedia gates desktop pin only); each pillar
 // stacks as a normal vertical section.
 
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useEffect, useRef } from 'react';
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 import Link from 'next/link';
 import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import type Lenis from 'lenis';
 import { gsapEasings } from '@/lib/motion';
@@ -95,91 +97,86 @@ const HALO = '[text-shadow:0_1px_2px_rgba(11,18,32,0.5),0_0_24px_rgba(11,18,32,0
 export function Pillars() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (typeof window === 'undefined') return;
 
     const section = sectionRef.current;
     if (!section) return;
 
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
+    const mm = gsap.matchMedia();
 
-      // Desktop & Mobile: pinned multi-stage timeline.
-      mm.add('all', () => {
-        const stages = gsap.utils.toArray<HTMLElement>('[data-pillar-stage]', section);
-        if (stages.length === 0) return;
+    // Desktop & Mobile: pinned multi-stage timeline.
+    mm.add('all', () => {
+      const stages = gsap.utils.toArray<HTMLElement>('[data-pillar-stage]', section);
+      if (stages.length === 0) return;
 
-        // Each stage absolutely stacked. Hide stages 2 & 3 initially.
-        stages.forEach((stage, i) => {
-          if (i === 0) {
-            gsap.set(stage, { autoAlpha: 1, xPercent: 0 });
-          } else {
-            gsap.set(stage, { autoAlpha: 0, xPercent: 100 });
-          }
-        });
-
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger:    section,
-            start:      'top top',
-            // ScrollTrigger end strings don't parse "vh" — convert to px so
-            // the pin extends 120vh per stage as intended (R2 had the same
-            // bug; pin worked but the timeline scrubbed across only 360px
-            // instead of 360vh, so each stage played in ~120px of scroll).
-            end:        () => `+=${stages.length * 1.2 * window.innerHeight}`,
-            pin:        true,
-            scrub:      1,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        stages.forEach((stage, i) => {
-          const num    = stage.querySelector<HTMLElement>('[data-pillar-number]');
-          const head   = stage.querySelector<HTMLElement>('[data-pillar-head]');
-          const body   = stage.querySelector<HTMLElement>('[data-pillar-body]');
-          const items  = gsap.utils.toArray<HTMLElement>('[data-pillar-item]', stage);
-          const cta    = stage.querySelector<HTMLElement>('[data-pillar-cta]');
-
-          // Stage entry animations — number Lift → head → body → items → cta.
-          // (Image mask-reveal is gone in the canvas-first rebuild — there's
-          //  no image. The "image" is the canvas, which is already there.)
-          tl.from(num,  { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '+=0');
-          tl.from(head, { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '<+0.1');
-          tl.from(body, { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '<+0.1');
-          tl.from(items,{ y: 16, autoAlpha: 0, duration: 0.4, stagger: 0.1, ease: gsapEasings.out },     '<+0.1');
-          tl.from(cta,  { y: 16, autoAlpha: 0, duration: 0.4, ease: gsapEasings.out },                   '<+0.2');
-          // Hold this stage visible for a bit before transition.
-          tl.to({}, { duration: 0.8 });
-
-          // Inter-stage: exit current to left, bring next in from right.
-          if (i < stages.length - 1) {
-            const next = stages[i + 1];
-            tl.to(stage,  { autoAlpha: 0, xPercent: -100, duration: 0.6, ease: gsapEasings.cinema });
-            tl.set(next,  { autoAlpha: 1, xPercent: 100 });
-            tl.to(next,   { xPercent: 0, duration: 0.6, ease: gsapEasings.cinema }, '<');
-          }
-        });
-
-        // Refresh wiring — both window resize and Lenis scroll.
-        const lenis = (window as Window & { __lenis?: Lenis }).__lenis;
-        const onLenisRefresh = () => ScrollTrigger.update();
-        if (lenis) lenis.on('scroll', onLenisRefresh);
-
-        const onResize = () => ScrollTrigger.refresh();
-        window.addEventListener('resize', onResize);
-
-        return () => {
-          if (lenis) lenis.off('scroll', onLenisRefresh);
-          window.removeEventListener('resize', onResize);
-        };
+      // Each stage absolutely stacked. Hide stages 2 & 3 initially.
+      stages.forEach((stage, i) => {
+        if (i === 0) {
+          gsap.set(stage, { autoAlpha: 1, xPercent: 0 });
+        } else {
+          gsap.set(stage, { autoAlpha: 0, xPercent: 100 });
+        }
       });
 
-        // Fallback block removed since 'all' covers all viewports.
-    }, section);
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger:    section,
+          start:      'top top',
+          // ScrollTrigger end strings don't parse "vh" — convert to px so
+          // the pin extends 120vh per stage as intended (R2 had the same
+          // bug; pin worked but the timeline scrubbed across only 360px
+          // instead of 360vh, so each stage played in ~120px of scroll).
+          end:        () => `+=${stages.length * 1.2 * window.innerHeight}`,
+          pin:        true,
+          scrub:      1,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
 
-    return () => ctx.revert();
-  }, []);
+      stages.forEach((stage, i) => {
+        const num    = stage.querySelector<HTMLElement>('[data-pillar-number]');
+        const head   = stage.querySelector<HTMLElement>('[data-pillar-head]');
+        const body   = stage.querySelector<HTMLElement>('[data-pillar-body]');
+        const items  = gsap.utils.toArray<HTMLElement>('[data-pillar-item]', stage);
+        const cta    = stage.querySelector<HTMLElement>('[data-pillar-cta]');
+
+        // Stage entry animations — number Lift → head → body → items → cta.
+        // (Image mask-reveal is gone in the canvas-first rebuild — there's
+        //  no image. The "image" is the canvas, which is already there.)
+        tl.from(num,  { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '+=0');
+        tl.from(head, { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '<+0.1');
+        tl.from(body, { y: 24, autoAlpha: 0, duration: 0.5, ease: gsapEasings.out },                   '<+0.1');
+        tl.from(items,{ y: 16, autoAlpha: 0, duration: 0.4, stagger: 0.1, ease: gsapEasings.out },     '<+0.1');
+        tl.from(cta,  { y: 16, autoAlpha: 0, duration: 0.4, ease: gsapEasings.out },                   '<+0.2');
+        // Hold this stage visible for a bit before transition.
+        tl.to({}, { duration: 0.8 });
+
+        // Inter-stage: exit current to left, bring next in from right.
+        if (i < stages.length - 1) {
+          const next = stages[i + 1];
+          tl.to(stage,  { autoAlpha: 0, xPercent: -100, duration: 0.6, ease: gsapEasings.cinema });
+          tl.set(next,  { autoAlpha: 1, xPercent: 100 });
+          tl.to(next,   { xPercent: 0, duration: 0.6, ease: gsapEasings.cinema }, '<');
+        }
+      });
+
+      // Refresh wiring — both window resize and Lenis scroll.
+      const lenis = (window as Window & { __lenis?: Lenis }).__lenis;
+      const onLenisRefresh = () => ScrollTrigger.update();
+      if (lenis) lenis.on('scroll', onLenisRefresh);
+
+      const onResize = () => ScrollTrigger.refresh();
+      window.addEventListener('resize', onResize);
+
+      return () => {
+        if (lenis) lenis.off('scroll', onLenisRefresh);
+        window.removeEventListener('resize', onResize);
+      };
+    });
+
+  }, { scope: sectionRef });
 
   return (
     <section
@@ -202,26 +199,14 @@ export function Pillars() {
               smaller (45vw × 75vh) so the right ~60% of the viewport
               stays clean canvas. Applied to all three panels (R2.7-fix). */}
           {p.needsPool && (
-            <>
-              {/* Mobile: Centered, wider pool to cover the full-width centered text */}
-              <div
-                className="absolute inset-0 pointer-events-none block md:hidden"
-                aria-hidden="true"
-                style={{
-                  background:
-                    'radial-gradient(ellipse 120vw 80vh at 50% 50%, rgba(11,18,32,0.7) 0%, rgba(11,18,32,0.45) 40%, rgba(11,18,32,0) 80%)',
-                }}
-              />
-              {/* Desktop: Left-anchored pool */}
-              <div
-                className="absolute inset-0 pointer-events-none hidden md:block"
-                aria-hidden="true"
-                style={{
-                  background:
-                    'radial-gradient(ellipse 45vw 75vh at 18% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
-                }}
-              />
-            </>
+            <div
+              className="absolute inset-0 pointer-events-none hidden md:block"
+              aria-hidden="true"
+              style={{
+                background:
+                  'radial-gradient(ellipse 45vw 75vh at 18% 50%, rgba(11,18,32,0.65) 0%, rgba(11,18,32,0.40) 35%, rgba(11,18,32,0) 70%)',
+              }}
+            />
           )}
 
           {/* Left-anchored single-column composition. Text-align centre inside. */}
