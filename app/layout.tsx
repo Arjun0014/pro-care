@@ -89,7 +89,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
 
         <Preloader />
-        <RouteCurtain />
         <Cursor />
 
         {/* Film-grain noise overlay — fixed, hidden from assistive tech.
@@ -113,7 +112,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SectionScrollLock />
           <Nav />
           <main id="main" className="relative z-10">
-            {children}
+            <RouteCurtain>
+              {children}
+            </RouteCurtain>
           </main>
         </LenisProvider>
 

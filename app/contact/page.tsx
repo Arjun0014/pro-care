@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { SplitText } from '@/components/motion/split-text';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { Footer } from '@/components/layout/footer';
+import { InkVeil } from '@/components/ui/ink-veil';
 
 const contactSchema = z.object({
   intent: z.enum(['rfq', 'project', 'vendor', 'general']),
@@ -53,7 +54,8 @@ export default function ContactPage() {
 
   return (
     <>
-      <main className="bg-[var(--color-bone)] text-[var(--color-ink)] min-h-screen pt-32 pb-24 px-[5vw]">
+      <InkVeil className="!fixed" />
+      <div className="text-[var(--color-bone)] min-h-screen pt-32 pb-24 px-[5vw] relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-20">
@@ -75,7 +77,7 @@ export default function ContactPage() {
             {/* Form Column */}
             <div>
               {isSuccess ? (
-                <div className="bg-[var(--color-ink)]/5 p-12 text-center rounded-sm border border-[var(--color-ink)]/10">
+                <div className="bg-[var(--color-bone)]/5 p-12 text-center rounded-sm border border-[var(--color-bone)]/10">
                   <h3 className="font-display text-[32px] tracking-[-0.01em] mb-4 text-[var(--color-gold)]">Got it.</h3>
                   <p className="font-sans text-[18px] opacity-80">
                     We've received your details and will be in touch within one business day.
@@ -85,7 +87,7 @@ export default function ContactPage() {
                 <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-12">
                   {/* INTENT */}
                   <div>
-                    <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 mb-6 border-b border-[var(--color-ink)]/20 pb-2">
+                    <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 mb-6 border-b border-[var(--color-bone)]/20 pb-2">
                       Intent
                     </h2>
                     <div className="flex flex-wrap gap-6 font-sans text-[15px]">
@@ -100,7 +102,7 @@ export default function ContactPage() {
                             type="radio"
                             value={opt.value}
                             {...register('intent')}
-                            className="appearance-none w-4 h-4 rounded-full border border-[var(--color-ink)]/40 checked:border-[var(--color-gold)] checked:border-4 transition-all"
+                            className="appearance-none w-4 h-4 rounded-full border border-[var(--color-bone)]/40 checked:border-[var(--color-gold)] checked:border-4 transition-all"
                           />
                           <span className={intent === opt.value ? 'opacity-100' : 'opacity-60 group-hover:opacity-100 transition-opacity'}>
                             {opt.label}
@@ -112,7 +114,7 @@ export default function ContactPage() {
 
                   {/* YOUR DETAILS */}
                   <div>
-                    <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 mb-6 border-b border-[var(--color-ink)]/20 pb-2">
+                    <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 mb-6 border-b border-[var(--color-bone)]/20 pb-2">
                       Your Details
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -120,7 +122,7 @@ export default function ContactPage() {
                         <label className="font-sans text-[13px] opacity-80">Name</label>
                         <input
                           {...register('name')}
-                          className="bg-transparent border-b border-[var(--color-ink)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors"
+                          className="bg-transparent border-b border-[var(--color-bone)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors"
                           disabled={isSubmitting}
                         />
                         {errors.name && <span className="text-red-500 text-[12px]">{errors.name.message}</span>}
@@ -129,7 +131,7 @@ export default function ContactPage() {
                         <label className="font-sans text-[13px] opacity-80">Company</label>
                         <input
                           {...register('company')}
-                          className="bg-transparent border-b border-[var(--color-ink)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors"
+                          className="bg-transparent border-b border-[var(--color-bone)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors"
                           disabled={isSubmitting}
                         />
                         {errors.company && <span className="text-red-500 text-[12px]">{errors.company.message}</span>}
@@ -139,7 +141,7 @@ export default function ContactPage() {
                         <input
                           type="email"
                           {...register('email')}
-                          className="bg-transparent border-b border-[var(--color-ink)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors"
+                          className="bg-transparent border-b border-[var(--color-bone)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors"
                           disabled={isSubmitting}
                         />
                         {errors.email && <span className="text-red-500 text-[12px]">{errors.email.message}</span>}
@@ -148,7 +150,7 @@ export default function ContactPage() {
                         <label className="font-sans text-[13px] opacity-80">Phone (optional)</label>
                         <input
                           {...register('phone')}
-                          className="bg-transparent border-b border-[var(--color-ink)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors"
+                          className="bg-transparent border-b border-[var(--color-bone)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors"
                           disabled={isSubmitting}
                         />
                       </div>
@@ -157,7 +159,7 @@ export default function ContactPage() {
 
                   {/* YOUR PROJECT */}
                   <div>
-                    <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 mb-6 border-b border-[var(--color-ink)]/20 pb-2">
+                    <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 mb-6 border-b border-[var(--color-bone)]/20 pb-2">
                       Your Project
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
@@ -166,7 +168,7 @@ export default function ContactPage() {
                         <textarea
                           {...register('brief')}
                           rows={4}
-                          className="bg-transparent border-b border-[var(--color-ink)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors resize-none"
+                          className="bg-transparent border-b border-[var(--color-bone)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors resize-none"
                           disabled={isSubmitting}
                         />
                         {errors.brief && <span className="text-red-500 text-[12px]">{errors.brief.message}</span>}
@@ -178,7 +180,7 @@ export default function ContactPage() {
                             <label className="font-sans text-[13px] opacity-80">Sector</label>
                             <select
                               {...register('sector')}
-                              className="bg-transparent border-b border-[var(--color-ink)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors appearance-none rounded-none"
+                              className="bg-transparent border-b border-[var(--color-bone)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors appearance-none rounded-none text-black"
                               disabled={isSubmitting}
                             >
                               <option value="">Select sector</option>
@@ -191,7 +193,7 @@ export default function ContactPage() {
                             <label className="font-sans text-[13px] opacity-80">Service required</label>
                             <select
                               {...register('service')}
-                              className="bg-transparent border-b border-[var(--color-ink)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors appearance-none rounded-none"
+                              className="bg-transparent border-b border-[var(--color-bone)]/20 focus:border-[var(--color-gold)] py-2 outline-none font-sans text-[16px] transition-colors appearance-none rounded-none text-black"
                               disabled={isSubmitting}
                             >
                               <option value="">Select service</option>
@@ -209,7 +211,7 @@ export default function ContactPage() {
                     <MagneticButton
                       type="submit"
                       disabled={isSubmitting}
-                      className="bg-[var(--color-ink)] text-[var(--color-bone)] border-[var(--color-ink)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)] disabled:opacity-50 disabled:pointer-events-none"
+                      className="bg-[var(--color-bone)] text-[var(--color-ink)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)] disabled:opacity-50 disabled:pointer-events-none"
                     >
                       {isSubmitting ? 'SENDING...' : 'SEND INQUIRY'}
                     </MagneticButton>
@@ -222,9 +224,9 @@ export default function ContactPage() {
             </div>
 
             {/* Sidebar Column */}
-            <div className="flex flex-col gap-12 lg:border-l border-[var(--color-ink)]/10 lg:pl-16">
+            <div className="flex flex-col gap-12 lg:border-l border-[var(--color-bone)]/20 lg:pl-16">
               <div className="flex flex-col gap-4">
-                <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 border-b border-[var(--color-ink)]/20 pb-2 block">
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 border-b border-[var(--color-bone)]/20 pb-2 block">
                   Office
                 </span>
                 <address className="not-italic font-sans text-[15px] opacity-90 leading-[1.6]">
@@ -234,7 +236,7 @@ export default function ContactPage() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 border-b border-[var(--color-ink)]/20 pb-2 block">
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 border-b border-[var(--color-bone)]/20 pb-2 block">
                   Direct Lines
                 </span>
                 <div className="flex flex-col gap-2 font-sans text-[15px] opacity-90">
@@ -244,7 +246,7 @@ export default function ContactPage() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 border-b border-[var(--color-ink)]/20 pb-2 block">
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 border-b border-[var(--color-bone)]/20 pb-2 block">
                   Registry
                 </span>
                 <div className="flex flex-col gap-2 font-sans text-[15px] opacity-90">
@@ -255,7 +257,7 @@ export default function ContactPage() {
               </div>
 
               <div className="flex flex-col gap-4">
-                <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 border-b border-[var(--color-ink)]/20 pb-2 block">
+                <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-60 border-b border-[var(--color-bone)]/20 pb-2 block">
                   Hours
                 </span>
                 <div className="flex flex-col gap-2 font-mono text-[13px] opacity-90">
@@ -267,7 +269,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
       <Footer />
     </>
   );

@@ -6,6 +6,7 @@ import { buildMetadata } from '@/lib/seo';
 import { SplitText } from '@/components/motion/split-text';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { Footer } from '@/components/layout/footer';
+import { InkVeil } from '@/components/ui/ink-veil';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Projects',
@@ -16,7 +17,8 @@ export const metadata: Metadata = buildMetadata({
 export default function ProjectsPage() {
   return (
     <>
-      <main className="bg-[var(--color-bone)] text-[var(--color-ink)] min-h-screen pt-32 pb-24 px-[5vw]">
+      <InkVeil className="!fixed" />
+      <div className="text-[var(--color-bone)] min-h-screen pt-32 pb-24 px-[5vw] relative z-10">
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-16">
           <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-gold)] mb-6 block">
@@ -42,7 +44,7 @@ export default function ProjectsPage() {
                 href={`/projects/${project.slug}`}
                 className="group flex flex-col gap-4 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
               >
-                <div className="relative w-full aspect-[4/5] overflow-hidden bg-[var(--color-ink)]/5">
+                <div className="relative w-full aspect-[4/5] overflow-hidden bg-[var(--color-bone)]/5">
                   <Image
                     src={project.image}
                     alt={project.imageAlt || project.title}
@@ -80,15 +82,15 @@ export default function ProjectsPage() {
         </div>
 
         {/* Closing CTA */}
-        <section className="max-w-7xl mx-auto mt-32 border-t border-[var(--color-ink)]/10 pt-24 text-center flex flex-col items-center">
+        <section className="max-w-7xl mx-auto mt-32 border-t border-[var(--color-bone)]/20 pt-24 text-center flex flex-col items-center">
           <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] leading-[1.1] tracking-[-0.02em] mb-10 max-w-[20ch]">
             Ready to scope your project?
           </h2>
-          <MagneticButton href="/contact" className="bg-[var(--color-ink)] text-[var(--color-bone)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]">
+          <MagneticButton href="/contact" className="bg-[var(--color-bone)] text-[var(--color-ink)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]">
             Send an RFQ →
           </MagneticButton>
         </section>
-      </main>
+      </div>
       <Footer />
     </>
   );

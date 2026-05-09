@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { projects } from '@/lib/content/projects';
 import { buildMetadata } from '@/lib/seo';
 import { Footer } from '@/components/layout/footer';
+import { InkVeil } from '@/components/ui/ink-veil';
 
 export function generateStaticParams() {
   return projects.map((p) => ({
@@ -33,13 +34,14 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
 
   return (
     <>
-      <main className="bg-[var(--color-bone)] text-[var(--color-ink)] min-h-screen pt-32 pb-24 px-[5vw]">
+      <InkVeil className="!fixed" />
+      <div className="text-[var(--color-bone)] min-h-screen pt-32 pb-24 px-[5vw] relative z-10">
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="mb-12">
             <Link
               href="/#selected-projects"
-              className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-ink)]/60 hover:text-[var(--color-gold)] transition-colors mb-8 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+              className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[var(--color-bone)]/60 hover:text-[var(--color-gold)] transition-colors mb-8 focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
             >
               ← Back to selected projects
             </Link>
@@ -59,7 +61,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           </div>
 
           {/* Hero Image */}
-          <div className="relative w-full aspect-[16/9] mb-16 overflow-hidden">
+          <div className="relative w-full aspect-[16/9] mb-16 overflow-hidden border border-[var(--color-bone)]/10">
             <Image
               src={project.image}
               alt={project.imageAlt || project.title}
@@ -73,15 +75,15 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_2.5fr] gap-12 lg:gap-24">
             {/* Sidebar */}
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-1 border-t border-[var(--color-ink)]/10 pt-4">
+              <div className="flex flex-col gap-1 border-t border-[var(--color-bone)]/20 pt-4">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] opacity-50">End User</span>
                 <span className="font-sans text-[14px]">{project.endUser}</span>
               </div>
-              <div className="flex flex-col gap-1 border-t border-[var(--color-ink)]/10 pt-4">
+              <div className="flex flex-col gap-1 border-t border-[var(--color-bone)]/20 pt-4">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] opacity-50">Client</span>
                 <span className="font-sans text-[14px]">{project.client}</span>
               </div>
-              <div className="flex flex-col gap-1 border-t border-[var(--color-ink)]/10 pt-4">
+              <div className="flex flex-col gap-1 border-t border-[var(--color-bone)]/20 pt-4">
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] opacity-50">Service</span>
                 <span className="font-sans text-[14px] capitalize">{project.pillar.replace('-', ' ')}</span>
               </div>
@@ -93,7 +95,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
                 {project.brief}
               </p>
               
-              <div className="bg-[var(--color-ink)]/5 p-6 border border-[var(--color-ink)]/10">
+              <div className="bg-[var(--color-bone)]/5 p-6 border border-[var(--color-bone)]/10">
                 <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--color-gold)] mb-3">
                   // PLACEHOLDER: Client Copy
                 </p>
@@ -107,7 +109,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
             </div>
           </div>
         </div>
-      </main>
+      </div>
       <Footer />
     </>
   );

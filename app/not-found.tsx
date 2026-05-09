@@ -1,12 +1,14 @@
 import Link from 'next/link';
+import { InkVeil } from '@/components/ui/ink-veil';
 
 // Per 05-IA.md: a single editorial line, no drama, same ground rhythm.
 export default function NotFound() {
   return (
-    <section
-      data-ground="bone"
-      className="bg-[var(--color-bone)] text-[var(--color-ink)] min-h-screen flex flex-col items-start justify-center px-[clamp(1.5rem,4vw,4rem)] pt-20"
-    >
+    <>
+      <InkVeil className="!fixed" />
+      <section
+        className="text-[var(--color-bone)] min-h-screen flex flex-col items-start justify-center px-[clamp(1.5rem,4vw,4rem)] pt-20 relative z-10"
+      >
       <div className="mx-auto max-w-[1440px] w-full">
         <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-gold)]">
           404
@@ -22,5 +24,6 @@ export default function NotFound() {
         </Link>
       </div>
     </section>
+    </>
   );
 }

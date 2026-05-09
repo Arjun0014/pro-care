@@ -5,6 +5,7 @@ import { buildMetadata } from '@/lib/seo';
 import { SplitText } from '@/components/motion/split-text';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { Footer } from '@/components/layout/footer';
+import { InkVeil } from '@/components/ui/ink-veil';
 
 export const metadata: Metadata = buildMetadata({
   title: 'Contracting',
@@ -15,9 +16,10 @@ export const metadata: Metadata = buildMetadata({
 export default function ContractingPage() {
   return (
     <>
-      <main>
-        {/* 1. Pillar hero (bone) */}
-        <section className="relative h-[80svh] w-full px-[5vw] flex flex-col justify-end pb-[10vh] bg-[var(--color-bone)] text-[var(--color-bone)] pt-32">
+      <InkVeil className="!fixed" />
+      <div className="text-[var(--color-bone)] min-h-screen relative z-10">
+        {/* 1. Pillar hero */}
+        <section className="relative h-[80svh] w-full px-[5vw] flex flex-col justify-end pb-[10vh] pt-32">
           <div className="absolute inset-0 z-0 bg-[var(--color-ink)]">
             <Image
               src="/images/pillars/contracting.jpg"
@@ -46,8 +48,8 @@ export default function ContractingPage() {
           </div>
         </section>
 
-        {/* 2. Sub-capabilities grid (bone) */}
-        <section className="bg-[var(--color-bone)] text-[var(--color-ink)] px-[5vw] py-[14vh]">
+        {/* 2. Sub-capabilities grid */}
+        <section className="px-[5vw] py-[14vh]">
           <div className="max-w-7xl mx-auto">
             <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] mb-12 opacity-80 text-[var(--color-gold)]">
               What we deliver
@@ -71,8 +73,8 @@ export default function ContractingPage() {
                   desc: 'End-to-end site supervision, scheduling, and subcontractor management.',
                 },
               ].map((item, i) => (
-                <div key={i} className="group flex flex-col gap-5 border-t border-[var(--color-ink)]/15 pt-8 hover:border-[var(--color-gold)] transition-colors duration-400">
-                  <div className="w-6 h-[1px] bg-[var(--color-ink)] group-hover:bg-[var(--color-gold)] group-hover:scale-125 transition-all duration-400 origin-left" />
+                <div key={i} className="group flex flex-col gap-5 border-t border-[var(--color-bone)]/20 pt-8 hover:border-[var(--color-gold)] transition-colors duration-400">
+                  <div className="w-6 h-[1px] bg-[var(--color-bone)] group-hover:bg-[var(--color-gold)] group-hover:scale-125 transition-all duration-400 origin-left" />
                   <h3 className="font-display text-[24px] tracking-[-0.01em]">{item.title}</h3>
                   <p className="font-sans text-[15px] leading-[1.6] opacity-75">
                     {item.desc}
@@ -83,8 +85,8 @@ export default function ContractingPage() {
           </div>
         </section>
 
-        {/* 5. Adjacent pillars (ink) */}
-        <section className="bg-[var(--color-ink)] text-[var(--color-bone)] px-[5vw] py-[10vh] border-b border-[var(--color-bone)]/10">
+        {/* 5. Adjacent pillars */}
+        <section className="px-[5vw] py-[10vh] border-y border-[var(--color-bone)]/20">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-8 justify-between items-center">
             <span className="font-mono text-[11px] uppercase tracking-[0.2em] opacity-70">
               Also offering
@@ -102,16 +104,16 @@ export default function ContractingPage() {
           </div>
         </section>
 
-        {/* 6. Closing CTA (bone) */}
-        <section className="bg-[var(--color-bone)] text-[var(--color-ink)] px-[5vw] py-[14vh] text-center flex flex-col items-center">
+        {/* 6. Closing CTA */}
+        <section className="px-[5vw] py-[14vh] text-center flex flex-col items-center">
           <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] leading-[1.1] tracking-[-0.02em] mb-10 max-w-[20ch]">
             Project requires contracting? Let's scope it.
           </h2>
-          <MagneticButton href="/contact" className="bg-[var(--color-ink)] text-[var(--color-bone)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]">
+          <MagneticButton href="/contact" className="bg-[var(--color-bone)] text-[var(--color-ink)] hover:bg-[var(--color-gold)] hover:text-[var(--color-ink)] hover:border-[var(--color-gold)]">
             Send an RFQ →
           </MagneticButton>
         </section>
-      </main>
+      </div>
       <Footer />
     </>
   );

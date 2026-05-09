@@ -5,6 +5,7 @@ import { buildMetadata } from '@/lib/seo';
 import { SplitText } from '@/components/motion/split-text';
 import { MagneticButton } from '@/components/ui/magnetic-button';
 import { Footer } from '@/components/layout/footer';
+import { InkVeil } from '@/components/ui/ink-veil';
 
 export const metadata: Metadata = buildMetadata({
   title: 'About',
@@ -15,10 +16,11 @@ export const metadata: Metadata = buildMetadata({
 export default function AboutPage() {
   return (
     <>
-      <main className="bg-[var(--color-bone)] text-[var(--color-ink)] min-h-screen">
+      <InkVeil className="!fixed" />
+      <div className="text-[var(--color-bone)] min-h-screen pb-24 relative z-10">
         {/* Hero */}
-        <section className="relative pt-32 pb-24 px-[5vw] border-b border-[var(--color-ink)]/10">
-          <div className="max-w-5xl mx-auto">
+        <section className="relative pt-32 pb-24 px-[5vw] border-b border-[var(--color-bone)]/20">
+          <div className="max-w-3xl mr-auto">
             <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-gold)]">
               About
             </span>
@@ -28,15 +30,15 @@ export default function AboutPage() {
             >
               One team. <em>Three companies.</em> One standard.
             </SplitText>
-            <p className="mt-8 font-sans text-[18px] md:text-[20px] leading-[1.6] text-[var(--color-ink)]/80 max-w-2xl">
+            <p className="mt-8 font-sans text-[18px] md:text-[20px] leading-[1.6] opacity-80 max-w-2xl">
               In Qatar's construction economy, three things keep going wrong: materials arrive late, builds finish over budget, and what was built isn't maintained well. We started Pro Care because the same team that brings the materials, builds with them, and maintains them afterwards has every incentive to get all three right. <em>Single accountability across the lifecycle of a building.</em>
             </p>
           </div>
         </section>
 
         {/* Company Stats */}
-        <section className="bg-[var(--color-ink)] text-[var(--color-bone)] py-24 px-[5vw]">
-          <div className="max-w-7xl mx-auto">
+        <section className="py-24 px-[5vw]">
+          <div className="max-w-7xl mr-auto">
             <span className="block font-mono text-xs uppercase tracking-[0.2em] opacity-80 mb-12 text-[var(--color-gold)]">
               By the numbers
             </span>
@@ -78,7 +80,7 @@ export default function AboutPage() {
 
         {/* Three Disciplines Brief */}
         <section className="py-24 px-[5vw]">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mr-auto">
             <span className="block font-mono text-[12px] uppercase tracking-[0.16em] text-[var(--color-gold)] mb-12">
               Three Disciplines
             </span>
@@ -90,14 +92,14 @@ export default function AboutPage() {
                 </p>
                 <Link href="/services/trading" className="font-sans text-[14px] text-[var(--color-gold)] hover:underline mt-2">Explore Trading →</Link>
               </div>
-              <div className="flex flex-col gap-4 border-t md:border-t-0 md:border-l border-[var(--color-ink)]/10 pt-8 md:pt-0 md:pl-12">
+              <div className="flex flex-col gap-4 border-t md:border-t-0 md:border-l border-[var(--color-bone)]/20 pt-8 md:pt-0 md:pl-12">
                 <h3 className="font-display text-[28px] tracking-[-0.01em]">Contracting</h3>
                 <p className="font-sans text-[15px] leading-[1.6] opacity-80">
                   We are the team between the drawings and the finished building. Civil, MEP, fit-out — delivered against fixed timelines, with site safety as the first metric.
                 </p>
                 <Link href="/services/contracting" className="font-sans text-[14px] text-[var(--color-gold)] hover:underline mt-2">Explore Contracting →</Link>
               </div>
-              <div className="flex flex-col gap-4 border-t md:border-t-0 md:border-l border-[var(--color-ink)]/10 pt-8 md:pt-0 md:pl-12">
+              <div className="flex flex-col gap-4 border-t md:border-t-0 md:border-l border-[var(--color-bone)]/20 pt-8 md:pt-0 md:pl-12">
                 <h3 className="font-display text-[28px] tracking-[-0.01em]">Facility Services</h3>
                 <p className="font-sans text-[15px] leading-[1.6] opacity-80">
                   We maintain buildings — the mechanical systems that keep them habitable, the surfaces that keep them presentable, and the response times that keep clients calm.
@@ -109,7 +111,7 @@ export default function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="bg-[var(--color-ink)] text-[var(--color-bone)] py-24 px-[5vw] text-center flex flex-col items-center">
+        <section className="py-24 px-[5vw] text-left flex flex-col items-start">
           <h2 className="font-display text-[clamp(2.5rem,5vw,4rem)] leading-[1.1] tracking-[-0.02em] mb-10">
             Working in our sectors? Let's talk.
           </h2>
@@ -117,7 +119,7 @@ export default function AboutPage() {
             Send an RFQ →
           </MagneticButton>
         </section>
-      </main>
+      </div>
       <Footer />
     </>
   );

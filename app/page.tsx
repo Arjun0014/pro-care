@@ -18,6 +18,7 @@ import { ProjectsHorizontal } from '@/components/sections/home/projects-horizont
 import { WhyCluster }         from '@/components/sections/home/why-cluster';
 import { StatsCountUp }       from '@/components/sections/home/stats-count-up';
 import { projects }       from '@/lib/content/projects';
+import { InkVeil }        from '@/components/ui/ink-veil';
 
 export const metadata: Metadata = {
   title:       'Pro Care Qatar — Trading, Contracting, Facility Services',
@@ -33,18 +34,7 @@ const SHADOW_LIGHT  = '0 1px 8px rgba(11,18,32,0.45)';
 // content (z-10), so the canvas darkens slightly toward edges where text
 // usually sits. Kept transparent at center so the building stays the visible
 // subject. Per spec § Bug 4.
-function InkVeil() {
-  return (
-    <div
-      className="absolute inset-0 pointer-events-none z-[1]"
-      style={{
-        background:
-          'radial-gradient(ellipse at center, rgba(11,18,32,0) 0%, rgba(11,18,32,0.35) 60%, rgba(11,18,32,0.55) 100%)',
-      }}
-      aria-hidden="true"
-    />
-  );
-}
+
 
 // Lighter ambient veil for the alternating-veil experiment (R2.5 user
 // feedback — "the transparent covering like in the first one, it can be
