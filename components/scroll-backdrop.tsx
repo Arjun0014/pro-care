@@ -259,25 +259,41 @@ export function ScrollBackdrop() {
   };
 
   // Scroll listener + lerp animation
+  // Home: scrub 0 → 599 across the full document.
+  // Interior pages: scrub 488 → 599 across the full document scroll.
+  const INTERIOR_START_FRAME = 488;
+  const INTERIOR_END_FRAME = 599;
+
   useEffect(() => {
     if (!ready) return;
-    if (reducedMotion || pathname !== '/') {
-      drawFrame(488);
+    if (reducedMotion) {
+      drawFrame(INTERIOR_START_FRAME);
       return;
     }
+
+    const isHome = pathname === '/';
 
     const handleScroll = () => {
       const scrollY = window.scrollY;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = maxScroll > 0 ? scrollY / maxScroll : 0;
-      const target = progress * (TOTAL_FRAMES - 1);
-      targetFrameRef.current = snapToStep(target);
+      const progress = maxScroll > 0 ? Math.min(scrollY / maxScroll, 1) : 0;
+
+      if (isHome) {
+        // Home: full timeline 0 → 599
+        const target = progress * (TOTAL_FRAMES - 1);
+        targetFrameRef.current = snapToStep(target);
+      } else {
+        // Interior: scrub 488 → 599
+        const range = INTERIOR_END_FRAME - INTERIOR_START_FRAME;
+        const target = INTERIOR_START_FRAME + progress * range;
+        targetFrameRef.current = snapToStep(target);
+      }
     };
 
     // Initialize scroll position immediately
     handleScroll();
     
-    // Snap to current scroll instantly so we don't display the interior page's frame (599)
+    // Snap to current scroll instantly so we don't show the wrong frame on mount
     currentFrameRef.current = targetFrameRef.current;
     drawFrame(currentFrameRef.current);
 
